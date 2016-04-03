@@ -57,7 +57,6 @@ public class Conexion implements Runnable{
                 enviados.writeUTF("Datos Recividos");
                 System.out.println("Datos Enviados");
                 cliente.close();
-                via.close();
             } catch (Exception ex) {
                 ex.printStackTrace();
             }

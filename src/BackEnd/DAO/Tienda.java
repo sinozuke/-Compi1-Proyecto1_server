@@ -5,8 +5,6 @@
  */
 package BackEnd.DAO;
 
-import java.util.ArrayList;
-
 /**
  *
  * @author sinozuke
@@ -19,8 +17,16 @@ public class Tienda {
     private String Dirreccion;
     private int telefono;
     private String img;
-    public static ArrayList<Producto> productos;
-
+    public static Producto[] hash_productos;
+    
+    public Tienda() {
+        hash_productos = new Producto[10000];
+    }
+    
+    public boolean productoocupado(int codigo){
+        return (hash_productos[codigo]!=null);
+    }
+    
     public int getCodigo() {
         return codigo;
     }
@@ -69,12 +75,4 @@ public class Tienda {
         this.img = img;
     }
 
-    public static ArrayList<Producto> getProductos() {
-        return productos;
-    }
-
-    public static void setProductos(ArrayList<Producto> productos) {
-        Tienda.productos = productos;
-    }
-    
 }

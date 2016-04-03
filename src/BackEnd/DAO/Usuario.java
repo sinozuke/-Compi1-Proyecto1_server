@@ -5,7 +5,6 @@
  */
 package BackEnd.DAO;
 
-import java.util.ArrayList;
 
 /**
  *
@@ -20,8 +19,12 @@ public class Usuario {
     private int telefono;
     private String email;
     private String dirreccion;
-    public static ArrayList<Tienda> tiendas;
+    public Tienda[] hash_tiendas;
 
+    public Usuario() {
+        hash_tiendas = new Tienda[10000];
+    }
+    
     public int getId() {
         return id;
     }
@@ -76,14 +79,6 @@ public class Usuario {
 
     public void setDirreccion(String dirreccion) {
         this.dirreccion = dirreccion;
-    }
-
-    public static ArrayList<Tienda> getTiendas() {
-        return tiendas;
-    }
-
-    public static void setTiendas(ArrayList<Tienda> tiendas) {
-        Usuario.tiendas = tiendas;
     }
     
 }
