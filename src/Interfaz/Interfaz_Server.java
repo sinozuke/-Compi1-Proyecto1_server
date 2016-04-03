@@ -5,16 +5,18 @@
  */
 package Interfaz;
 
+import static compi1.proyecto1_server.pkg201403775.Compi1Proyecto1_Server201403775.SG;
+
 /**
  *
  * @author sinozuke
  */
-public class Interfaz_General extends javax.swing.JFrame {
+public class Interfaz_Server extends javax.swing.JFrame {
 
     /**
-     * Creates new form Interfaz_General
+     * Creates new form Interfaz_Server
      */
-    public Interfaz_General() {
+    public Interfaz_Server() {
         initComponents();
     }
 
@@ -42,6 +44,11 @@ public class Interfaz_General extends javax.swing.JFrame {
         jTextArea2 = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel1.setText("Consola");
 
@@ -127,15 +134,18 @@ public class Interfaz_General extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-     * @param args the command line arguments
-     */
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        SG.Realizar_Backup();
+        System.exit(0);
+    }//GEN-LAST:event_formWindowClosing
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

@@ -31,18 +31,6 @@ public class Stores_Generator implements Runnable{
     
     @Override
     public void run() {
-        backup = gson.toJson(usuarios_hash);
-        Archivo_backlog = new File(ruta_backlog);
-        try {
-            bw = new BufferedWriter(new FileWriter(Archivo_backlog));
-            bw.write(backup);
-            bw.close();
-        } catch (Exception ex) {
-            System.out.println("Error al Guardar BackLog: " + ex.getCause());
-        }
-    }
-    
-    public void Restablecer_info(){
         try{
             Archivo_backlog = new File(ruta_backlog);
             if(Archivo_backlog.exists()){
@@ -61,5 +49,17 @@ public class Stores_Generator implements Runnable{
         }catch(IOException | JsonSyntaxException ex){
             System.out.println(ex.getCause());
         }
+    }
+    
+    public void Realizar_Backup(){
+        backup = gson.toJson(usuarios_hash);
+        Archivo_backlog = new File(ruta_backlog);
+        try {
+            bw = new BufferedWriter(new FileWriter(Archivo_backlog));
+            bw.write(backup);
+            bw.close();
+        } catch (Exception ex) {
+            System.out.println("Error al Guardar BackLog: " + ex.getCause());
+        }  
     }
 }
