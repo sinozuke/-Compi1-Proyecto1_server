@@ -5,6 +5,7 @@
  */
 package Interfaz;
 
+import static compi1.proyecto1_server.pkg201403775.Compi1Proyecto1_Server201403775.SG;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Font;
@@ -12,7 +13,6 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import static compi1.proyecto1_server.pkg201403775.Compi1Proyecto1_Server201403775.SG;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
