@@ -21,7 +21,7 @@ public interface Enlace_EnvioDAO {
     boolean reply_registro_producto(int id,int sucursal, String registro);
     boolean reply_modificacion_producto(int id,int sucursal,String modificado);
     boolean reply_eliminacion_producto(int id,int sucursal,String eliminado);
-    boolean reply_error(String descripccion);
+    boolean reply_error(ArrayList<Error> Errores);
     boolean reply_lista_tiendas(ArrayList<Tienda> tiendas);
     boolean reply_lista_productos(ArrayList<Producto> productos);
 }
