@@ -68,6 +68,8 @@ public class Interfaz_Server extends javax.swing.JFrame {
         try {
             instance = PdfWriter.getInstance(lex, new FileOutputStream("~/errlex.pdf"));
             
+            lex.open();
+            
             tabla = new PdfPTable(3);
             
             ini = new Paragraph("Errores Lexicos",fuente);
@@ -104,17 +106,114 @@ public class Interfaz_Server extends javax.swing.JFrame {
     
     private void mostrar_documento_lex(){
         try {
-            Runtime.getRuntime().exec("evince ~./errlex.pdf");
+            Runtime.getRuntime().exec("evince ./errlex.pdf");
         } catch (IOException ex) {
                 JOptionPane.showMessageDialog(null, "linux No  pude abrir evince");
                 System.out.println("err al ejecutar evince (pdfs()): " + ex.getCause());
         }
     }
     
-    public void generar_pdf_sin(){
+    public void generar_pdf_sin(ArrayList<Error> errores){
+        try {
+            instance = PdfWriter.getInstance(sin, new FileOutputStream("~/errsin.pdf"));
+            
+            sin.open();
+            
+            tabla = new PdfPTable(3);
+            
+            ini = new Paragraph("Errores Sintacticos",fuente);
+            ini.setLeading(0,1);
+            
+            fin = new Paragraph("-- Fin Errores Sintacticos --",fuente);
+            fin.setLeading(0,1);
+            
+            cabeza = new PdfPCell(ini);
+            cabeza.setColspan(3);
+                       
+            Pie = new PdfPCell(fin);
+            Pie.setColspan(3);
+            
+            tabla.setWidthPercentage(100);
+            
+            tabla.addCell(cabeza);
+            
+            errores.stream().forEach((Error err)->{
+                if(err.getTipo().equals("sintactico")){
+                    tabla.addCell(String.valueOf(err.getFila()));
+                    tabla.addCell(String.valueOf(err.getColumna()));
+                    tabla.addCell(err.getDescripccion());
+                }
+            });
+            
+            tabla.addCell(Pie);
+            
+            sin.add(tabla);
+            sin.close();
+            this.mostrar_documento_sin();
+        } catch (DocumentException | FileNotFoundException ex) {
+            Logger.getLogger(Interfaz_Server.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void mostrar_documento_sin(){
+        try {
+            Runtime.getRuntime().exec("evince ./errsin.pdf");
+        } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "linux No  pude abrir evince");
+                System.out.println("err al ejecutar evince (pdfs()): " + ex.getCause());
+        }
     
     }
-    public void generar_pdf_sem(){
+    
+    public void generar_pdf_sem(ArrayList<Error> errores){
+        try {
+            instance = PdfWriter.getInstance(sem, new FileOutputStream("~/errsem.pdf"));
+            
+            sem.open();
+            
+            tabla = new PdfPTable(3);
+            
+            ini = new Paragraph("Errores Semanticos",fuente);
+            ini.setLeading(0,1);
+            
+            fin = new Paragraph("-- Fin Errores Semanticos --",fuente);
+            fin.setLeading(0,1);
+            
+            cabeza = new PdfPCell(ini);
+            cabeza.setColspan(3);
+                       
+            Pie = new PdfPCell(fin);
+            Pie.setColspan(3);
+            
+            tabla.setWidthPercentage(100);
+            
+            tabla.addCell(cabeza);
+            
+            errores.stream().forEach((Error err)->{
+                if(err.getTipo().equals("semantico")){
+                    tabla.addCell(String.valueOf(err.getFila()));
+                    tabla.addCell(String.valueOf(err.getColumna()));
+                    tabla.addCell(err.getDescripccion());
+                }
+            });
+            
+            tabla.addCell(Pie);
+            
+            sem.add(tabla);
+            sem.close();
+            this.mostrar_documento_sem();
+        } catch (DocumentException | FileNotFoundException ex) {
+            Logger.getLogger(Interfaz_Server.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    private void mostrar_documento_sem(){
+        try {
+            Runtime.getRuntime().exec("evince ~./errsem.pdf");
+        } catch (IOException ex) {
+                JOptionPane.showMessageDialog(null, "linux No  pude abrir evince");
+                System.out.println("err al ejecutar evince (pdfs()): " + ex.getCause());
+        }
     }
     
     private void cargar(){
@@ -302,21 +401,11 @@ public class Interfaz_Server extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
-        try {
-            Runtime.getRuntime().exec("evince ~./errsin.pdf");
-        } catch (IOException ex) {
-                JOptionPane.showMessageDialog(null, "linux No  pude abrir evince");
-                System.out.println("err al ejecutar evince (pdfs()): " + ex.getCause());
-        }
+        this.mostrar_documento_sin();
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        try {
-            Runtime.getRuntime().exec("evince ~./errsem.pdf");
-        } catch (IOException ex) {
-                JOptionPane.showMessageDialog(null, "linux No  pude abrir evince");
-                System.out.println("err al ejecutar evince (pdfs()): " + ex.getCause());
-        }
+        this.mostrar_documento_sem();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
