@@ -89,9 +89,11 @@ public class Interfaz_Server extends javax.swing.JFrame {
             tabla.addCell(cabeza);
             
             errores.stream().forEach((Error err)->{
-                tabla.addCell(String.valueOf(err.getFila()));
-                tabla.addCell(String.valueOf(err.getColumna()));
-                tabla.addCell(err.getDescripccion());
+                if(err.getTipo().equals("lexico")){
+                    tabla.addCell(String.valueOf(err.getFila()));
+                    tabla.addCell(String.valueOf(err.getColumna()));
+                    tabla.addCell(err.getDescripccion());
+                }
             });
             
             tabla.addCell(Pie);
