@@ -20,7 +20,7 @@ public class Tienda {
     public static Producto[] hash_productos;
     
     public Tienda() {
-        hash_productos = new Producto[10000];
+        hash_productos = new Producto[50];
     }
     
     public boolean productoocupado(int codigo){

@@ -22,7 +22,7 @@ public class Usuario {
     public Tienda[] hash_tiendas;
 
     public Usuario() {
-        hash_tiendas = new Tienda[10000];
+        hash_tiendas = new Tienda[50];
     }
     
     public int getId() {
