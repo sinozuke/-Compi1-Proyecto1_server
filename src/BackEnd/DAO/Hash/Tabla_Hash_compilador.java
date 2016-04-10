@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package BackEnd.DAO;
+package BackEnd.DAO.Hash;
 
+import BackEnd.DAO.Compilador.Seccion_Mate;
 import java.util.ArrayList;
 
 /**

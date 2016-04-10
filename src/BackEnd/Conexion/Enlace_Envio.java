@@ -5,10 +5,10 @@
  */
 package BackEnd.Conexion;
 
-import BackEnd.DAO.Enlace_EnvioDAO;
-import BackEnd.DAO.Error;
-import BackEnd.DAO.Producto;
-import BackEnd.DAO.Tienda;
+import BackEnd.DAO.Interfaces.Enlace_EnvioDAO;
+import BackEnd.DAO.Objetos.Error;
+import BackEnd.DAO.Objetos.Producto;
+import BackEnd.DAO.Objetos.Tienda;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;

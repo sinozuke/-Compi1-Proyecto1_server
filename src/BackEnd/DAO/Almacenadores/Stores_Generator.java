@@ -3,8 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package BackEnd.DAO;
+package BackEnd.DAO.Almacenadores;
 
+import BackEnd.DAO.Objetos.DATOS;
+import BackEnd.DAO.Objetos.Producto;
+import BackEnd.DAO.Objetos.Tienda;
+import BackEnd.DAO.Objetos.Usuario;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import java.io.BufferedReader;
@@ -28,9 +32,9 @@ public class Stores_Generator implements Runnable{
     private BufferedWriter bw;
     private BufferedReader  br;
     private String Backup_backlog;
-    public static Usuario[] usuarios_hash = new Usuario[50];
-    public static Tienda[] Tienda_hash = new Tienda[2500];
-    public static Producto[] Productos_hash = new Producto[125000];
+    public Usuario[] usuarios_hash = new Usuario[50];
+    public Tienda[] Tienda_hash = new Tienda[5000];
+    public Producto[] Productos_hash = new Producto[500000];
     private final Stores_Generator_Repository SGR = new Stores_Generator_Repository();
     private final Thread SGR1 = new Thread(SGR);
     private final String ruta_backlog = "/home/sinozuke/Escritorio/backlog.txt";

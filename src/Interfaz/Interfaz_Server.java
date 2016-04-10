@@ -24,7 +24,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import BackEnd.DAO.Error;
+import BackEnd.DAO.Objetos.Error;
 
 /**
  *

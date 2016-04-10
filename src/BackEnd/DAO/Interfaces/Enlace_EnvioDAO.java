@@ -3,8 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package BackEnd.DAO;
+package BackEnd.DAO.Interfaces;
 
+import BackEnd.DAO.Objetos.Error;
+import BackEnd.DAO.Objetos.Producto;
+import BackEnd.DAO.Objetos.Tienda;
 import java.util.ArrayList;
 
 /**

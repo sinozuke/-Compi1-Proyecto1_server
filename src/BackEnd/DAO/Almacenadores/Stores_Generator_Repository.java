@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package BackEnd.DAO;
+package BackEnd.DAO.Almacenadores;
 
-import static BackEnd.DAO.Stores_Generator.Productos_hash;
-import static BackEnd.DAO.Stores_Generator.Tienda_hash;
-import static BackEnd.DAO.Stores_Generator.usuarios_hash;
+
+import BackEnd.DAO.Objetos.DATOS;
+import static compi1.proyecto1_server.pkg201403775.Compi1Proyecto1_Server201403775.SG;
 import com.google.gson.Gson;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -37,9 +37,9 @@ public class Stores_Generator_Repository implements Runnable{
     
     @Override
     public void run() {
-        datos_backup.setDatos_productos(Productos_hash);
-        datos_backup.setDatos_tiendas(Tienda_hash);
-        datos_backup.setDatos_usuario(usuarios_hash);
+        datos_backup.setDatos_productos(SG.Productos_hash);
+        datos_backup.setDatos_tiendas(SG.Tienda_hash);
+        datos_backup.setDatos_usuario(SG.usuarios_hash);
         backup = gson.toJson(datos_backup);
         Archivo_backlog = new File(MessageFormat.format("{0}{1}-{2}.txt", ruta_backlog, dateFormat.format(date), hourFormat.format(date)));
         try {

@@ -11,7 +11,7 @@ package compi1.proyecto1_server.pkg201403775;
 
 import BackEnd.Conexion.Conexion;
 import BackEnd.Conexion.Enlace_Envio;
-import BackEnd.DAO.Stores_Generator;
+import BackEnd.DAO.Almacenadores.Stores_Generator;
 import Interfaz.Interfaz_Server;
 
 /**
