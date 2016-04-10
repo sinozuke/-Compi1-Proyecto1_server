@@ -1,4 +1,4 @@
-package BackEnd.analizadores;
+package BackEnd.Analizador;
 
 import java_cup.runtime.Symbol;
 import java.util.*;
