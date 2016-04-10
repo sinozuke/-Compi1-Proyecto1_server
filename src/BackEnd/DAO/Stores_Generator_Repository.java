@@ -5,6 +5,9 @@
  */
 package BackEnd.DAO;
 
+import static BackEnd.DAO.Stores_Generator.Productos_hash;
+import static BackEnd.DAO.Stores_Generator.Tienda_hash;
+import static BackEnd.DAO.Stores_Generator.usuarios_hash;
 import com.google.gson.Gson;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,7 +17,6 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import static BackEnd.DAO.Stores_Generator.usuarios_hash;
 
 /**
  *
@@ -31,10 +33,14 @@ public class Stores_Generator_Repository implements Runnable{
     private String backup;
     private File Archivo_backlog;
     private BufferedWriter bw;
+    private final DATOS datos_backup = new DATOS();
     
     @Override
     public void run() {
-        backup = gson.toJson(usuarios_hash);
+        datos_backup.setDatos_productos(Productos_hash);
+        datos_backup.setDatos_tiendas(Tienda_hash);
+        datos_backup.setDatos_usuario(usuarios_hash);
+        backup = gson.toJson(datos_backup);
         Archivo_backlog = new File(MessageFormat.format("{0}{1}-{2}.txt", ruta_backlog, dateFormat.format(date), hourFormat.format(date)));
         try {
             System.out.println("Creando Repositorio de informacion");

@@ -17,14 +17,32 @@ public class Tienda {
     private String Dirreccion;
     private int telefono;
     private String img;
-    public static Producto[] hash_productos;
-    
-    public Tienda() {
-        hash_productos = new Producto[50];
+    private boolean registro=false;
+    private boolean modificar=false;
+    private boolean eliminar=false;
+
+    public boolean isRegistro() {
+        return registro;
     }
-    
-    public boolean productoocupado(int codigo){
-        return (hash_productos[codigo]!=null);
+
+    public void setRegistro(boolean registro) {
+        this.registro = registro;
+    }
+
+    public boolean isModificar() {
+        return modificar;
+    }
+
+    public void setModificar(boolean modificar) {
+        this.modificar = modificar;
+    }
+
+    public boolean isEliminar() {
+        return eliminar;
+    }
+
+    public void setEliminar(boolean eliminar) {
+        this.eliminar = eliminar;
     }
     
     public int getCodigo() {

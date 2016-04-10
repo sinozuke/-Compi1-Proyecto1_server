@@ -6,9 +6,10 @@
 package BackEnd.Conexion;
 
 import java.io.DataInputStream;
-import java.io.DataOutputStream;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  *
@@ -16,13 +17,29 @@ import java.net.Socket;
  */
 
 public class Conexion implements Runnable{
+    
+    public static class enlace_usuario implements Runnable{
+        
+        public static final Enlace_Envio enlace=new Enlace_Envio();
+        private final String recivido;
+        public enlace_usuario(String recivido,InetAddress ip) {
+            this.recivido = recivido;
+            enlace.dirreccionip=ip;
+        }
+        
+        @Override
+        public void run() {
+            //metodo a analizar
+        }
+        
+    }
 
     private static ServerSocket servidor;
     private Socket cliente;
-    private DataInputStream recividos;
-    private DataOutputStream enviados;
-    private Socket via;
+    private ArrayList<Thread> enlaces;
+    
     public Conexion(){
+        this.enlaces = new ArrayList();
         if(conectar()){
             System.out.println("conexion hecha, Servidor andando");
         }else{
@@ -44,23 +61,29 @@ public class Conexion implements Runnable{
     
     @Override
     public void run() {
-        String recv;
         System.out.println("Buscando por clientes");
         while (true){
             try {
                 cliente = servidor.accept();
-                recividos = new DataInputStream(cliente.getInputStream());
-                recv = recividos.readUTF();
-                System.out.println(recv);
-                via = new Socket(cliente.getLocalAddress(),3501);
-                enviados = new DataOutputStream(via.getOutputStream());
-                enviados.writeUTF("Datos Recividos");
-                System.out.println("Datos Enviados");
+                String recivido =new DataInputStream(cliente.getInputStream()).readUTF();
+                enlaces.add(new Thread(new enlace_usuario(recivido,cliente.getLocalAddress())));
+                enlaces.get(enlaces.size()-1).start();
                 cliente.close();
+                enlaces = eliminar_enlaces(enlaces);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
+    }
+    
+    private ArrayList<Thread> eliminar_enlaces(ArrayList<Thread> enlaces1){
+        ArrayList<Thread> temp1 = null;
+            enlaces1.stream().forEach((Thread t)->{
+                if(t.isAlive()){
+                   temp1.add(t);
+                }
+            });
+        return temp1;
     }
     
 }

@@ -19,10 +19,14 @@ public class Usuario {
     private int telefono;
     private String email;
     private String dirreccion;
-    public Tienda[] hash_tiendas;
+    private boolean registro=false;
 
-    public Usuario() {
-        hash_tiendas = new Tienda[50];
+    public boolean isRegistro() {
+        return registro;
+    }
+
+    public void setRegistro(boolean registro) {
+        this.registro = registro;
     }
     
     public int getId() {

@@ -28,12 +28,15 @@ public class Stores_Generator implements Runnable{
     private BufferedWriter bw;
     private BufferedReader  br;
     private String Backup_backlog;
-    public static Usuario[] usuarios_hash = new Usuario[10000];
+    public static Usuario[] usuarios_hash = new Usuario[50];
+    public static Tienda[] Tienda_hash = new Tienda[2500];
+    public static Producto[] Productos_hash = new Producto[125000];
     private final Stores_Generator_Repository SGR = new Stores_Generator_Repository();
     private final Thread SGR1 = new Thread(SGR);
     private final String ruta_backlog = "/home/sinozuke/Escritorio/backlog.txt";
     private final Gson gson = new Gson();
     private final JFileChooser fc = new JFileChooser();
+    private final DATOS datos_backup = new DATOS();
     
     @Override
     public void run() {
@@ -51,7 +54,10 @@ public class Stores_Generator implements Runnable{
                 Backup_backlog = br.readLine();
                 System.out.println("verificando informacion");
                 if(Backup_backlog!=null && !Backup_backlog.equals("")){
-                    System.arraycopy(gson.fromJson(Backup_backlog, Usuario[].class), 0, Stores_Generator.usuarios_hash, 0, 0);
+                    DATOS cargados = gson.fromJson(Backup_backlog, DATOS.class);
+                    System.arraycopy(cargados.getDatos_usuario(), 0, usuarios_hash, 0, 0);
+                    System.arraycopy(cargados.getDatos_tiendas(), 0, Tienda_hash, 0, 0);
+                    System.arraycopy(cargados.getDatos_productos(), 0, Productos_hash, 0, 0);
                     System.out.println("informacion Restablecida");
                 }
                 br.close();                
@@ -80,7 +86,10 @@ public class Stores_Generator implements Runnable{
                 Backup_backlog = br.readLine();
                 System.out.println("verificando informacion");
                 if(Backup_backlog!=null && !Backup_backlog.equals("")){
-                    System.arraycopy(gson.fromJson(Backup_backlog, Usuario[].class), 0, Stores_Generator.usuarios_hash, 0, 0);
+                    DATOS cargados = gson.fromJson(Backup_backlog, DATOS.class);
+                    System.arraycopy(cargados.getDatos_usuario(), 0, usuarios_hash, 0, 0);
+                    System.arraycopy(cargados.getDatos_tiendas(), 0, Tienda_hash, 0, 0);
+                    System.arraycopy(cargados.getDatos_productos(), 0, Productos_hash, 0, 0);
                     System.out.println("informacion Restablecida");
                 }
                 br.close();                
@@ -101,7 +110,10 @@ public class Stores_Generator implements Runnable{
     }
     
     public void Realizar_Backup(){
-        backup = gson.toJson(usuarios_hash);
+        datos_backup.setDatos_productos(Productos_hash);
+        datos_backup.setDatos_tiendas(Tienda_hash);
+        datos_backup.setDatos_usuario(usuarios_hash);
+        backup = gson.toJson(datos_backup);
         Archivo_backlog = new File(ruta_backlog);
         try {
             System.out.println("Creando Respaldo de informacion");

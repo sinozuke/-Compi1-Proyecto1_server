@@ -11,6 +11,7 @@ import BackEnd.DAO.Producto;
 import BackEnd.DAO.Tienda;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -23,8 +24,8 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
     
         private Socket Cliente;
         private DataOutputStream enviado;
-        public String dirreccionip;
-    
+        public InetAddress dirreccionip;
+       
     private boolean enlazar(){
         try{
             Cliente = new Socket(dirreccionip,3501);
