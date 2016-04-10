@@ -316,7 +316,7 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
                     reply.append("$código-$\n");
                     reply.append("$nombre$");
                     reply.append("\"");
-                    reply.append(p.getNombrre());
+                    reply.append(p.getNombre());
                     reply.append("\"");
                     reply.append("$nombre-$\n");
                     reply.append("$cantidad$");

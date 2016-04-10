@@ -12,13 +12,13 @@ package BackEnd.DAO.Objetos;
 public class Producto {
     
     private int id;
-    private String Nombrre;
-    private int cantidad;
+    private String Nombre;
     private String marca;
     private String color;
+    private int cantidad;
     private int tamaño;
-    private String img;
     private int sucursal;
+    private String img;
     private boolean registro=false;
     private boolean modificar=false;
     private boolean eliminar=false;
@@ -55,12 +55,12 @@ public class Producto {
         this.id = id;
     }
 
-    public String getNombrre() {
-        return Nombrre;
+    public String getNombre() {
+        return Nombre;
     }
 
-    public void setNombrre(String Nombrre) {
-        this.Nombrre = Nombrre;
+    public void setNombre(String Nombre) {
+        this.Nombre = Nombre;
     }
 
     public int getCantidad() {

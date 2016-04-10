@@ -59,61 +59,82 @@ public class Tabla_Hash_DATOS {
         }
         return temp;    
     }
-    public ArrayList<Tienda> get_tiendasc1(int OL,int Atributo,Object comparacion){
+    public ArrayList<Tienda> get_tiendasc(String evaluacion,Object comparacion){
         ArrayList<Tienda> temp = this.get_tiendas();
+        ArrayList<Tienda> temp2 = null;
         temp.stream().forEach((Tienda t)->{
-            switch(Atributo){
-                case 1:
-                    if(this.aceptarint(OL, t.getCodigo(), (Integer)comparacion)){
-                        temp.add(t);
+            switch(evaluacion){
+                case "codigo":
+                    if(t.getCodigo()==(Integer)comparacion){
+                        temp2.add(t);
                     }
                     break;
-                case 2:
-                    if(this.aceptarint(OL, t.getPropietario(), (Integer)comparacion)){
-                        temp.add(t);
+                case "propietario":
+                    if(t.getPropietario()==(Integer)comparacion){
+                        temp2.add(t);
                     }
                     break;
-                case 3:
-                    if(this.aceptarstring(OL, t.getNombre(), (String)comparacion)){
-                        temp.add(t);
+                case "nombre":
+                    if(t.getNombre().equals((String)comparacion)){
+                        temp2.add(t);
                     }
                     break;
-                case 4:
-                    if(this.aceptarstring(OL, t.getDirreccion(), (String)comparacion)){
-                        temp.add(t);
+                case "dirreccion":
+                    if(t.getDirreccion().equals((String)comparacion)){
+                        temp2.add(t);
                     }
                     break;
-                case 5:
-                    if(this.aceptarint(OL, t.getTelefono(), (Integer)comparacion)){
-                        temp.add(t);
+                case "telefono":
+                    if(t.getTelefono()==(Integer)comparacion){
+                        temp2.add(t);
                     }
                     break;
             }
         });
-        return temp;
+        return temp2;
     }
-    private boolean aceptarint(int ol, int atributo, int comparacion){
-        boolean a=false;
-        switch(ol){
-            case 1:
-                a = atributo==comparacion;
-                break;
-            case 2:
-                a= atributo!=comparacion;
-                break;
-        }
-        return a;
-    }
-    private boolean aceptarstring(int ol, String atributo, String comparacion){
-        boolean a=false;
-        switch(ol){
-            case 1:
-                a = atributo.equals(comparacion);
-                break;
-            case 2:
-                a= atributo.equals(comparacion);
-                break;
-        }
-        return a;
+    public ArrayList<Producto> get_productosc(String evaluar,Object comparacion){
+        ArrayList<Producto> temp = this.get_productos();
+        ArrayList<Producto> temp2 = null;
+        temp.stream().forEach((Producto p)->{
+            switch(evaluar){
+                case "id":
+                    if(p.getId()==(Integer)comparacion){
+                        temp2.add(p);
+                    }
+                    break;
+                case "nombre":
+                    if(p.getNombre().equals((String)comparacion)){
+                        temp2.add(p);
+                    }
+                    break;
+                case "marca":
+                    if(p.getMarca().equals((String)comparacion)){
+                        temp2.add(p);
+                    }
+                    break;
+                case "color":
+                    if(p.getColor().equals((String)comparacion)){
+                        temp2.add(p);
+                    }
+                    break;
+                case "cantidad":
+                    if(p.getCantidad()==(Integer)comparacion){
+                        temp2.add(p);
+                    }
+                    break;
+                case "tamaño":
+                    if(p.getTamaño()==(Integer)comparacion){
+                        temp2.add(p);
+                    }
+                    break;
+                case "sucursal":
+                    if(p.getSucursal()==(Integer)comparacion){
+                        temp2.add(p);
+                    }
+                    break;
+            }
+        });
+        return temp2;
     }
 }
