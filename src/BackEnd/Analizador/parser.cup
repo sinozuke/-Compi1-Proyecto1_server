@@ -39,7 +39,8 @@ non terminal Funciones CUERPODEFUNCIONES ,PRIMITIVO;
 non terminal Calculos EOA, DATO,DATO1;
 non terminal Query CUERPOCONSULTA,COMPARACION,OPERADORLOGICO,DESARROLLOCONSULTA;
 
-precedence left Suma, Resta;
+precedence left Suma;
+precedence left Resta;
 precedence left Multiplicacion, Division;
 precedence left Potencia ;
 precedence left Raiz	;

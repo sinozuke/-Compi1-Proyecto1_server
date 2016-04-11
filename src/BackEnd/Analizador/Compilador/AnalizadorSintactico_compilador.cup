@@ -1,1 +1,234 @@
+package BackEnd.Analizadores.Compilador;
+import java_cup.runtime.*;
 
+parser code
+{:
+    /**Metodo al que se llama automáticamente ante algún error sintactico.*/
+    public void syntax_error(Symbol s){
+		System.out.println("Error en la Línea " + (s.right+1) +" Columna "+s.left+ ". Identificador "
+        +s.value + " no reconocido.");
+    }
+
+    /**Metodo al que se llama en el momento en que ya no es posible una recuperación de
+    errores.*/
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+		System.out.println("Error en la Línea " + (s.right+1)+ "Columna "+s.left+". Identificador " +
+        s.value + " no reconocido.");
+    }
+:}
+
+action code
+{:
+
+		
+:}
+terminal constante,DI,DF,get,request,iniciousuario,id,sucursal,password,usuario,crearusuario;
+terminal String nombre,apellido,telefono,email,direccion,tienda,codigo,propietario,imagen,tipo;
+terminal potencia,raiz,multiplicacion,division,suma,resta;
+terminal producto,cantidad;
+terminal String marca,color,tamano;
+terminal pyc;
+terminal Integer numero;
+terminal coma,igual,corchetei,corchetef,parentesisi,parentesisf,llavesi,llavesf,mate,consulta,avacio;
+terminal AND,OR,NOT;
+terminal extraer,de,donde,CREACION,MODIFICACION,ELIMINACION,cadena,correo,identificador;
+
+non terminal INICIA;
+non terminal REQUEST, MATE, CONTMATE, CONTMATEP, PARAMS, PARAMSP, VALOR;
+non terminal PETICIONES, PETICION, PETICIONP, TIENDA, CONTREGISTIENDA;
+non terminal CONTREGISTIENDAP, CONSM;
+non terminal PRODUCTO, REGISPRODU;
+non terminal REGISPRODUP;
+non terminal USUARIO, REGISUSU, REGISUSUP, LOGIN, LOGINP, CONSULTA, CONSULTAS;
+non terminal ACCIONESPRODU, ACCIONESPRODUP,ACCION,ACCIONESTIENDA,ACCIONESTIENDAP;
+non terminal COMPARA, COMPARAP, OL;
+non terminal EQ, EQP;
+non terminal EXPREA, EXPREB, EXPREC, EXPRED, EXPREE, EXPREF,EXPREG;
+non terminal PARAMSN,PARAMSNP, MATEF, CONTMATEF;
+non terminal CONTGET, CONTGETP;
+
+precedence left suma;
+precedence left resta;
+precedence left multiplicacion;
+precedence left division;
+
+start with INICIA;
+
+INICIA ::=  REQUEST                                                                                 {::};
+
+REQUEST ::=  REQUEST PETICIONES                                                                     {::}
+            |PETICIONES                                                                             {::}
+            |DI mate nombre igual MATE DI mate DF                                                   {::};  
+
+MATE ::= cadena DI CONTMATE                                                                         {::};
+
+CONTMATE ::=     CONTMATE CONTMATEP                                                                 {::}
+                |CONTMATEP                                                                          {::};
+
+CONTMATEP ::=    identificador parentesisi PARAMS parentesisf igual llavesi EQ llavesf pyc          {::}
+                |constante identificador igual VALOR pyc                                            {::};
+
+PARAMS ::=   PARAMS coma PARAMSP                                                                    {::}
+            |PARAMSP                                                                                {::};
+
+PARAMSP ::= identificador                                                                           {::};
+
+EQ ::=   EQ EQP                                                                                     {::}
+        |EQP                                                                                        {::}
+        |MATEF                                                                                      {::};
+
+MATEF ::= corchetei identificador coma identificador CONTMATEF corchetef                            {::};
+
+CONTMATEF ::=                                                                                       {::}
+            |parentesisi PARAMSN parentesisf                                                        {::};
+
+PARAMSN ::=  PARAMSN coma PARAMSNP                                                                  {::}
+            |PARAMSNP                                                                               {::};
+
+PARAMSNP ::= numero                                                                                 {::};
+      
+EQP ::= EQP suma EXPREA                                                                             {::}
+        |EXPREA                                                                                     {::};
+
+EXPREA ::= EXPREA resta EXPREB                                                                      {::}
+            |EXPREB                                                                                 {::};
+
+EXPREB ::= EXPREB multiplicacion EXPREC                                                             {::}
+            |EXPREC                                                                                 {::};
+
+EXPREC ::= EXPREC division EXPRED                                                                   {::}
+            EXPRED                                                                                  {::};
+
+EXPRED ::= potencia corchetei EXPREE coma EXPREE corchetef                                          {::}
+            |EXPREE                                                                                 {::};
+
+EXPREE ::= raiz corchetei EXPREF coma EXPREF corchetef                                              {::}
+            |EXPREF                                                                                 {::};
+
+EXPREF ::= llavesi EXPREG llavesf                                                                   {::}
+            |EXPREG                                                                                 {::};
+
+EXPREG ::= parentesisi EQP parentesisf                                                              {::}
+            |numero                                                                                 {::}
+            |identificador                                                                          {::};
+
+VALOR ::=    numero                                                                                 {::}
+            |cadena                                                                                 {::};
+
+PETICIONES ::=   DI request DI PETICION DI request DF                                               {::}
+                |DI consulta DI CONSULTA DI consulta DF                                             {::}
+                |DI get DI tipo igual CONTGET DI get DF                                             {::}
+                |DI request DI USUARIO DI request DF                                                {::};
+
+CONTGET ::= cadena propietario igual numero CONTGETP                                                {::};
+
+CONTGETP ::=                                                                                        {::}
+            |sucursal igual numero                                                                  {::};
+
+PETICION ::=     PETICION PETICIONP                                                                 {::}
+                |PETICIONP                                                                          {::};
+
+PETICIONP ::=   DI tienda TIENDA DF                                                                 {::}
+                |PRODUCTO                                                                           {::};
+
+TIENDA ::=  tipo igual CREACION DI CONTREGISTIENDA DI tienda                                        {::}
+            | ACCIONESTIENDA                                                                        {::};
+
+CONTREGISTIENDA ::=  CONTREGISTIENDA CONTREGISTIENDAP                                               {::}
+                    |CONTREGISTIENDAP                                                               {::};
+
+CONTREGISTIENDAP ::=     DI codigo DI EQ DI codigo DF                                            {::}
+                        |DI propietario DI EQ DI propietario DF                                  {::}
+                        |DI nombre DI CONSM DI nombre DF                                            {::}
+                        |DI direccion DI CONSM DI direccion DF                                      {::}
+                        |DI telefono DI EQ DI telefono DF                                        {::}
+                        |DI imagen DI identificador DI imagen DF                                    {::};
+
+ACCIONESTIENDA ::=   ACCIONESTIENDA coma ACCIONESTIENDAP                                            {::}
+                    |ACCIONESTIENDAP                                                                {::};
+
+ACCIONESTIENDAP ::=  tipo igual ACCION                                                        {::}
+                    |codigo igual numero                                                            {::}
+                    |propietario igual numero                                                       {::}
+                    |nombre igual cadena                                                            {::}
+                    |direccion igual cadena                                                         {::}
+                    |telefono igual numero                                                          {::};
+      
+CONSM ::=    cadena                                                                                 {::}
+            |numero                                                                                 {::}
+            |avacio                                                                                 {::}
+            |corchetei identificador coma identificador corchetef                                   {::};
+
+PRODUCTO ::=     DI producto tipo igual CREACION DI REGISPRODU DI DF                                {::}
+                |DI producto ACCIONESPRODU DF                                                           {::}
+                |DI tienda id igual numero DI ACCIONESPRODU DI tienda DF                               {::};
+
+REGISPRODU ::=   REGISPRODU REGISPRODUP                                                             {::}
+                |REGISPRODUP                                                                        {::};
+
+REGISPRODUP ::=  DI codigo DI EQ DI codigo DF                                                    {::}
+                |DI nombre DI CONSM DI nombre DF                                                    {::}
+                |DI cantidad DI EQ DI cantidad DF                                                {::}
+                |DI marca DI CONSM DI marca DF                                                      {::}
+                |DI tamano DI EQ DI tamano DF                                                    {::}
+                |DI color DI CONSM DI color DF                                                      {::}
+                |DI imagen DI identificador DI imagen DF                                            {::};
+
+ACCIONESPRODU ::=    ACCIONESPRODU ACCIONESPRODUP                                                   {::}
+                    |ACCIONESPRODUP                                                                 {::};
+
+ACCIONESPRODUP ::=   tipo igual ACCION                                                              {::}
+                |codigo igual numero                                                                {::}
+                |sucursal igual numero                                                              {::}
+                |nombre igual cadena                                                                {::}
+                |color igual CONSM                                                                  {::}
+                |cantidad igual EQ                                                               {::};
+
+
+ACCION ::=   MODIFICACION                                                                           {::}
+            |ELIMINACION                                                                            {::};
+
+USUARIO ::=  DI crearusuario DI REGISUSU DI crearusuario DF                                         {::}
+            |DI iniciousuario DI LOGIN DI iniciousuario DF                                          {::};
+
+REGISUSU ::=     REGISUSU REGISUSUP                                                                 {::}
+                |REGISUSUP                                                                          {::};
+
+REGISUSUP ::=    DI id DI numero DI id DF                                                           {::}
+                |DI nombre DI cadena DI nombre DF                                                   {::}
+                |DI apellido DI cadena DI apellido DF                                               {::}
+                |DI password DI identificador DI password DF                                        {::}
+                |DI telefono DI numero DI telefono DF                                               {::}
+                |DI email DI correo DI email DF                                                     {::}
+                |DI direccion DI cadena DI direccion DF                                             {::};
+
+LOGIN ::=    LOGIN LOGINP                                                                           {::}
+            |LOGINP                                                                                 {::};
+
+LOGINP ::=   DI id DI numero DI id DF                                                               {::}
+            |DI password DI identificador DI password DF                                            {::};
+
+CONSULTA ::=   extraer de CONSULTAS COMPARA pyc                                                     {::};
+
+CONSULTAS ::=    usuario                                                                            {::}
+                |tienda                                                                             {::}
+                |producto                                                                           {::};
+
+COMPARA ::=                                                                                         {::}
+            |donde COMPARA OL COMPARAP                                                              {::}
+            |COMPARAP                                                                               {::};
+
+COMPARAP ::=     NOT parentesisi COMPARAP parentesisf                                               {::}
+                |id igual igual EQ                                                               {::}
+                |nombre igual igual CONSM                                                           {::}
+                |apellido igual igual CONSM                                                         {::}
+                |telefono igual igual EQ                                                         {::}
+                |email igual igual CONSM                                                            {::}
+                |direccion igual igual CONSM                                                       {::}
+                |codigo igual igual CONSM                                                           {::}
+                |sucursal igual igual CONSM                                                         {::}
+                |cantidad igual igual EQ                                                         {::}
+                |tamano igual igual EQ                                                           {::};
+
+OL ::=   OR                                                                                         {::}
+        |AND                                                                                        {::};

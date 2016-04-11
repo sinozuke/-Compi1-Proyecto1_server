@@ -1,1 +1,79 @@
+package BackEnd.Analizador.Ecuaciones;
+import java_cup.runtime.*;
 
+parser code
+{:
+    /**Metodo al que se llama automáticamente ante algún error sintactico.*/
+    public void syntax_error(Symbol s){
+		System.out.println("Error en la Línea " + (s.right+1) +" Columna "+s.left+ ". Identificador "
+        +s.value + " no reconocido.");
+    }
+
+    /**Metodo al que se llama en el momento en que ya no es posible una recuperación de
+    errores.*/
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+		System.out.println("Error en la Línea " + (s.right+1)+ "Columna "+s.left+". Identificador " +
+        s.value + " no reconocido.");
+    }
+:}
+
+action code
+{:
+
+		
+:}
+
+terminal potencia,raiz,multiplicacion,division,suma,resta,numero,corchetei,corchetef,parentesisi,parentesisf,llavesi,llavesf,coma,identificador;
+
+non terminal INICIA;
+non terminal EQ, EQP;
+non terminal EXPREA, EXPREB, EXPREC, EXPRED, EXPREE, EXPREF,EXPREG;
+non terminal PARAMSN,PARAMSNP, MATEF, CONTMATEF;
+
+precedence left suma;
+precedence left resta;
+precedence left multiplicacion;
+precedence left division;
+
+start with INICIA;
+
+INICIA ::= EQ;
+
+EQ ::= EQ EQP{::}
+        |EQP{::}
+        |MATEF {::};
+
+MATEF ::= corchetei identificador coma identificador CONTMATEF corchetef {::};
+
+CONTMATEF ::=                                 {::}
+            |parentesisi PARAMSN parentesisf {::};
+
+PARAMSN ::= PARAMSN coma PARAMSNP              {::}
+            |PARAMSNP                        {::};
+
+PARAMSNP ::= numero {::};
+
+EQP ::= EQP suma EXPREA{::}
+        |EXPREA{::};
+
+EXPREA ::= EXPREA resta EXPREB {::}
+            |EXPREB {::};
+
+EXPREB ::= EXPREB multiplicacion EXPREC{::}
+            |EXPREC {::};
+
+EXPREC ::= EXPREC division EXPRED {::}
+            EXPRED {::};
+
+EXPRED ::= potencia corchetei EXPREE coma EXPREE corchetef {::}
+            |EXPREE {::};
+
+EXPREE ::= raiz corchetei EXPREF coma EXPREF corchetef {::}
+            |EXPREF {::};
+
+EXPREF ::= llavesi EXPREG llavesf {::}
+            |EXPREG {::};
+
+EXPREG ::= parentesisi EQP parentesisf {::}
+            |numero {::}
+            |identificador{::};
