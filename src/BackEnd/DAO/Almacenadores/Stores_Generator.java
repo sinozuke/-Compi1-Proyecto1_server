@@ -59,9 +59,9 @@ public class Stores_Generator implements Runnable{
                 System.out.println("verificando informacion");
                 if(Backup_backlog!=null && !Backup_backlog.equals("")){
                     DATOS cargados = gson.fromJson(Backup_backlog, DATOS.class);
-                    System.arraycopy(cargados.getDatos_usuario(), 0, usuarios_hash, 0, 0);
-                    System.arraycopy(cargados.getDatos_tiendas(), 0, Tienda_hash, 0, 0);
-                    System.arraycopy(cargados.getDatos_productos(), 0, Productos_hash, 0, 0);
+                    usuarios_hash=cargados.getDatos_usuario();
+                    Tienda_hash=cargados.getDatos_tiendas();
+                    Productos_hash=cargados.getDatos_productos();
                     System.out.println("informacion Restablecida");
                 }
                 br.close();                
@@ -91,9 +91,9 @@ public class Stores_Generator implements Runnable{
                 System.out.println("verificando informacion");
                 if(Backup_backlog!=null && !Backup_backlog.equals("")){
                     DATOS cargados = gson.fromJson(Backup_backlog, DATOS.class);
-                    System.arraycopy(cargados.getDatos_usuario(), 0, usuarios_hash, 0, 0);
-                    System.arraycopy(cargados.getDatos_tiendas(), 0, Tienda_hash, 0, 0);
-                    System.arraycopy(cargados.getDatos_productos(), 0, Productos_hash, 0, 0);
+                    usuarios_hash=cargados.getDatos_usuario();
+                    Tienda_hash=cargados.getDatos_tiendas();
+                    Productos_hash=cargados.getDatos_productos();
                     System.out.println("informacion Restablecida");
                 }
                 br.close();                

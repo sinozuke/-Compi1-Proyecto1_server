@@ -59,7 +59,8 @@ non terminal COMPARA, COMPARAP, OL;
 non terminal EQ, EQP;
 non terminal EXPREA, EXPREB, EXPREC, EXPRED, EXPREE, EXPREF,EXPREG;
 non terminal PARAMSN,PARAMSNP, MATEF, CONTMATEF;
-non terminal CONTGET, CONTGETP;
+non terminal String CONTGETP;
+non terminal ArrayList<Object> CONTGET;
 
 precedence left suma;
 precedence left resta;
@@ -131,13 +132,49 @@ VALOR ::=    numero                                                             
 
 PETICIONES ::=   DI request DI PETICION DI request DF                                               {::}
                 |DI consulta DI CONSULTA DI consulta DF                                             {::}
-                |DI get DI tipo igual CONTGET DI get DF                                             {::}
+                |DI get tipo igual CONTGET DF                                             {::}
                 |DI request DI USUARIO DI request DF                                                {::};
 
-CONTGET ::= cadena propietario igual numero CONTGETP                                                {::};
+CONTGET ::= cadena:val propietario igual numero:val1 CONTGETP:val2
+{:
+    RESULT = new ArrayList();
+    
+    if(val.replace("\n", "").equals("producto")){
+        if(val2.equals("")){
+            errores.add("a solicitado productos pero no ha especificado sucursal");
+        }else{
+            ArrayList<Producto> temp1 = hash.get_productosc("sucursal",(Object)val2);
+            ArrayList<Producto> temp2 = new ArrayList();
+            ArrayList<Object> temp3 = new ArrayList();
+            temp1.stream().forEach((Producto p)->{
+                temp2.add(p);
+                temp3.add((Object)p);
+            });
+            RESULT = temp3;
+            enlace.reply_lista_productos(temp2);
+        }
+    }else if(val.replace("\"","").equals("tienda")){
+        if(!val2.equals("")){
+            errores.add("Atributo sucursal no era nesesario para obtener tiendas");
+        }else{
+            ArrayList<Tienda> temp1 = hash.get_tiendasc("sucursal",(Object)val2);
+            ArrayList<Tienda> temp2 = new ArrayList();
+            ArrayList<Object> temp3 = new ArrayList();
+            temp1.stream().forEach((Tienda p)->{
+                temp2.add(p);
+                temp3.add((Object)p);
+            });
+            RESULT = temp3;
+            enlace.reply_lista_tiendas(temp2);
+        }
+    }
+:};
 
-CONTGETP ::=                                                                                        {::}
-            |sucursal igual numero                                                                  {::};
+CONTGETP ::=                                                                                        {:RESULT = "";:}
+            |sucursal igual numero:val
+{:
+RESULT = val;
+:};
 
 PETICION ::=     PETICION PETICIONP                                                                 {::}
                 |PETICIONP                                                                          {::};
