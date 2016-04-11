@@ -47,15 +47,6 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
 
     @Override
     public boolean reply_login(int id_usuario, String acceso) {
-        String prueba =MessageFormat.format("$reply$\n" +
-                                                            "$Usuario$\n" +
-                                                            "$id${0}$id-$\n" +
-                                                            "$access${1}$access-$\n" +
-                                                            "$Usuario-$\n" +
-                                                        "$reply-$",id_usuario, acceso).replace("\0", "");
-        for(int x=0;x<prueba.length();x++){
-                System.out.println(prueba.charAt(x) + " = " + prueba.codePointAt(x));
-        }
         if(this.enlazar()){
             try{
                 enviado.writeUTF(MessageFormat.format("$reply$\n" +
