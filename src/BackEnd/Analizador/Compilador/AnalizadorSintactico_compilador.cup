@@ -1,25 +1,35 @@
 package BackEnd.Analizador.Compilador;
 import java_cup.runtime.*;
+import BackEnd.DAO.Objetos.*;
+import BackEnd.DAO.Compilador.*;
+import BackEnd.DAO.Hash.Tabla_Hash_compilador;
+
+//import static compi1.proyecto1_server.pkg201403775.Compi1Proyecto1_Server201403775.hash;
 
 parser code
 {:
     /**Metodo al que se llama automáticamente ante algún error sintactico.*/
+    @Override
     public void syntax_error(Symbol s){
 		System.out.println("Error en la Línea " + (s.right+1) +" Columna "+s.left+ ". Identificador "
         +s.value + " no reconocido.");
     }
 
     /**Metodo al que se llama en el momento en que ya no es posible una recuperación de
+    @Override
     errores.*/
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
 		System.out.println("Error en la Línea " + (s.right+1)+ "Columna "+s.left+". Identificador " +
         s.value + " no reconocido.");
     }
+
+    
 :}
 
 action code
 {:
-
+    Tabla_Hash_compilador hash_compi = new Tabla_Hash_compilador();
+    ArrayList<String> errores = new ArrayList();
 		
 :}
 terminal constante,DI,DF,get,request,iniciousuario,id,sucursal,password,usuario,crearusuario;
@@ -206,7 +216,7 @@ LOGIN ::=    LOGIN LOGINP                                                       
             |LOGINP                                                                                 {::};
 
 LOGINP ::=   DI id DI numero DI id DF                                                               {::}
-            |DI password DI identificador DI password DF                                            {::};
+            |DI password DI identificador DI password DF                                            {:RESULT = new Usuario();:};
 
 CONSULTA ::=   extraer de CONSULTAS COMPARA pyc                                                     {::};
 
@@ -228,7 +238,9 @@ COMPARAP ::=     NOT parentesisi COMPARAP parentesisf                           
                 |codigo igual igual CONSM                                                           {::}
                 |sucursal igual igual CONSM                                                         {::}
                 |cantidad igual igual EQ                                                         {::}
-                |tamano igual igual EQ                                                           {::};
+                |tamano igual igual EQ                                                           {::}
+                |error:e pyc DI                                                                   {:errores.add("Comparacion no Reconocido");:};
 
 OL ::=   OR                                                                                         {::}
-        |AND                                                                                        {::};
+        |AND                                                                                        {::}
+        |error:e pyc DI                                                                             {:errores.add("Operador Logico Invalido");:};

@@ -10,6 +10,9 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import BackEnd.Analizador.Compilador.Lexico_Request;
+import BackEnd.Analizador.Compilador.AnalizadorSintactico_compilador;
+import java.io.ByteArrayInputStream;
 
 /**
  *
@@ -19,9 +22,10 @@ import java.util.ArrayList;
 public class Conexion implements Runnable{
     
     public static class enlace_usuario implements Runnable{
-        
-        public static final Enlace_Envio enlace=new Enlace_Envio();
+        private static final Enlace_Envio enlace=new Enlace_Envio();
         private final String recivido;
+        private Lexico_Request Lex;
+        private AnalizadorSintactico_compilador Sin;
         public enlace_usuario(String recivido,InetAddress ip) {
             this.recivido = recivido;
             enlace.dirreccionip=ip;
@@ -29,7 +33,13 @@ public class Conexion implements Runnable{
         
         @Override
         public void run() {
-            //metodo a analizar
+            Lex = new Lexico_Request(new ByteArrayInputStream(recivido.getBytes()));
+            Sin = new AnalizadorSintactico_compilador(Lex);
+            try {
+                Sin.parse();
+            } catch (Exception ex) {
+                System.out.println(ex.getCause());
+            }
         }
         
     }
