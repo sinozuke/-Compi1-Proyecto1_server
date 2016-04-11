@@ -45,7 +45,7 @@ Borrar = [\"]"Eliminar"[\"]
 "apellido"      	{return new Symbol(Simbolo.apellido, yycolumn,yyline,yytext()); }
 "telefono"      	{return new Symbol(Simbolo.telefono, yycolumn,yyline,yytext()); }
 "email"                 {return new Symbol(Simbolo.email, yycolumn,yyline,yytext()); }
-"dirección"      	{return new Symbol(Simbolo.direccion, yycolumn,yyline,yytext()); }
+"direccion"      	{return new Symbol(Simbolo.direccion, yycolumn,yyline,yytext()); }
 "tienda"          	{return new Symbol(Simbolo.tienda, yycolumn,yyline,yytext()); }
 "código"                {return new Symbol(Simbolo.codigo, yycolumn,yyline,yytext()); }
 "propietario"      	{return new Symbol(Simbolo.propietario, yycolumn,yyline,yytext()); }

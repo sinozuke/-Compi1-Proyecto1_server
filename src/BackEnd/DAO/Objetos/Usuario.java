@@ -13,12 +13,12 @@ package BackEnd.DAO.Objetos;
 public class Usuario {
     
     private int id = 0;
-    private String nombre;
-    private String apellido;
-    private String password;
-    private int telefono;
-    private String email;
-    private String dirreccion;
+    private String nombre="vacio";
+    private String apellido="vacio";
+    private String password="vacio";
+    private int telefono=0;
+    private String email="vacio";
+    private String dirreccion="vacio";
     private boolean registro=false;
 
     public boolean isRegistro() {

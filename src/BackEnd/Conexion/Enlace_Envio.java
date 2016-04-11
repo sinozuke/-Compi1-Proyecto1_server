@@ -52,7 +52,7 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
                 enviado.writeUTF(MessageFormat.format("$reply$\n" +
                                                             "$Usuario$\n" +
                                                             "$id${0}$id-$\n" +
-                                                            "$access${1}$access-$\n" +
+                                                            "$access$ {1} $access-$\n" +
                                                             "$Usuario-$\n" +
                                                         "$reply-$",id_usuario, acceso));
                 this.Terminar_Conexion();
@@ -85,11 +85,10 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
 
     @Override
     public String reply_registro_usu(int id, String registro) {
-        StringBuilder reply=null;
-        reply.append(MessageFormat.format("$Usuario$\n" +
-                "$registro id ={0}$ {1} $registro-$\n" +
-                "$Usuario-$\n",id, registro));
-        return reply.toString();
+        String reply = MessageFormat.format("$Usuario$\n" +
+                "$registro id = {0} $ {1} $registro-$\n" +
+                "$Usuario-$\n",String.valueOf(id), registro);
+        return reply;
     }
 
     @Override

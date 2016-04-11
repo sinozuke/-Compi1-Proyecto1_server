@@ -16,9 +16,13 @@ import java.util.ArrayList;
  * @author sinozuke
  */
 public class Tabla_Hash_DATOS {
+    
+    public void insertar_usu(int indice, Usuario insertar){
+        SG.usuarios_hash[indice-1] = insertar;
+    }
 
     public Usuario getusu(int indice){
-        return SG.usuarios_hash[indice];
+        return SG.usuarios_hash[indice-1];
     }
     public Tienda gettienda(int indice){
         return SG.Tienda_hash[indice];
@@ -37,14 +41,14 @@ public class Tabla_Hash_DATOS {
         if(indice >4999){
             return false;
         }else{
-            return SG.Tienda_hash[indice]==null;    
+            return SG.Tienda_hash[indice-1]==null;    
         }
     }
     public boolean produExist(int indice){
         if(indice >499999){
             return false;
         }else{
-            return SG.Productos_hash[indice]==null;
+            return SG.Productos_hash[indice-1]==null;
         }
     }
     public int Hash_Cod_Tienda(int id,int sucursal){

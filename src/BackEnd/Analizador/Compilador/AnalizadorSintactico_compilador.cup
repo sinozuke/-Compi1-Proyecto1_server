@@ -39,13 +39,12 @@ action code
 terminal constante,DI,DF,get,request,iniciousuario,id,sucursal,password,usuario,crearusuario;
 terminal String nombre,apellido,telefono,email,direccion,tienda,codigo,propietario,imagen,tipo;
 terminal potencia,raiz,multiplicacion,division,suma,resta;
-terminal producto,cantidad;
-terminal String marca,color,tamano;
+terminal producto,cantidad,marca,color,tamano;
+terminal String correo,cadena,numero,identificador;
 terminal pyc;
-terminal String numero;
 terminal coma,igual,corchetei,corchetef,parentesisi,parentesisf,llavesi,llavesf,mate,consulta,avacio;
 terminal AND,OR,NOT;
-terminal extraer,de,donde,CREACION,MODIFICACION,ELIMINACION,cadena,correo,identificador;
+terminal extraer,de,donde,CREACION,MODIFICACION,ELIMINACION;
 
 non terminal INICIA;
 non terminal REQUEST, MATE, CONTMATE, CONTMATEP, PARAMS, PARAMSP, VALOR;
@@ -203,34 +202,116 @@ ACCIONESPRODUP ::=   tipo igual ACCION                                          
 ACCION ::=   MODIFICACION                                                                           {::}
             |ELIMINACION                                                                            {::};
 
-USUARIO ::=  DI crearusuario DI REGISUSU DI crearusuario DF                                         {::}
+USUARIO ::=  DI crearusuario DI REGISUSU:val DI crearusuario DF
+{:
+    RESULT = val;
+    if(RESULT.getId()!=0 && !RESULT.getNombre().equals("vacio") && !RESULT.getApellido().equals("vacio") && RESULT.getTelefono()!=0 && !RESULT.getEmail().equals("vacio")){
+        if(hash.usuExist(RESULT.getId()-1)){
+            hash.insertar_usu(RESULT.getId(),RESULT);
+            enlace.enviar_Reply(enlace.reply_registro_usu(RESULT.getId(),"True"));
+        }else{
+            enlace.enviar_Reply(enlace.reply_registro_usu(RESULT.getId(),"False"));
+        }
+    }
+:}
             |DI iniciousuario DI LOGIN:val DI iniciousuario DF
 {:
 
     RESULT = val;
-    if(hash.usuExist(RESULT.getId()-1)){
-        Usuario prueba = hash.getusu(RESULT.getId());
-        if(prueba.getPassword().equals(RESULT.getPassword())){
-            enlace.reply_login(RESULT.getId(), "True");
+    if(RESULT.getId()!=0 && !RESULT.getPassword().equals("vacio")){
+        if(!hash.usuExist(RESULT.getId()-1)){
+            Usuario prueba = hash.getusu(RESULT.getId());
+            if(prueba.getPassword().equals(RESULT.getPassword())){
+                enlace.reply_login(RESULT.getId(), "True");
+            }else{
+                enlace.reply_login(RESULT.getId(), "False");    
+            }
         }else{
-            enlace.reply_login(RESULT.getId(), "False");    
+            enlace.reply_login(RESULT.getId(), "Fail");
         }
-    }else{
-        enlace.reply_login(RESULT.getId(), "Fail");
     }
 
 :};
 
-REGISUSU ::=     REGISUSU REGISUSUP                                                                 {::}
-                |REGISUSUP                                                                          {::};
+REGISUSU ::=     REGISUSU:val1 REGISUSUP:val2
+{:
+    RESULT = val1;
+    if(val2.getId()!=0 && RESULT.getId()==0){
+        RESULT.setId(val2.getId());
+    }else if(val2.getId()!=0 && RESULT.getId()!=0){
+        errores.add("Atributo id declarado mas de una vez");
+    }
+    if(!val2.getNombre().equals("vacio") && RESULT.getNombre().equals("vacio")){
+        RESULT.setNombre(val2.getNombre());
+    }else if(!val2.getNombre().equals("vacio") && !RESULT.getNombre().equals("vacio")){
+        errores.add("Atributo nombre Declarado mas una vez");
+    }
+    if(!val2.getApellido().equals("vacio") && RESULT.getApellido().equals("vacio")){
+        RESULT.setApellido(val2.getApellido());
+    }else if(!val2.getApellido().equals("vacio") && !RESULT.getApellido().equals("vacio")){
+        errores.add("Atributo Apellido declarado mas de una vez");
+    }
+    if(!val2.getPassword().equals("vacio") && RESULT.getPassword().equals("vacio")){
+        RESULT.setPassword(val2.getPassword());
+    }else if(!val2.getPassword().equals("vacio") && !RESULT.getPassword().equals("vacio")){
+        errores.add("Atributo apssword declarado mas de una vez");
+    }
+    if(val2.getTelefono()!=0 && RESULT.getTelefono()==0){
+        RESULT.setTelefono(val2.getTelefono());
+    }else if(val2.getTelefono()!=0 && RESULT.getTelefono()!=0){
+        errores.add("atributo Telefono declarado mas de una vez");
+    }
+    if(!val2.getEmail().equals("vacio") && RESULT.getEmail().equals("vacio")){
+        RESULT.setEmail(val2.getEmail());
+    }else if(!val2.getEmail().equals("vacio") && !RESULT.getEmail().equals("vacio")){
+        errores.add("atributo correo declrado mas de una vez");
+    }
+    if(!val2.getDirreccion().equals("vacio") && RESULT.getDirreccion().equals("vacio")){
+        RESULT.setDirreccion(val2.getDirreccion());
+    }else if(!val2.getDirreccion().equals("vacio") && !RESULT.getDirreccion().equals("vacio")){
+        errores.add("atributo dirreccion declarado mas de una vez");
+    }
+:}
+                |REGISUSUP:val
+{:
+    RESULT = val;
+:};
 
-REGISUSUP ::=    DI id DI numero DI id DF                                                           {::}
-                |DI nombre DI cadena DI nombre DF                                                   {::}
-                |DI apellido DI cadena DI apellido DF                                               {::}
-                |DI password DI identificador DI password DF                                        {::}
-                |DI telefono DI numero DI telefono DF                                               {::}
-                |DI email DI correo DI email DF                                                     {::}
-                |DI direccion DI cadena DI direccion DF                                             {::};
+REGISUSUP ::=    DI id DI numero:val DI id DF
+{:
+    RESULT = new Usuario();
+    RESULT.setId(Integer.parseInt(val));
+:}
+                |DI nombre DI cadena:val DI nombre DF
+{:
+    RESULT = new Usuario();
+    RESULT.setNombre(val.replace("\"",""));
+:}
+                |DI apellido DI cadena:val DI apellido DF
+{:
+    RESULT = new Usuario();
+    RESULT.setApellido(val.replace("\"",""));
+:}
+                |DI password DI identificador:val DI password DF
+{:
+    RESULT = new Usuario();
+    RESULT.setPassword(val);
+:}
+                |DI telefono DI numero:val DI telefono DF
+{:
+    RESULT = new Usuario();
+    RESULT.setTelefono(Integer.parseInt(val));
+:}
+                |DI email DI correo:val DI email DF
+{:
+    RESULT = new Usuario();
+    RESULT.setEmail(val);
+:}
+                |DI direccion DI cadena:val DI direccion DF
+{:
+    RESULT = new Usuario();
+    RESULT.setDirreccion(val.replace("\"",""));
+:};
 
 LOGIN ::=    LOGIN:val1 LOGINP:val2
 {:
@@ -243,9 +324,9 @@ LOGIN ::=    LOGIN:val1 LOGINP:val2
     }else{
         errores.add("Atributos ingresado para login incorrectos");
     }
-    if(val1.getPassword()==null && val2.getPassword()!=null){
+    if(val1.getPassword().equals("vacio") && !val2.getPassword().equals("vacio")){
         RESULT.setPassword(val2.getPassword());
-    }else if(val1.getPassword()!=null && val2.getPassword()==null){
+    }else if(!val1.getPassword().equals("vacio") && val2.getPassword().equals("vacio")){
         RESULT.setPassword(val1.getPassword());    
     }else{
         errores.add("Atributos ingresados para login erroneos");
