@@ -22,19 +22,15 @@ import java.io.ByteArrayInputStream;
 public class Conexion implements Runnable{
     
     public static class enlace_usuario implements Runnable{
-        private static final Enlace_Envio enlace=new Enlace_Envio();
-        private final String recivido;
-        private Lexico_Request Lex;
-        private AnalizadorSintactico_compilador Sin;
+        private final Lexico_Request Lex;
+        private final AnalizadorSintactico_compilador Sin;
         public enlace_usuario(String recivido,InetAddress ip) {
-            this.recivido = recivido;
-            enlace.dirreccionip=ip;
+            Lex = new Lexico_Request(new ByteArrayInputStream(recivido.getBytes()));
+            Sin = new AnalizadorSintactico_compilador(Lex);
         }
         
         @Override
         public void run() {
-            Lex = new Lexico_Request(new ByteArrayInputStream(recivido.getBytes()));
-            Sin = new AnalizadorSintactico_compilador(Lex);
             try {
                 Sin.parse();
             } catch (Exception ex) {
@@ -79,7 +75,7 @@ public class Conexion implements Runnable{
                 enlaces.add(new Thread(new enlace_usuario(recivido,cliente.getLocalAddress())));
                 enlaces.get(enlaces.size()-1).start();
                 cliente.close();
-                enlaces = eliminar_enlaces(enlaces);
+            //    enlaces = eliminar_enlaces(enlaces);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -89,7 +85,7 @@ public class Conexion implements Runnable{
     private ArrayList<Thread> eliminar_enlaces(ArrayList<Thread> enlaces1){
         ArrayList<Thread> temp1 = null;
             enlaces1.stream().forEach((Thread t)->{
-                if(t.isAlive()){
+                if(!t.isAlive()){
                    temp1.add(t);
                 }
             });

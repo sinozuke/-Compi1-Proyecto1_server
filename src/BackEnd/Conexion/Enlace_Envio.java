@@ -24,11 +24,10 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
     
         private Socket Cliente;
         private DataOutputStream enviado;
-        public InetAddress dirreccionip;
-       
+        
     private boolean enlazar(){
         try{
-            Cliente = new Socket(dirreccionip,3501);
+            Cliente = new Socket(InetAddress.getLocalHost().getHostAddress(),3501);
             enviado = new DataOutputStream(Cliente.getOutputStream());
             System.out.println("enlace Creado con Exito");
             return true;
@@ -48,9 +47,18 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
 
     @Override
     public boolean reply_login(int id_usuario, String acceso) {
+        String prueba =MessageFormat.format("$reply$\n" +
+                                                            "$Usuario$\n" +
+                                                            "$id${0}$id-$\n" +
+                                                            "$access${1}$access-$\n" +
+                                                            "$Usuario-$\n" +
+                                                        "$reply-$",id_usuario, acceso).replace("\0", "");
+        for(int x=0;x<prueba.length();x++){
+                System.out.println(prueba.charAt(x) + " = " + prueba.codePointAt(x));
+        }
         if(this.enlazar()){
             try{
-                enviado.writeUTF(MessageFormat.format("reply$\n" +
+                enviado.writeUTF(MessageFormat.format("$reply$\n" +
                                                             "$Usuario$\n" +
                                                             "$id${0}$id-$\n" +
                                                             "$access${1}$access-$\n" +

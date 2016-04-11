@@ -12,7 +12,7 @@ package BackEnd.DAO.Objetos;
  */
 public class Usuario {
     
-    private int id;
+    private int id = 0;
     private String nombre;
     private String apellido;
     private String password;

@@ -3,6 +3,10 @@ import java_cup.runtime.*;
 import BackEnd.DAO.Objetos.*;
 import BackEnd.DAO.Compilador.*;
 import BackEnd.DAO.Hash.Tabla_Hash_compilador;
+import java.util.ArrayList;
+import BackEnd.Conexion.Enlace_Envio;
+import java.net.InetAddress;
+
 
 //import static compi1.proyecto1_server.pkg201403775.Compi1Proyecto1_Server201403775.hash;
 
@@ -23,14 +27,14 @@ parser code
         s.value + " no reconocido.");
     }
 
-    
 :}
 
 action code
 {:
     Tabla_Hash_compilador hash_compi = new Tabla_Hash_compilador();
     ArrayList<String> errores = new ArrayList();
-		
+    private Enlace_Envio enlace=new Enlace_Envio();
+        		
 :}
 terminal constante,DI,DF,get,request,iniciousuario,id,sucursal,password,usuario,crearusuario;
 terminal String nombre,apellido,telefono,email,direccion,tienda,codigo,propietario,imagen,tipo;
@@ -38,7 +42,7 @@ terminal potencia,raiz,multiplicacion,division,suma,resta;
 terminal producto,cantidad;
 terminal String marca,color,tamano;
 terminal pyc;
-terminal Integer numero;
+terminal String numero;
 terminal coma,igual,corchetei,corchetef,parentesisi,parentesisf,llavesi,llavesf,mate,consulta,avacio;
 terminal AND,OR,NOT;
 terminal extraer,de,donde,CREACION,MODIFICACION,ELIMINACION,cadena,correo,identificador;
@@ -49,7 +53,8 @@ non terminal PETICIONES, PETICION, PETICIONP, TIENDA, CONTREGISTIENDA;
 non terminal CONTREGISTIENDAP, CONSM;
 non terminal PRODUCTO, REGISPRODU;
 non terminal REGISPRODUP;
-non terminal USUARIO, REGISUSU, REGISUSUP, LOGIN, LOGINP, CONSULTA, CONSULTAS;
+non terminal Usuario USUARIO, REGISUSU, REGISUSUP, LOGIN, LOGINP;
+non terminal CONSULTA, CONSULTAS;
 non terminal ACCIONESPRODU, ACCIONESPRODUP,ACCION,ACCIONESTIENDA,ACCIONESTIENDAP;
 non terminal COMPARA, COMPARAP, OL;
 non terminal EQ, EQP;
@@ -199,7 +204,22 @@ ACCION ::=   MODIFICACION                                                       
             |ELIMINACION                                                                            {::};
 
 USUARIO ::=  DI crearusuario DI REGISUSU DI crearusuario DF                                         {::}
-            |DI iniciousuario DI LOGIN DI iniciousuario DF                                          {::};
+            |DI iniciousuario DI LOGIN:val DI iniciousuario DF
+{:
+
+    RESULT = val;
+    if(hash.usuExist(RESULT.getId()-1)){
+        Usuario prueba = hash.getusu(RESULT.getId());
+        if(prueba.getPassword().equals(RESULT.getPassword())){
+            enlace.reply_login(RESULT.getId(), "True");
+        }else{
+            enlace.reply_login(RESULT.getId(), "False");    
+        }
+    }else{
+        enlace.reply_login(RESULT.getId(), "Fail");
+    }
+
+:};
 
 REGISUSU ::=     REGISUSU REGISUSUP                                                                 {::}
                 |REGISUSUP                                                                          {::};
@@ -212,11 +232,44 @@ REGISUSUP ::=    DI id DI numero DI id DF                                       
                 |DI email DI correo DI email DF                                                     {::}
                 |DI direccion DI cadena DI direccion DF                                             {::};
 
-LOGIN ::=    LOGIN LOGINP                                                                           {::}
-            |LOGINP                                                                                 {::};
+LOGIN ::=    LOGIN:val1 LOGINP:val2
+{:
 
-LOGINP ::=   DI id DI numero DI id DF                                                               {::}
-            |DI password DI identificador DI password DF                                            {:RESULT = new Usuario();:};
+    RESULT= new Usuario();
+    if(val1.getId()==0 && val2.getId()!=0){
+        RESULT.setId(val2.getId());
+    }else if(val1.getId()!=0 && val2.getId()==0){
+        RESULT.setId(val1.getId());
+    }else{
+        errores.add("Atributos ingresado para login incorrectos");
+    }
+    if(val1.getPassword()==null && val2.getPassword()!=null){
+        RESULT.setPassword(val2.getPassword());
+    }else if(val1.getPassword()!=null && val2.getPassword()==null){
+        RESULT.setPassword(val1.getPassword());    
+    }else{
+        errores.add("Atributos ingresados para login erroneos");
+    }
+    if(RESULT.getId()==0 || RESULT.getPassword()==null){
+        errores.add("ERROR EN INGRESO DE DATOS PARA LOGEAR, FALLO CRITICO");
+    }
+
+:}
+            |LOGINP:val
+{:
+RESULT = val;
+:};
+
+LOGINP ::=   DI id DI numero:val DI id DF                                                               
+{:
+    RESULT = new Usuario();
+    RESULT.setId(Integer.parseInt(val));
+:}
+            |DI password DI identificador:val DI password DF                                            
+{:  
+    RESULT = new Usuario();
+    RESULT.setPassword((String)val);
+:};
 
 CONSULTA ::=   extraer de CONSULTAS COMPARA pyc                                                     {::};
 
@@ -238,9 +291,9 @@ COMPARAP ::=     NOT parentesisi COMPARAP parentesisf                           
                 |codigo igual igual CONSM                                                           {::}
                 |sucursal igual igual CONSM                                                         {::}
                 |cantidad igual igual EQ                                                         {::}
-                |tamano igual igual EQ                                                           {::}
-                |error:e pyc DI                                                                   {:errores.add("Comparacion no Reconocido");:};
+                |tamano igual igual EQ                                                           {::};
 
 OL ::=   OR                                                                                         {::}
         |AND                                                                                        {::}
-        |error:e pyc DI                                                                             {:errores.add("Operador Logico Invalido");:};
+        |error:e pyc DI
+        {://errores.add("Operador Logico Invalido");:};

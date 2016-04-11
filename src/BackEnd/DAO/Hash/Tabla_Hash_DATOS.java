@@ -15,8 +15,38 @@ import java.util.ArrayList;
  *
  * @author sinozuke
  */
-public class Tabla_Hash_DATOS {    
-    
+public class Tabla_Hash_DATOS {
+
+    public Usuario getusu(int indice){
+        return SG.usuarios_hash[indice];
+    }
+    public Tienda gettienda(int indice){
+        return SG.Tienda_hash[indice];
+    }
+    public Producto getProdu(int indice){
+        return SG.Productos_hash[indice];
+    }
+    public boolean usuExist(int indice){
+        if(indice>49){
+            return false;
+        }else{
+            return SG.usuarios_hash[indice]==null;
+        }
+    }
+    public boolean tiendaExist(int indice){
+        if(indice >4999){
+            return false;
+        }else{
+            return SG.Tienda_hash[indice]==null;    
+        }
+    }
+    public boolean produExist(int indice){
+        if(indice >499999){
+            return false;
+        }else{
+            return SG.Productos_hash[indice]==null;
+        }
+    }
     public int Hash_Cod_Tienda(int id,int sucursal){
         return 100*(id - 1) + (sucursal - 1);
     }
