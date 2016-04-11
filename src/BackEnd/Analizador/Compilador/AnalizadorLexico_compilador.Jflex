@@ -40,7 +40,6 @@ Borrar = [\"]"Eliminar"[\"]
 "sucursal"              {return new Symbol(Simbolo.sucursal, yycolumn,yyline,yytext()); }
 "password"           	{return new Symbol(Simbolo.password, yycolumn,yyline,yytext()); }
 "Usuario"           	{return new Symbol(Simbolo.usuario, yycolumn,yyline,yytext()); }
-"access"           	{return new Symbol(Simbolo.access, yycolumn,yyline,yytext()); }
 "CrearUsuario"      	{return new Symbol(Simbolo.crearusuario, yycolumn,yyline,yytext()); }
 "nombre"                {return new Symbol(Simbolo.nombre, yycolumn,yyline,yytext()); }
 "apellido"      	{return new Symbol(Simbolo.apellido, yycolumn,yyline,yytext()); }

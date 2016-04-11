@@ -1,4 +1,4 @@
-package BackEnd.Analizadores.Compilador;
+package BackEnd.Analizador.Compilador;
 import java_cup.runtime.*;
 
 parser code
