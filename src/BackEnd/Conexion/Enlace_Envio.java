@@ -129,7 +129,7 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
 
     @Override
     public String reply_modificacion_producto(int id, int sucursal, String modificado) {
-        StringBuilder reply = null;
+        StringBuilder reply = new StringBuilder();
         reply.append(MessageFormat.format("$producto$\n" +
                                                 "$modificar id={0} sucursal={1}$ {2} $modificar-$\n" +
                                             "$producto-$\n",id, sucursal, modificado));
@@ -138,7 +138,7 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
 
     @Override
     public String reply_eliminacion_producto(int id, int sucursal, String eliminado) {
-        StringBuilder reply = null;
+        StringBuilder reply = new StringBuilder();
         reply.append(MessageFormat.format("$producto$\n" +
                                                 "$eliminar id={0} sucursal={1}$ {2} $eliminar-$\n" +
                                             "$producto-$\n",id, sucursal, eliminado));

@@ -1665,7 +1665,7 @@ RESULT = val;
                 temp3.add((Object)p);
             });
             RESULT = temp3;
-            enlace.reply_lista_tiendas(temp2);
+            enlace.enviar_Reply(enlace.reply_lista_tiendas(temp2));
         }
     }
 
