@@ -67,7 +67,7 @@ public class Tabla_Hash_DATOS {
         return SG.usuarios_hash[indice];
     }
     public ArrayList<Tienda> get_tiendas(){
-        ArrayList<Tienda> temp = null;
+        ArrayList<Tienda> temp = new ArrayList();
         for(int i =0;i<5000;i++){
             if(SG.Tienda_hash[i]!=null){
                 temp.add(SG.Tienda_hash[i]);
@@ -76,7 +76,7 @@ public class Tabla_Hash_DATOS {
         return temp;    
     }
     public ArrayList<Producto> get_productos(){
-        ArrayList<Producto> temp = null;
+        ArrayList<Producto> temp = new ArrayList();
         for(int i =0;i<500000;i++){
             if(SG.Productos_hash[i]!=null){
                 temp.add(SG.Productos_hash[i]);
@@ -85,7 +85,7 @@ public class Tabla_Hash_DATOS {
         return temp;    
     }
     public ArrayList<Usuario> get_usuarios(){
-        ArrayList<Usuario> temp = null;
+        ArrayList<Usuario> temp = new ArrayList();
         for(int i =0;i<50;i++){
             if(SG.usuarios_hash[i]!=null){
                 temp.add(SG.usuarios_hash[i]);
@@ -95,7 +95,7 @@ public class Tabla_Hash_DATOS {
     }
     public ArrayList<Tienda> get_tiendasc(String evaluacion,Object comparacion){
         ArrayList<Tienda> temp = this.get_tiendas();
-        ArrayList<Tienda> temp2 = null;
+        ArrayList<Tienda> temp2 = new ArrayList();
         temp.stream().forEach((Tienda t)->{
             switch(evaluacion){
                 case "codigo":
@@ -129,7 +129,7 @@ public class Tabla_Hash_DATOS {
     }
     public ArrayList<Producto> get_productosc(String evaluar,Object comparacion){
         ArrayList<Producto> temp = this.get_productos();
-        ArrayList<Producto> temp2 = null;
+        ArrayList<Producto> temp2 = new ArrayList();
         temp.stream().forEach((Producto p)->{
             switch(evaluar){
                 case "id":

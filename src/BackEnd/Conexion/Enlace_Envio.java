@@ -93,7 +93,7 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
 
     @Override
     public String reply_registro_tienda(int id, String registro) {
-        StringBuilder reply=null;
+        StringBuilder reply = new StringBuilder();
         reply.append(MessageFormat.format("$tienda$\n" +
                                                 "$registro id = {0}$ {1} $registro-$\n" +
                                            "$tienda-$\n",id, registro));
@@ -102,7 +102,7 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
 
     @Override
     public String reply_modificacion_tienda(int id, String modificado) {
-        StringBuilder reply=null;
+        StringBuilder reply = new StringBuilder();
         reply.append(MessageFormat.format("$tienda$\n" +
                                             "$modificar id = {0}$ {1} $modificar-$\n" +
                                           "$tienda-$\n",id, modificado));
@@ -111,7 +111,7 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
 
     @Override
     public String reply_eliminar_tienda(int id, String eliminado) {
-        StringBuilder reply=null;
+        StringBuilder reply = new StringBuilder();
         reply.append(MessageFormat.format("$tienda$\n" +
                                             "$eliminar id = {0}$ {1} $eliminar-$\n" +
                                           "$tienda-$\n",id, eliminado));
@@ -120,7 +120,7 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
 
     @Override
     public String reply_registro_producto(int id, int sucursal, String registro) {
-        StringBuilder reply=null;
+        StringBuilder reply = new StringBuilder();
         reply.append(MessageFormat.format("$producto$\n" +
                                             "$registro id={0} sucursal={1}$ {2} $registro-$\n" +
                                           "$producto-$\n",id, sucursal, registro));
@@ -147,7 +147,7 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
     
     @Override
     public String reply_error(ArrayList<Error> Errores) {
-        StringBuilder reply=null;
+        StringBuilder reply = new StringBuilder();
         Errores.stream().forEach((Error e)->{
             reply.append("$error-$\n");
             reply.append("$tipo$");
@@ -173,7 +173,7 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
 
     @Override
     public String reply_lista_tiendas(ArrayList<Tienda> tiendas) {
-        StringBuilder reply=null;
+        StringBuilder reply = new StringBuilder();
         reply.append("$lista$\n");
 
         tiendas.stream().forEach((Tienda t)->{
@@ -205,7 +205,7 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
 
     @Override
     public String reply_lista_productos(ArrayList<Producto> productos) {
-        StringBuilder reply=null;
+        StringBuilder reply = new StringBuilder();
         reply.append("$lista$\n");
         productos.stream().forEach((Producto p)->{
             reply.append("$producto$\n");

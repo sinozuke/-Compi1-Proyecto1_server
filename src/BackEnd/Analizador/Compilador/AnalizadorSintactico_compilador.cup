@@ -58,7 +58,7 @@ non terminal ACCIONESPRODU, ACCIONESPRODUP,ACCION,ACCIONESTIENDA,ACCIONESTIENDAP
 non terminal COMPARA, COMPARAP, OL;
 non terminal EQ, EQP;
 non terminal EXPREA, EXPREB, EXPREC, EXPRED, EXPREE, EXPREF,EXPREG;
-non terminal PARAMSN,PARAMSNP, MATEF, CONTMATEF;
+non terminal PARAMSN,PARAMSNP, MATEF, CONTMATEF, GET;
 non terminal String CONTGETP;
 non terminal ArrayList<Object> CONTGET;
 
@@ -132,14 +132,24 @@ VALOR ::=    numero                                                             
 
 PETICIONES ::=   DI request DI PETICION DI request DF                                               {::}
                 |DI consulta DI CONSULTA DI consulta DF                                             {::}
-                |DI get tipo igual CONTGET DF                                             {::}
-                |DI request DI USUARIO DI request DF                                                {::};
+                |DI request DI GET DI request DF                                                    {::}
+                |DI request DI USUARIO DI request DF                                                {::}
+                |error:e DF
+{:
+System.out.println("me sincronize con -$" + eleft + " " + " " + eright);
+:}
+                |error:e DI
+{:
+System.out.println("me sincronize con $" + eleft + " " + " " + eright);
+:};
+
+GET ::= DI get tipo igual CONTGET DF                                                                {::};
 
 CONTGET ::= cadena:val propietario igual numero:val1 CONTGETP:val2
 {:
     RESULT = new ArrayList();
     
-    if(val.replace("\n", "").equals("producto")){
+    if(val.equals("productos")){
         if(val2.equals("")){
             errores.add("a solicitado productos pero no ha especificado sucursal");
         }else{
@@ -153,11 +163,11 @@ CONTGET ::= cadena:val propietario igual numero:val1 CONTGETP:val2
             RESULT = temp3;
             enlace.reply_lista_productos(temp2);
         }
-    }else if(val.replace("\"","").equals("tienda")){
+    }else if(val.equals("tiendas")){
         if(!val2.equals("")){
             errores.add("Atributo sucursal no era nesesario para obtener tiendas");
         }else{
-            ArrayList<Tienda> temp1 = hash.get_tiendasc("sucursal",(Object)val2);
+            ArrayList<Tienda> temp1 = hash.get_tiendasc("propietario",(Object)val1);
             ArrayList<Tienda> temp2 = new ArrayList();
             ArrayList<Object> temp3 = new ArrayList();
             temp1.stream().forEach((Tienda p)->{
