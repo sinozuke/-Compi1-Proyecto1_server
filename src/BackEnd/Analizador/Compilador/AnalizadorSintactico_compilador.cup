@@ -47,20 +47,19 @@ terminal AND,OR,NOT;
 terminal extraer,de,donde,CREACION,MODIFICACION,ELIMINACION;
 
 non terminal INICIA;
-non terminal REQUEST, MATE, CONTMATE, CONTMATEP, PARAMS, PARAMSP, VALOR;
-non terminal PETICIONES, PETICION, PETICIONP, TIENDA, CONTREGISTIENDA;
-non terminal CONTREGISTIENDAP, CONSM;
-non terminal PRODUCTO, REGISPRODU;
-non terminal REGISPRODUP;
-non terminal Usuario USUARIO, REGISUSU, REGISUSUP, LOGIN, LOGINP;
+non terminal PETICIONES, PETICION, PETICIONP, TIENDA;
+non terminal PRODUCTO;
 non terminal CONSULTA, CONSULTAS;
-non terminal ACCIONESPRODU, ACCIONESPRODUP,ACCION,ACCIONESTIENDA,ACCIONESTIENDAP;
 non terminal COMPARA, COMPARAP, OL;
-non terminal EQ, EQP;
-non terminal EXPREA, EXPREB, EXPREC, EXPRED, EXPREE, EXPREF,EXPREG;
-non terminal PARAMSN,PARAMSNP, MATEF, CONTMATEF, GET;
-non terminal String CONTGETP;
+non terminal StringBuilder REQUEST;
+non terminal Usuario USUARIO, REGISUSU, REGISUSUP, LOGIN, LOGINP;
+non terminal Producto ACCIONESPRODU, ACCIONESPRODUP,REGISPRODU,REGISPRODUP;
+non terminal Tienda   ACCIONESTIENDA,ACCIONESTIENDAP,CONTREGISTIENDA,CONTREGISTIENDAP;
+non terminal Ecuacion EQ, EQP, EXPREA, EXPREB, EXPREC, EXPRED, EXPREE, EXPREF,EXPREG;
+non terminal String GET, CONTGETP,CONSM, PARAMSP,ACCION,MATEF;
+non terminal ArrayList<String> PARAMS, PARAMSN,PARAMSNP,CONTMATEF;
 non terminal ArrayList<Object> CONTGET;
+non terminal Seccion_Mate MATE,CONTMATEP,CONTMATE;
 
 precedence left suma;
 precedence left resta;
@@ -73,62 +72,276 @@ INICIA ::=  REQUEST                                                             
 
 REQUEST ::=  REQUEST PETICIONES                                                                     {::}
             |PETICIONES                                                                             {::}
-            |DI mate nombre igual MATE DI mate DF                                                   {::};  
+            |DI mate nombre igual MATE:val DI mate DF
+{:
+                this.hash_compi.agregar_seccion(val);
+:};  
 
-MATE ::= cadena DI CONTMATE                                                                         {::};
+MATE ::= cadena:val1 DI CONTMATE:val2
+{:
+                RESULT = new Seccion_Mate();
+                RESULT.id = val1;
+                if(val2!=null){
+                    val2.funciones.stream().forEach(RESULT::agregar_funcion);
+                    val2.constantes.stream().forEach(RESULT::agregar_constante);
+                }
+:};
 
-CONTMATE ::=     CONTMATE CONTMATEP                                                                 {::}
-                |CONTMATEP                                                                          {::};
+CONTMATE ::=     CONTMATE:val1 CONTMATEP:val2
+{:
+                if(val1!=null){
+                    RESULT = val1;
+                    if(val2!=null){
+                        if(!val2.funciones.isEmpty()){
+                            val2.funciones.stream().forEach(RESULT::agregar_funcion);
+                        }
+                        if(!val2.constantes.isEmpty()){
+                            val2.constantes.stream().forEach(RESULT::agregar_constante);
+                        }
+                    }
+                }else if(val2!=null){
+                    RESULT = val2;
+                    if(val1!=null){
+                        if(!val1.funciones.isEmpty()){
+                            val1.funciones.stream().forEach(RESULT::agregar_funcion);
+                        }
+                        if(!val1.constantes.isEmpty()){
+                            val1.constantes.stream().forEach(RESULT::agregar_constante);
+                        }
+                    }
+                }
+:}
+                |CONTMATEP:val
+{:
+                if(val!=null){
+                    RESULT = val;
+                }
+:};
 
-CONTMATEP ::=    identificador parentesisi PARAMS parentesisf igual llavesi EQ llavesf pyc          {::}
-                |constante identificador igual VALOR pyc                                            {::};
+CONTMATEP ::=    identificador:val1 parentesisi PARAMS:val2 parentesisf igual llavesi EQ:val3 llavesf pyc
+{:
+                Funcion_Mate funcion = new Funcion_Mate();
+                funcion.id=val1;
+                funcion.parametros=val2;
+                if(funcion.parametros.size() == val3.variables.size()){
+                    if(funcion.parametros.containsAll(val3.variables)){
+                        funcion.parametros=val3.variables;
+                        funcion.accion=val3.Ecuacion;
+                        RESULT = new Seccion_Mate();
+                        RESULT.agregar_funcion(funcion);
+                    }else{
+                        errores.add("los parametros declarados no coiciden con los de la ecuacion");
+                    }
+                }else if(funcion.parametros.size()<val3.variables.size()){
+                    errores.add("Hay Mas Variables que parametros declarado para la funcion " + funcion.id);
+                }else if(funcion.parametros.size()>val3.variables.size()){
+                    errores.add("Hay parametros declarados demas en la funcion " + funcion.id);           
+                }
+:}
+                |constante identificador:val1 igual numero:val2 pyc
+{:
+                Cons_Mate constante = new Cons_Mate();
+                constante.id=val1;
+                constante.valor_num=val2;
+                RESULT = new Seccion_Mate();
+                RESULT.agregar_constante(constante);
+                
+:}
+                |constante identificador:val1 igual cadena:val2 pyc
+{:
+                Cons_Mate constante = new Cons_Mate();
+                constante.id=val1;
+                constante.valor_str=val2;
+                RESULT = new Seccion_Mate();
+                RESULT.agregar_constante(constante);
+:};
 
-PARAMS ::=   PARAMS coma PARAMSP                                                                    {::}
-            |PARAMSP                                                                                {::};
 
-PARAMSP ::= identificador                                                                           {::};
+PARAMS ::=   PARAMS:val1 coma PARAMSP:val2
+{:
+                RESULT = new ArrayList();
+                val1.stream().forEach(RESULT::add);
+                if(RESULT.isEmpty() && !val2.equals("")){
+                    errores.add("error,  declaracion de paramtero antes de " + val2);
+                }else if(!RESULT.isEmpty() && val2.equals("")){
+                    errores.add("error, coma demas");
+                }else{
+                    RESULT.add(val2);
+                }
+:}
+            |PARAMSP:val
+{:
+                RESULT = new ArrayList();
+                if(!val.equals("")){RESULT.add(val);}
+:};
 
-EQ ::=   EQ EQP                                                                                     {::}
-        |EQP                                                                                        {::}
-        |MATEF                                                                                      {::};
+PARAMSP ::= {:RESULT="";:}
+            |identificador:val
+{:
+                RESULT = val;
+:};
 
-MATEF ::= corchetei identificador coma identificador CONTMATEF corchetef                            {::};
+EQ ::=   EQP:val
+{:
+                RESULT = val;
+:}
+        |MATEF:val
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion=val;
 
-CONTMATEF ::=                                                                                       {::}
-            |parentesisi PARAMSN parentesisf                                                        {::};
+:};
 
-PARAMSN ::=  PARAMSN coma PARAMSNP                                                                  {::}
-            |PARAMSNP                                                                               {::};
+MATEF ::= corchetei identificador:val1 coma identificador:val2 CONTMATEF:val3 corchetef
+{:
+                if(this.hash_compi.estaseccion(val1)){
+                    Seccion_Mate secciontemp = this.hash_compi.devolver_seccion(val1);
+                    if(secciontemp.estafuncion(val2)){
+                        Funcion_Mate funciontemp = secciontemp.devolverfuncion(val2);
+                        if(funciontemp.parametros.size()==val3.size()){
+                           RESULT = funciontemp.devolver_entero(val3);
+                        }else{
+                            errores.add("El numero de Paramteroos ingresado no coiciden con los que se nesesitan");
+                        }
+                    }else{
+                    errores.add("La Funcion Declarada no existe");
+                    }
+                }else{
+                    errores.add("la seccion de mate dclarada no existe");
+                }
+:};
 
-PARAMSNP ::= numero                                                                                 {::};
+CONTMATEF ::=   parentesisi PARAMSN:val parentesisf
+{:
+                RESULT = val;
+:};
+
+PARAMSN ::=  PARAMSN:val1 coma PARAMSNP:val2
+{:
+                RESULT = new ArrayList();
+                if((!val1.isEmpty() && val2.isEmpty()) || (val2.isEmpty() && val1.isEmpty())){
+                    errores.add("Declracion Erronea");
+                }
+                if(!val2.isEmpty() && !val1.isEmpty()){
+                    val2.stream().forEach(RESULT::add);
+                    val1.stream().forEach(RESULT::add);
+                }
+:}
+            |PARAMSNP:val
+{:
+                RESULT = new ArrayList();
+                if(!val.isEmpty()){
+                    val.stream().forEach(RESULT::add);
+                }
+:};
+
+PARAMSNP ::= {:RESULT=new ArrayList();:}
+|numero:val
+{:
+                RESULT = new ArrayList();
+                RESULT.add(val);
+:};
       
-EQP ::= EQP suma EXPREA                                                                             {::}
-        |EXPREA                                                                                     {::};
+EQP ::= EQP:val1 suma EXPREA:val2
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion=val1.Ecuacion+"+"+val2.Ecuacion;
+                val1.variables.stream().forEach(RESULT.variables::add);
+                val2.variables.stream().forEach(RESULT.variables::add);                
+:}
+        |EXPREA:val
+{:
+                RESULT = val;
+:};
 
-EXPREA ::= EXPREA resta EXPREB                                                                      {::}
-            |EXPREB                                                                                 {::};
+EXPREA ::= EXPREA:val1 resta EXPREB:val2
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion=val1.Ecuacion+"-"+val2.Ecuacion;
+                val1.variables.stream().forEach(RESULT.variables::add);
+                val2.variables.stream().forEach(RESULT.variables::add);                
+:}
+            |EXPREB:val
+{:
+                RESULT = val;
+:};
 
-EXPREB ::= EXPREB multiplicacion EXPREC                                                             {::}
-            |EXPREC                                                                                 {::};
+EXPREB ::= EXPREB:val1 multiplicacion EXPREC:val2
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion=val1.Ecuacion+"*"+val2.Ecuacion;
+                val1.variables.stream().forEach(RESULT.variables::add);
+                val2.variables.stream().forEach(RESULT.variables::add);                
+:}
+            |EXPREC:val
+{:
+                RESULT = val;
+:};
 
-EXPREC ::= EXPREC division EXPRED                                                                   {::}
-            EXPRED                                                                                  {::};
+EXPREC ::= EXPREC:val1 division EXPRED:val2
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion=val1.Ecuacion+"/"+val2.Ecuacion;
+                val1.variables.stream().forEach(RESULT.variables::add);
+                val2.variables.stream().forEach(RESULT.variables::add);                
+:}
+            |EXPRED:val
+{:
+                RESULT = val;
+:};
 
-EXPRED ::= potencia corchetei EXPREE coma EXPREE corchetef                                          {::}
-            |EXPREE                                                                                 {::};
+EXPRED ::= potencia corchetei EXPREE:val1 coma EXPREE:val2 corchetef
+{:
+                RESULT=new Ecuacion();
+                RESULT.Ecuacion="Ptn["+val1.Ecuacion+","+val2.Ecuacion+"]";
+                val1.variables.stream().forEach(RESULT.variables::add);
+                val2.variables.stream().forEach(RESULT.variables::add);
+:}
+            |EXPREE:val
+{:
+                RESULT = val;
+:};
 
-EXPREE ::= raiz corchetei EXPREF coma EXPREF corchetef                                              {::}
-            |EXPREF                                                                                 {::};
+EXPREE ::= raiz corchetei EXPREF:val1 coma EXPREF:val2 corchetef
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion="Rq["+val1.Ecuacion+","+val2.Ecuacion+"]";
+                val1.variables.stream().forEach(RESULT.variables::add);
+                val2.variables.stream().forEach(RESULT.variables::add);            
+:}
+            |EXPREF:val
+{:
+                RESULT = val;
+:};
 
-EXPREF ::= llavesi EXPREG llavesf                                                                   {::}
-            |EXPREG                                                                                 {::};
+EXPREF ::= llavesi EXPREG:val llavesf
+{:
+                RESULT = new Ecuacion();
+                RESULT.variables = val.variables;
+                RESULT.Ecuacion = "{" + val.Ecuacion + "}";
+:}
+            |EXPREG:val
+{:
+                RESULT = val;
+:};
 
-EXPREG ::= parentesisi EQP parentesisf                                                              {::}
-            |numero                                                                                 {::}
-            |identificador                                                                          {::};
-
-VALOR ::=    numero                                                                                 {::}
-            |cadena                                                                                 {::};
+EXPREG ::= parentesisi EQP:val parentesisf
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion = "("+ val.Ecuacion +")";
+                val.variables.stream().forEach(RESULT.variables::add);
+:}
+            |numero:val
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion += val;
+:}
+            |identificador:val
+{:
+                RESULT = new Ecuacion();
+                RESULT.variables.add(val);
+                RESULT.Ecuacion+=val;
+:};
 
 PETICIONES ::=   DI request DI PETICION DI request DF                                               {::}
                 |DI consulta DI CONSULTA DI consulta DF                                             {::}
@@ -147,37 +360,37 @@ GET ::= DI get tipo igual CONTGET DF                                            
 
 CONTGET ::= cadena:val propietario igual numero:val1 CONTGETP:val2
 {:
-    RESULT = new ArrayList();
-    
-    if(val.equals("productos")){
-        if(val2.equals("")){
-            errores.add("a solicitado productos pero no ha especificado sucursal");
-        }else{
-            ArrayList<Producto> temp1 = hash.get_productosc("sucursal",(Object)val2);
-            ArrayList<Producto> temp2 = new ArrayList();
-            ArrayList<Object> temp3 = new ArrayList();
-            temp1.stream().forEach((Producto p)->{
-                temp2.add(p);
-                temp3.add((Object)p);
-            });
-            RESULT = temp3;
-            enlace.reply_lista_productos(temp2);
-        }
-    }else if(val.equals("tiendas")){
-        if(!val2.equals("")){
-            errores.add("Atributo sucursal no era nesesario para obtener tiendas");
-        }else{
-            ArrayList<Tienda> temp1 = hash.get_tiendasc("propietario",(Object)val1);
-            ArrayList<Tienda> temp2 = new ArrayList();
-            ArrayList<Object> temp3 = new ArrayList();
-            temp1.stream().forEach((Tienda p)->{
-                temp2.add(p);
-                temp3.add((Object)p);
-            });
-            RESULT = temp3;
-            enlace.reply_lista_tiendas(temp2);
-        }
-    }
+                RESULT = new ArrayList();
+
+                if(val.equals("productos")){
+                    if(val2.equals("")){
+                        errores.add("a solicitado productos pero no ha especificado sucursal");
+                    }else{
+                        ArrayList<Producto> temp1 = hash.get_productosc("sucursal",(Object)val2);
+                        ArrayList<Producto> temp2 = new ArrayList();
+                        ArrayList<Object> temp3 = new ArrayList();
+                        temp1.stream().forEach((Producto p)->{
+                            temp2.add(p);
+                            temp3.add((Object)p);
+                        });
+                        RESULT = temp3;
+                        enlace.reply_lista_productos(temp2);
+                    }
+                }else if(val.equals("tiendas")){
+                    if(!val2.equals("")){
+                        errores.add("Atributo sucursal no era nesesario para obtener tiendas");
+                    }else{
+                        ArrayList<Tienda> temp1 = hash.get_tiendasc("propietario",(Object)val1);
+                        ArrayList<Tienda> temp2 = new ArrayList();
+                        ArrayList<Object> temp3 = new ArrayList();
+                        temp1.stream().forEach((Tienda p)->{
+                            temp2.add(p);
+                            temp3.add((Object)p);
+                        });
+                        RESULT = temp3;
+                        enlace.reply_lista_tiendas(temp2);
+                    }
+                }
 :};
 
 CONTGETP ::=                                                                                        {:RESULT = "";:}
@@ -215,10 +428,36 @@ ACCIONESTIENDAP ::=  tipo igual ACCION                                          
                     |direccion igual cadena                                                         {::}
                     |telefono igual numero                                                          {::};
       
-CONSM ::=    cadena                                                                                 {::}
-            |numero                                                                                 {::}
-            |avacio                                                                                 {::}
-            |corchetei identificador coma identificador corchetef                                   {::};
+CONSM ::=    cadena:val
+{:
+                RESULT = val;
+:}
+            |numero:val
+{:
+                RESULT = val;
+:}
+            |avacio:val
+{:
+                RESULT = "vacio";
+:}
+            |corchetei identificador:val1 coma identificador:val2 corchetef
+{:
+                if(this.hash_compi.estaseccion(val1)){
+                    Seccion_Mate temp1 = this.hash_compi.devolver_seccion(val1);
+                    if(temp1.estacons(val2)){
+                        Cons_Mate temp2 =temp1.devolverconst(val2);
+                        if(temp2.valor_num!=null){
+                            RESULT = temp2.valor_num;
+                        }else{
+                            RESULT = temp2.valor_str;
+                        }
+                    }else{
+                        errores.add("Error, no existe Constante " + val2);
+                    }
+                }else{
+                    errores.add("error, no existe la seccion " + val1);
+                }
+:};
 
 PRODUCTO ::=     DI producto tipo igual CREACION DI REGISPRODU DI DF                                {::}
                 |DI producto ACCIONESPRODU DF                                                           {::}
@@ -251,152 +490,152 @@ ACCION ::=   MODIFICACION                                                       
 
 USUARIO ::=  DI crearusuario DI REGISUSU:val DI crearusuario DF
 {:
-    RESULT = val;
-    if(RESULT.getId()!=0 && !RESULT.getNombre().equals("vacio") && !RESULT.getApellido().equals("vacio") && RESULT.getTelefono()!=0 && !RESULT.getEmail().equals("vacio")){
-        if(hash.usuExist(RESULT.getId()-1)){
-            hash.insertar_usu(RESULT.getId(),RESULT);
-            enlace.enviar_Reply(enlace.reply_registro_usu(RESULT.getId(),"True"));
-        }else{
-            enlace.enviar_Reply(enlace.reply_registro_usu(RESULT.getId(),"False"));
-        }
-    }
+                RESULT = val;
+                if(RESULT.getId()!=0 && !RESULT.getNombre().equals("vacio") && !RESULT.getApellido().equals("vacio") && RESULT.getTelefono()!=0 && !RESULT.getEmail().equals("vacio")){
+                    if(hash.usuExist(RESULT.getId()-1)){
+                        hash.insertar_usu(RESULT.getId(),RESULT);
+                        enlace.enviar_Reply(enlace.reply_registro_usu(RESULT.getId(),"True"));
+                    }else{
+                        enlace.enviar_Reply(enlace.reply_registro_usu(RESULT.getId(),"False"));
+                    }
+                }
 :}
             |DI iniciousuario DI LOGIN:val DI iniciousuario DF
 {:
 
-    RESULT = val;
-    if(RESULT.getId()!=0 && !RESULT.getPassword().equals("vacio")){
-        if(!hash.usuExist(RESULT.getId()-1)){
-            Usuario prueba = hash.getusu(RESULT.getId());
-            if(prueba.getPassword().equals(RESULT.getPassword())){
-                enlace.reply_login(RESULT.getId(), "True");
-            }else{
-                enlace.reply_login(RESULT.getId(), "False");    
-            }
-        }else{
-            enlace.reply_login(RESULT.getId(), "Fail");
-        }
-    }
+                RESULT = val;
+                if(RESULT.getId()!=0 && !RESULT.getPassword().equals("vacio")){
+                    if(!hash.usuExist(RESULT.getId()-1)){
+                        Usuario prueba = hash.getusu(RESULT.getId());
+                        if(prueba.getPassword().equals(RESULT.getPassword())){
+                            enlace.reply_login(RESULT.getId(), "True");
+                        }else{
+                            enlace.reply_login(RESULT.getId(), "False");    
+                        }
+                    }else{
+                        enlace.reply_login(RESULT.getId(), "Fail");
+                    }
+                }
 
 :};
 
 REGISUSU ::=     REGISUSU:val1 REGISUSUP:val2
 {:
-    RESULT = val1;
-    if(val2.getId()!=0 && RESULT.getId()==0){
-        RESULT.setId(val2.getId());
-    }else if(val2.getId()!=0 && RESULT.getId()!=0){
-        errores.add("Atributo id declarado mas de una vez");
-    }
-    if(!val2.getNombre().equals("vacio") && RESULT.getNombre().equals("vacio")){
-        RESULT.setNombre(val2.getNombre());
-    }else if(!val2.getNombre().equals("vacio") && !RESULT.getNombre().equals("vacio")){
-        errores.add("Atributo nombre Declarado mas una vez");
-    }
-    if(!val2.getApellido().equals("vacio") && RESULT.getApellido().equals("vacio")){
-        RESULT.setApellido(val2.getApellido());
-    }else if(!val2.getApellido().equals("vacio") && !RESULT.getApellido().equals("vacio")){
-        errores.add("Atributo Apellido declarado mas de una vez");
-    }
-    if(!val2.getPassword().equals("vacio") && RESULT.getPassword().equals("vacio")){
-        RESULT.setPassword(val2.getPassword());
-    }else if(!val2.getPassword().equals("vacio") && !RESULT.getPassword().equals("vacio")){
-        errores.add("Atributo apssword declarado mas de una vez");
-    }
-    if(val2.getTelefono()!=0 && RESULT.getTelefono()==0){
-        RESULT.setTelefono(val2.getTelefono());
-    }else if(val2.getTelefono()!=0 && RESULT.getTelefono()!=0){
-        errores.add("atributo Telefono declarado mas de una vez");
-    }
-    if(!val2.getEmail().equals("vacio") && RESULT.getEmail().equals("vacio")){
-        RESULT.setEmail(val2.getEmail());
-    }else if(!val2.getEmail().equals("vacio") && !RESULT.getEmail().equals("vacio")){
-        errores.add("atributo correo declrado mas de una vez");
-    }
-    if(!val2.getDirreccion().equals("vacio") && RESULT.getDirreccion().equals("vacio")){
-        RESULT.setDirreccion(val2.getDirreccion());
-    }else if(!val2.getDirreccion().equals("vacio") && !RESULT.getDirreccion().equals("vacio")){
-        errores.add("atributo dirreccion declarado mas de una vez");
-    }
+                    RESULT = val1;
+                    if(val2.getId()!=0 && RESULT.getId()==0){
+                        RESULT.setId(val2.getId());
+                    }else if(val2.getId()!=0 && RESULT.getId()!=0){
+                        errores.add("Atributo id declarado mas de una vez");
+                    }
+                    if(!val2.getNombre().equals("vacio") && RESULT.getNombre().equals("vacio")){
+                        RESULT.setNombre(val2.getNombre());
+                    }else if(!val2.getNombre().equals("vacio") && !RESULT.getNombre().equals("vacio")){
+                        errores.add("Atributo nombre Declarado mas una vez");
+                    }
+                    if(!val2.getApellido().equals("vacio") && RESULT.getApellido().equals("vacio")){
+                        RESULT.setApellido(val2.getApellido());
+                    }else if(!val2.getApellido().equals("vacio") && !RESULT.getApellido().equals("vacio")){
+                        errores.add("Atributo Apellido declarado mas de una vez");
+                    }
+                    if(!val2.getPassword().equals("vacio") && RESULT.getPassword().equals("vacio")){
+                        RESULT.setPassword(val2.getPassword());
+                    }else if(!val2.getPassword().equals("vacio") && !RESULT.getPassword().equals("vacio")){
+                        errores.add("Atributo apssword declarado mas de una vez");
+                    }
+                    if(val2.getTelefono()!=0 && RESULT.getTelefono()==0){
+                        RESULT.setTelefono(val2.getTelefono());
+                    }else if(val2.getTelefono()!=0 && RESULT.getTelefono()!=0){
+                        errores.add("atributo Telefono declarado mas de una vez");
+                    }
+                    if(!val2.getEmail().equals("vacio") && RESULT.getEmail().equals("vacio")){
+                        RESULT.setEmail(val2.getEmail());
+                    }else if(!val2.getEmail().equals("vacio") && !RESULT.getEmail().equals("vacio")){
+                        errores.add("atributo correo declrado mas de una vez");
+                    }
+                    if(!val2.getDirreccion().equals("vacio") && RESULT.getDirreccion().equals("vacio")){
+                        RESULT.setDirreccion(val2.getDirreccion());
+                    }else if(!val2.getDirreccion().equals("vacio") && !RESULT.getDirreccion().equals("vacio")){
+                        errores.add("atributo dirreccion declarado mas de una vez");
+                    }
 :}
                 |REGISUSUP:val
 {:
-    RESULT = val;
+                    RESULT = val;
 :};
 
 REGISUSUP ::=    DI id DI numero:val DI id DF
 {:
-    RESULT = new Usuario();
-    RESULT.setId(Integer.parseInt(val));
+                    RESULT = new Usuario();
+                    RESULT.setId(Integer.parseInt(val));
 :}
                 |DI nombre DI cadena:val DI nombre DF
 {:
-    RESULT = new Usuario();
-    RESULT.setNombre(val.replace("\"",""));
+                    RESULT = new Usuario();
+                    RESULT.setNombre(val.replace("\"",""));
 :}
                 |DI apellido DI cadena:val DI apellido DF
 {:
-    RESULT = new Usuario();
-    RESULT.setApellido(val.replace("\"",""));
+                    RESULT = new Usuario();
+                    RESULT.setApellido(val.replace("\"",""));
 :}
                 |DI password DI identificador:val DI password DF
 {:
-    RESULT = new Usuario();
-    RESULT.setPassword(val);
+                    RESULT = new Usuario();
+                    RESULT.setPassword(val);
 :}
                 |DI telefono DI numero:val DI telefono DF
 {:
-    RESULT = new Usuario();
-    RESULT.setTelefono(Integer.parseInt(val));
+                    RESULT = new Usuario();
+                    RESULT.setTelefono(Integer.parseInt(val));
 :}
                 |DI email DI correo:val DI email DF
 {:
-    RESULT = new Usuario();
-    RESULT.setEmail(val);
+                    RESULT = new Usuario();
+                    RESULT.setEmail(val);
 :}
                 |DI direccion DI cadena:val DI direccion DF
 {:
-    RESULT = new Usuario();
-    RESULT.setDirreccion(val.replace("\"",""));
+                    RESULT = new Usuario();
+                    RESULT.setDirreccion(val.replace("\"",""));
 :};
 
 LOGIN ::=    LOGIN:val1 LOGINP:val2
 {:
 
-    RESULT= new Usuario();
-    if(val1.getId()==0 && val2.getId()!=0){
-        RESULT.setId(val2.getId());
-    }else if(val1.getId()!=0 && val2.getId()==0){
-        RESULT.setId(val1.getId());
-    }else{
-        errores.add("Atributos ingresado para login incorrectos");
-    }
-    if(val1.getPassword().equals("vacio") && !val2.getPassword().equals("vacio")){
-        RESULT.setPassword(val2.getPassword());
-    }else if(!val1.getPassword().equals("vacio") && val2.getPassword().equals("vacio")){
-        RESULT.setPassword(val1.getPassword());    
-    }else{
-        errores.add("Atributos ingresados para login erroneos");
-    }
-    if(RESULT.getId()==0 || RESULT.getPassword()==null){
-        errores.add("ERROR EN INGRESO DE DATOS PARA LOGEAR, FALLO CRITICO");
-    }
+                    RESULT= new Usuario();
+                    if(val1.getId()==0 && val2.getId()!=0){
+                        RESULT.setId(val2.getId());
+                    }else if(val1.getId()!=0 && val2.getId()==0){
+                        RESULT.setId(val1.getId());
+                    }else{
+                        errores.add("Atributos ingresado para login incorrectos");
+                    }
+                    if(val1.getPassword().equals("vacio") && !val2.getPassword().equals("vacio")){
+                        RESULT.setPassword(val2.getPassword());
+                    }else if(!val1.getPassword().equals("vacio") && val2.getPassword().equals("vacio")){
+                        RESULT.setPassword(val1.getPassword());    
+                    }else{
+                        errores.add("Atributos ingresados para login erroneos");
+                    }
+                    if(RESULT.getId()==0 || RESULT.getPassword()==null){
+                        errores.add("ERROR EN INGRESO DE DATOS PARA LOGEAR, FALLO CRITICO");
+                    }
 
 :}
             |LOGINP:val
 {:
-RESULT = val;
+                    RESULT = val;
 :};
 
 LOGINP ::=   DI id DI numero:val DI id DF                                                               
 {:
-    RESULT = new Usuario();
-    RESULT.setId(Integer.parseInt(val));
+                    RESULT = new Usuario();
+                    RESULT.setId(Integer.parseInt(val));
 :}
             |DI password DI identificador:val DI password DF                                            
 {:  
-    RESULT = new Usuario();
-    RESULT.setPassword((String)val);
+                    RESULT = new Usuario();
+                    RESULT.setPassword((String)val);
 :};
 
 CONSULTA ::=   extraer de CONSULTAS COMPARA pyc                                                     {::};
@@ -424,4 +663,4 @@ COMPARAP ::=     NOT parentesisi COMPARAP parentesisf                           
 OL ::=   OR                                                                                         {::}
         |AND                                                                                        {::}
         |error:e pyc DI
-        {://errores.add("Operador Logico Invalido");:};
+        {://errores.add("Operador Logico Invalido " e.toString());:};

@@ -13,9 +13,9 @@ import java.util.ArrayList;
  * @author sinozuke
  */
 public class Tabla_Hash_compilador {
-    public static ArrayList<Seccion_Mate> secciones;
-    private static boolean esta;
-    private static Seccion_Mate temp;
+    public  ArrayList<Seccion_Mate> secciones;
+    private boolean esta;
+    private Seccion_Mate temp;
     
     public boolean estaseccion(String secc){
         esta=false;
@@ -36,4 +36,9 @@ public class Tabla_Hash_compilador {
         });
         return temp;
     }
+    
+    public void agregar_seccion(Seccion_Mate nueva){
+        this.secciones.add(nueva);
+    }
+    
 }

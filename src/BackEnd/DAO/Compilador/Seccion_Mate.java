@@ -14,11 +14,19 @@ import java.util.ArrayList;
 public class Seccion_Mate {
     
     public String id;
-    public static ArrayList<Funcion_Mate> funciones;
-    public static ArrayList<Cons_Mate> constantes;
+    public ArrayList<Funcion_Mate> funciones;
+    public ArrayList<Cons_Mate> constantes;
     private static boolean esta;
     private static Funcion_Mate temp1;
     private static Cons_Mate temp2;
+    
+    public void agregar_funcion(Funcion_Mate nueva){
+        this.funciones.add(nueva);
+    }
+    
+    public void agregar_constante(Cons_Mate nueva){
+        this.constantes.add(nueva);
+    }
     
     public boolean estafuncion(String funcion){
         esta=false;

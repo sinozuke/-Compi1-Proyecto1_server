@@ -5,13 +5,16 @@
  */
 package BackEnd.DAO.Compilador;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author sinozuke
  */
-public class Cons_Mate {
-    public String id;
-    public String valor_num=null;
-    public String valor_str=null;
+public class Ecuacion {
+
+    public ArrayList<String> variables = new ArrayList();
+    public String Ecuacion = "";
+    
     
 }

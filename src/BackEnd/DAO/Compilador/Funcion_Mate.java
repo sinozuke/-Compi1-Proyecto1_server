@@ -16,11 +16,11 @@ public class Funcion_Mate {
     public String id;
     public ArrayList<String> parametros;
     public String accion;
-    private Integer[] params2;
+    private String[] params2;
     private String[] params1;
     public static String resultado;
     
-    public String devolver_entero(ArrayList<Integer> params){
+    public String devolver_entero(ArrayList<String> params){
         resultado="";
         if(parametros.size()>params.size()){
             return "Error: se esperavan mas parametros para la funcion " + this.id;
@@ -28,7 +28,7 @@ public class Funcion_Mate {
             return "Error: el numero de valores es mayor al de parametros";
         }else if(parametros.size()==params.size()){
             params1 = (String[])parametros.toArray();
-            params2 = (Integer[])params.toArray();
+            params2 = (String[]) params.toArray();
             int j = params2.length;
             String accion_final = accion;
             for(int i=0;i<j;i++){
