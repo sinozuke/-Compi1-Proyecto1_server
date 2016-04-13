@@ -22,7 +22,8 @@ parser code
     @Override
     errores.*/
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
-		System.out.println("Error en la Línea " + (s.right+1)+ "Columna "+s.left+". Identificador " +
+        reply.append("");
+	System.out.println("Error en la Línea " + (s.right+1)+ "Columna "+s.left+". Identificador " +
         s.value + " no reconocido.");
     }
 
@@ -31,8 +32,9 @@ parser code
 action code
 {:
     Tabla_Hash_compilador hash_compi = new Tabla_Hash_compilador();
-    ArrayList<String> errores = new ArrayList();
     private final Enlace_Envio enlace=new Enlace_Envio();
+    StringBuilder reply= new StringBuilder();
+                
         		
 :}
 terminal constante,DI,DF,get,request,iniciousuario,id,sucursal,password,usuario,crearusuario;
@@ -655,25 +657,30 @@ PRODUCTO ::=     DI producto tipo igual CREACION DI REGISPRODU:val DI DF
                     if(p.isEliminar()){
                         if(hash.produExist(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()))){
                             hash.eliminarproduc(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()));
+                            reply.append(enlace.reply_eliminacion_producto(p.getId(), p.getSucursal(), "True"));
                         }else{
-                            errores.add("No Existe Producto con id: "+p.getId());
+                            reply.append(enlace.reply_error("semantico", "No Existe Producto con id: "+p.getId(), val2left, val2right));
+                            reply.append(enlace.reply_eliminacion_producto(p.getId(), p.getSucursal(), "False"));
                         }
                     }else if(p.isModificar()){
                         if(hash.produExist(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()))){
                             hash.modificarprodu(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()), p);
+                            reply.append(enlace.reply_modificacion_producto(p.getId(), p.getSucursal(), "True"));
                         }else{
-                            errores.add("No Existe Producto con id: "+p.getId());
+                            reply.append(enlace.reply_error("semantico", "No Existe Producto con id: "+p.getId(), val2left, val2right));
+                            reply.append(enlace.reply_eliminacion_producto(p.getId(), p.getSucursal(), "False"));
                         }
                     }else if(p.isRegistro()){
                         if(!hash.produExist(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()))){
                             hash.modificarprodu(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()), p);
-                        }else{
-                            errores.add("Ya Existe Producto con id: "+p.getId());
+                            reply.append(enlace.reply_eliminacion_producto(p.getId(), p.getSucursal(), "True"));
+                        }else{                            
+                            reply.append(enlace.reply_error("semantico", "Ya Existe Producto con id: "+p.getId(), val2left, val2right));
+                            reply.append(enlace.reply_eliminacion_producto(p.getId(), p.getSucursal(), "False"));
                         }
                     }else{
-                        errores.add("No se ha especificdo ninguna accion para el producto id: "+ String.valueOf(p.getId()));
+                        reply.append(enlace.reply_error("semantico", "No se ha especificdo ninguna accion para el producto id: "+ String.valueOf(p.getId()), val2left, val2right));
                     }
-                
                 });
 
 

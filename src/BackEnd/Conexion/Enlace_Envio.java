@@ -6,7 +6,6 @@
 package BackEnd.Conexion;
 
 import BackEnd.DAO.Interfaces.Enlace_EnvioDAO;
-import BackEnd.DAO.Objetos.Error;
 import BackEnd.DAO.Objetos.Producto;
 import BackEnd.DAO.Objetos.Tienda;
 import java.io.DataOutputStream;
@@ -146,29 +145,15 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
     }
     
     @Override
-    public String reply_error(ArrayList<Error> Errores) {
-        StringBuilder reply = new StringBuilder();
-        Errores.stream().forEach((Error e)->{
-            reply.append("$error-$\n");
-            reply.append("$tipo$");
-            reply.append(e.getTipo());
-            reply.append("$tipo-$\n");
-            if(e.getTipo().equals("lexico") || e.getTipo().equals("sintactico")){
-                reply.append("$posicion$\n");
-                reply.append("$fila$");
-                reply.append(String.valueOf(e.getFila()));
-                reply.append("$fila-$\n");
-                reply.append("$columna$");
-                reply.append(String.valueOf(e.getColumna()));
-                reply.append("$columna-$\n");
-                reply.append("$posicion-$\n");
-            }
-            reply.append("$descripcion$");
-            reply.append(e.getDescripccion());
-            reply.append("$descripcion-$\n");
-            reply.append("$error-$\n");
-        });
-        return reply.toString();
+    public String reply_error(String tipo,String descripccion, int fila, int columna) {
+        return MessageFormat.format("$error$\n+"
+                + "$tipo${0}$tipo-$\n+"
+                + "$posicion$\n$+"
+                    + "fila${1}$fila-$\n+"
+                    + "$columna${2}$columna-$\n+"
+                + "$posicion-$\n+"
+                + "$descripcion${3}$descripcion-$\n+"
+                + "$error-$\n", tipo, fila, columna, descripccion);
     }
 
     @Override
