@@ -11,12 +11,12 @@ package BackEnd.DAO.Objetos;
  */
 public class Tienda {
     
-    private int codigo;
-    private int propietario;
-    private String Nombre;
-    private String Dirreccion;
-    private int telefono;
-    private String img;
+    private int codigo=0;
+    private int propietario=0;
+    private String Nombre="vacio";
+    private String Dirreccion="vacio";
+    private int telefono=0;
+    private String img="vacio";
     private boolean registro=false;
     private boolean modificar=false;
     private boolean eliminar=false;

@@ -53,14 +53,14 @@ public class Tabla_Hash_DATOS {
         if(indice >4999){
             return false;
         }else{
-            return SG.Tienda_hash[indice-1]==null;    
+            return SG.Tienda_hash[indice]==null;    
         }
     }
     public boolean produExist(int indice){
         if(indice >499999){
             return false;
         }else{
-            return SG.Productos_hash[indice-1]==null;
+            return SG.Productos_hash[indice]==null;
         }
     }
     public int Hash_Cod_Tienda(int id,int sucursal){

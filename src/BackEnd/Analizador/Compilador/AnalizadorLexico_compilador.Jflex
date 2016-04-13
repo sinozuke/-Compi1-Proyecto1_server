@@ -47,7 +47,7 @@ Borrar = [\"]"Eliminar"[\"]
 "email"                 {return new Symbol(Simbolo.email, yycolumn,yyline,yytext()); }
 "direccion"      	{return new Symbol(Simbolo.direccion, yycolumn,yyline,yytext()); }
 "tienda"          	{return new Symbol(Simbolo.tienda, yycolumn,yyline,yytext()); }
-"código"                {return new Symbol(Simbolo.codigo, yycolumn,yyline,yytext()); }
+"codigo"                {return new Symbol(Simbolo.codigo, yycolumn,yyline,yytext()); }
 "propietario"      	{return new Symbol(Simbolo.propietario, yycolumn,yyline,yytext()); }
 "img"           	{return new Symbol(Simbolo.imagen, yycolumn,yyline,yytext()); }
 "tipo"          	{return new Symbol(Simbolo.tipo, yycolumn,yyline,yytext()); }
@@ -84,11 +84,7 @@ Borrar = [\"]"Eliminar"[\"]
 {Hacer}    		{return new Symbol(Simbolo.CREACION, yycolumn,yyline,yytext()); }
 {Modi}  		{return new Symbol(Simbolo.MODIFICACION, yycolumn,yyline,yytext()); }
 {Borrar}    		{return new Symbol(Simbolo.ELIMINACION, yycolumn,yyline,yytext()); }
-{cadena}		{	String Cadenita=yytext();
-                     		Cadenita = Cadenita.substring(1,Cadenita.length()-1);
- 				System.out.println(Cadenita);
-				return new Symbol(Simbolo.cadena, yycolumn,yyline,Cadenita);
-			}
+{cadena}		{return new Symbol(Simbolo.cadena, yycolumn,yyline,yytext());}
 {Correo}                {return new Symbol(Simbolo.correo, yycolumn,yyline,yytext()); }
 {Variable}		{return new Symbol(Simbolo.identificador, yycolumn,yyline,yytext()); }
 

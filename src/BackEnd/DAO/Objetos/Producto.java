@@ -11,14 +11,14 @@ package BackEnd.DAO.Objetos;
  */
 public class Producto {
     
-    private int id;
-    private String Nombre;
-    private String marca;
-    private String color;
-    private int cantidad;
-    private int tamaño;
-    private int sucursal;
-    private String img;
+    private int id=0;
+    private String Nombre="vacio";
+    private String marca="vacio";
+    private String color="vacio";
+    private int cantidad=0;
+    private int tamaño=0;
+    private int sucursal=0;
+    private String img="vacio";
     private boolean registro=false;
     private boolean modificar=false;
     private boolean eliminar=false;

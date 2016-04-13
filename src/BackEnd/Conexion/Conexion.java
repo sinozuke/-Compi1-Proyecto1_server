@@ -21,25 +21,8 @@ import java.io.ByteArrayInputStream;
 
 public class Conexion implements Runnable{
     
-    public static class enlace_usuario implements Runnable{
-        private final Lexico_Request Lex;
-        private final AnalizadorSintactico_compilador Sin;
-        public enlace_usuario(String recivido,InetAddress ip) {
-            Lex = new Lexico_Request(new ByteArrayInputStream(recivido.getBytes()));
-            Sin = new AnalizadorSintactico_compilador(Lex);
-        }
-        
-        @Override
-        public void run() {
-            try {
-                Sin.parse();
-            } catch (Exception ex) {
-                System.out.println(ex.getCause());
-            }
-        }
-        
-    }
-
+    private Lexico_Request Lex;
+    private AnalizadorSintactico_compilador Sin;
     private static ServerSocket servidor;
     private Socket cliente;
     private ArrayList<Thread> enlaces;
@@ -72,24 +55,14 @@ public class Conexion implements Runnable{
             try {
                 cliente = servidor.accept();
                 String recivido =new DataInputStream(cliente.getInputStream()).readUTF();
-                enlaces.add(new Thread(new enlace_usuario(recivido,cliente.getLocalAddress())));
-                enlaces.get(enlaces.size()-1).start();
+                Lex = new Lexico_Request(new ByteArrayInputStream(recivido.getBytes()));
+                Sin = new AnalizadorSintactico_compilador(Lex);
+                Sin.parse();
                 cliente.close();
-            //    enlaces = eliminar_enlaces(enlaces);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }
-    }
-    
-    private ArrayList<Thread> eliminar_enlaces(ArrayList<Thread> enlaces1){
-        ArrayList<Thread> temp1 = null;
-            enlaces1.stream().forEach((Thread t)->{
-                if(!t.isAlive()){
-                   temp1.add(t);
-                }
-            });
-        return temp1;
     }
     
 }

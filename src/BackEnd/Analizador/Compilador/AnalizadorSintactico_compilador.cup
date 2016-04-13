@@ -6,11 +6,16 @@ import BackEnd.DAO.Hash.Tabla_Hash_compilador;
 import java.util.ArrayList;
 import BackEnd.Conexion.Enlace_Envio;
 
-
 //import static compi1.proyecto1_server.pkg201403775.Compi1Proyecto1_Server201403775.hash;
 
 parser code
 {:
+
+    protected final static int _error_sync_size = 8;
+    protected int error_sync_size( ) {
+        return _error_sync_size; 
+    }
+
     /**Metodo al que se llama automáticamente ante algún error sintactico.*/
     public void syntax_error(Symbol s){
 		System.out.println("Error en la Línea " + (s.right+1) +" Columna "+s.left+ ". Identificador "
@@ -23,6 +28,7 @@ parser code
 		System.out.println("Error en la Línea " + (s.right+1)+ "Columna "+s.left+". Identificador " +
         s.value + " no reconocido.");
     }
+
 :}
 
 action code
@@ -30,6 +36,7 @@ action code
     Tabla_Hash_compilador hash_compi = new Tabla_Hash_compilador();
     private final Enlace_Envio enlace=new Enlace_Envio();
     StringBuilder reply= new StringBuilder();
+    Boolean Respondido = false;
                 
         		
 :}
@@ -66,7 +73,15 @@ precedence left division;
 
 start with INICIA;
 
-INICIA ::=  REQUEST                                                                                 {::};
+INICIA ::=  REQUEST
+{:
+                if(!Respondido){
+                    enlace.enviar_Reply(reply.toString());
+                }else{
+                    reply = new StringBuilder();
+                    Respondido = false;
+                }
+:};
 
 REQUEST ::=  REQUEST PETICIONES                                                                     {::}
             |PETICIONES                                                                             {::}
@@ -78,7 +93,7 @@ REQUEST ::=  REQUEST PETICIONES                                                 
 MATE ::= cadena:val1 DI CONTMATE:val2
 {:
                 RESULT = new Seccion_Mate();
-                RESULT.id = val1;
+                RESULT.id = val1.replaceAll("\"", "");
                 if(val2!=null){
                     val2.funciones.stream().forEach(RESULT::agregar_funcion);
                     val2.constantes.stream().forEach(RESULT::agregar_constante);
@@ -149,7 +164,7 @@ CONTMATEP ::=    identificador:val1 parentesisi PARAMS:val2 parentesisf igual ll
 {:
                 Cons_Mate constante = new Cons_Mate();
                 constante.id=val1;
-                constante.valor_str=val2;
+                constante.valor_str=val2.replaceAll("\"", "");
                 RESULT = new Seccion_Mate();
                 RESULT.agregar_constante(constante);
 :};
@@ -372,7 +387,7 @@ CONTGET ::= cadena:val propietario igual numero:val1 CONTGETP:val2
 {:
                 RESULT = new ArrayList();
 
-                if(val.equals("productos")){
+                if(val.replaceAll("\"", "").equals("productos")){
                     if(val2.equals("")){
                         reply.append(enlace.reply_error("semantico", "a solicitado productos pero no ha especificado sucursal", val2left, val2right));
                     }else{
@@ -384,9 +399,9 @@ CONTGET ::= cadena:val propietario igual numero:val1 CONTGETP:val2
                             temp3.add((Object)p);
                         });
                         RESULT = temp3;
-                        enlace.reply_lista_productos(temp2);
+                        reply.append(enlace.reply_lista_productos(temp2));
                     }
-                }else if(val.equals("tiendas")){
+                }else if(val.replaceAll("\"", "").equals("tiendas")){
                     if(!val2.equals("")){
                         reply.append(enlace.reply_error("semantico", "Atributo sucursal no era nesesario para obtener tiendas", val2left, val2right));
                     }else{
@@ -398,7 +413,7 @@ CONTGET ::= cadena:val propietario igual numero:val1 CONTGETP:val2
                             temp3.add((Object)p);
                         });
                         RESULT = temp3;
-                        enlace.reply_lista_tiendas(temp2);
+                        reply.append(enlace.reply_lista_tiendas(temp2));
                     }
                 }
 :};
@@ -418,7 +433,7 @@ PETICION ::=     PETICION:val1 PETICIONP:val2
 //----------------------
 :};
 
-PETICIONP ::=   DI tienda TIENDA:val DF
+PETICIONP ::=   DI tienda TIENDA:val
 {:
 //----------------------
 :}
@@ -430,8 +445,8 @@ PETICIONP ::=   DI tienda TIENDA:val DF
 TIENDA ::=  tipo igual CREACION DI CONTREGISTIENDA:val DI tienda DF
 {:
                 if(val!=null){
-                    if(val.getCodigo()!=0 && val.getDirreccion().equals("vacio") && val.getImg().equals("vacio") && val.getNombre().equals("vacio") && val.getPropietario()!=0 && val.getTelefono()!=0){
-                        if(!hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
+                    if(val.getCodigo()!=0 && !val.getDirreccion().equals("vacio") && !val.getImg().equals("vacio") && !val.getNombre().equals("vacio") && val.getPropietario()!=0 && val.getTelefono()!=0){
+                        if(hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
                             hash.modificartienda(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()), val);
                         }else{
                             reply.append(enlace.reply_error("Semantico","Tienda ya existente con el id:"+ String.valueOf(val.getCodigo()), valleft, valright));
@@ -442,7 +457,7 @@ TIENDA ::=  tipo igual CREACION DI CONTREGISTIENDA:val DI tienda DF
                 }
 
 :}
-            | ACCIONESTIENDA:val
+            | ACCIONESTIENDA:val DF
 {:
                 if(val.isEliminar()){
                     if(hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
@@ -510,6 +525,15 @@ CONTREGISTIENDAP ::=     DI codigo DI numero:val DI codigo DF
 {:
                 RESULT = new Tienda();
                 RESULT.setImg(val);
+:}
+                        |error DI
+{:
+                RESULT = new Tienda();
+                System.out.println("me sincronize con DI");
+:}
+                        |error DF {:
+                RESULT = new Tienda();
+                System.out.println("me sincronize con DF");
 :};
 
 ACCIONESTIENDA ::=   ACCIONESTIENDA:val1 coma ACCIONESTIENDAP:val2
@@ -560,12 +584,12 @@ ACCIONESTIENDAP ::=  tipo igual ACCION:val
                     |nombre igual cadena:val
 {:
                 RESULT = new Tienda();
-                RESULT.setNombre(val);
+                RESULT.setNombre(val.replaceAll("\"", ""));
 :}
                     |direccion igual cadena:val
 {:
                 RESULT = new Tienda();
-                RESULT.setDirreccion(val);
+                RESULT.setDirreccion(val.replaceAll("\"", ""));
 :}
                     |telefono igual numero:val
 {:
@@ -575,7 +599,7 @@ ACCIONESTIENDAP ::=  tipo igual ACCION:val
       
 CONSM ::=    cadena:val
 {:
-                RESULT = val;
+                RESULT = val.replaceAll("\"", "");
 :}
             |numero:val
 {:
@@ -815,7 +839,7 @@ ACCIONESPRODUP ::=   tipo igual ACCION:val
                 |nombre igual cadena:val
 {:
                 RESULT = new Producto();
-                RESULT.setNombre(val);
+                RESULT.setNombre(val.replaceAll("\"", ""));
 :}
                 |color igual CONSM:val
 {:
@@ -844,9 +868,9 @@ USUARIO ::=  DI crearusuario DI REGISUSU:val DI crearusuario DF
                 if(RESULT.getId()!=0 && !RESULT.getNombre().equals("vacio") && !RESULT.getApellido().equals("vacio") && RESULT.getTelefono()!=0 && !RESULT.getEmail().equals("vacio")){
                     if(hash.usuExist(RESULT.getId()-1)){
                         hash.insertar_usu(RESULT.getId(),RESULT);
-                        enlace.enviar_Reply(enlace.reply_registro_usu(RESULT.getId(),"True"));
+                        reply.append(enlace.reply_registro_usu(RESULT.getId(),"True"));
                     }else{
-                        enlace.enviar_Reply(enlace.reply_registro_usu(RESULT.getId(),"False"));
+                        reply.append(enlace.reply_registro_usu(RESULT.getId(),"False"));
                     }
                 }
 :}
@@ -859,11 +883,14 @@ USUARIO ::=  DI crearusuario DI REGISUSU:val DI crearusuario DF
                         Usuario prueba = hash.getusu(RESULT.getId());
                         if(prueba.getPassword().equals(RESULT.getPassword())){
                             enlace.reply_login(RESULT.getId(), "True");
+                            Respondido = true;
                         }else{
-                            enlace.reply_login(RESULT.getId(), "False");    
+                            enlace.reply_login(RESULT.getId(), "False");
+                            Respondido = true;
                         }
                     }else{
                         enlace.reply_login(RESULT.getId(), "Fail");
+                        Respondido = true;
                     }
                 }
 
