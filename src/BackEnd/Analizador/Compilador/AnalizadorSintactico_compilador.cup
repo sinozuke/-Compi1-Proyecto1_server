@@ -59,6 +59,7 @@ non terminal Ecuacion EQ, EQP, EXPREA, EXPREB, EXPREC, EXPRED, EXPREE, EXPREF,EX
 non terminal String GET, CONTGETP,CONSM, PARAMSP,ACCION,MATEF;
 non terminal ArrayList<String> PARAMS, PARAMSN,PARAMSNP,CONTMATEF;
 non terminal ArrayList<Object> CONTGET;
+non terminal ArrayList<Producto> CONJUNTOP, CONJUNTOPP; 
 non terminal Seccion_Mate MATE,CONTMATEP,CONTMATE;
 
 precedence left suma;
@@ -343,17 +344,29 @@ EXPREG ::= parentesisi EQP:val parentesisf
                 RESULT.Ecuacion+=val;
 :};
 
-PETICIONES ::=   DI request DI PETICION DI request DF                                               {::}
-                |DI consulta DI CONSULTA DI consulta DF                                             {::}
-                |DI request DI GET DI request DF                                                    {::}
-                |DI request DI USUARIO DI request DF                                                {::}
+PETICIONES ::=   DI request DI PETICION:val DI request DF
+{:
+//----------------------
+:}
+                |DI consulta DI CONSULTA:val DI consulta DF
+{:
+//----------------------
+:}
+                |DI request DI GET:val DI request DF
+{:
+//----------------------
+:}
+                |DI request DI USUARIO:val DI request DF
+{:
+//----------------------
+:}
                 |error:e DF
 {:
-System.out.println("me sincronize con -$" + eleft + " " + " " + eright);
+                System.out.println("me sincronize con -$" + eleft + " " + " " + eright);
 :}
                 |error:e DI
 {:
-System.out.println("me sincronize con $" + eleft + " " + " " + eright);
+                System.out.println("me sincronize con $" + eleft + " " + " " + eright);
 :};
 
 GET ::= DI get tipo igual CONTGET DF                                                                {::};
@@ -396,37 +409,103 @@ CONTGET ::= cadena:val propietario igual numero:val1 CONTGETP:val2
 CONTGETP ::=                                                                                        {:RESULT = "";:}
             |sucursal igual numero:val
 {:
-RESULT = val;
+            RESULT = val;
 :};
 
-PETICION ::=     PETICION PETICIONP                                                                 {::}
-                |PETICIONP                                                                          {::};
+PETICION ::=     PETICION:val1 PETICIONP:val2
+{:
+//----------------------
+:}
+                |PETICIONP:val
+{:
+//----------------------
+:};
 
-PETICIONP ::=   DI tienda TIENDA DF                                                                 {::}
-                |PRODUCTO                                                                           {::};
+PETICIONP ::=   DI tienda TIENDA:val DF
+{:
+//----------------------
+:}
+                |PRODUCTO:val
+{:
+//----------------------
+:};
 
-TIENDA ::=  tipo igual CREACION DI CONTREGISTIENDA DI tienda                                        {::}
-            | ACCIONESTIENDA                                                                        {::};
+TIENDA ::=  tipo igual CREACION DI CONTREGISTIENDA DI tienda
+{:
+//----------------------
+:}
+            | ACCIONESTIENDA:val
+{:
+//----------------------
+:};
 
-CONTREGISTIENDA ::=  CONTREGISTIENDA CONTREGISTIENDAP                                               {::}
-                    |CONTREGISTIENDAP                                                               {::};
+CONTREGISTIENDA ::=  CONTREGISTIENDA:val1 CONTREGISTIENDAP:val2
+{:
+//----------------------
+:}
+                    |CONTREGISTIENDAP:val
+{:
+//----------------------
+:};
 
-CONTREGISTIENDAP ::=     DI codigo DI EQ DI codigo DF                                            {::}
-                        |DI propietario DI EQ DI propietario DF                                  {::}
-                        |DI nombre DI CONSM DI nombre DF                                            {::}
-                        |DI direccion DI CONSM DI direccion DF                                      {::}
-                        |DI telefono DI EQ DI telefono DF                                        {::}
-                        |DI imagen DI identificador DI imagen DF                                    {::};
+CONTREGISTIENDAP ::=     DI codigo DI EQ:val DI codigo DF
+{:
+//----------------------
+:}
+                        |DI propietario DI EQ:val DI propietario DF
+{:
+//----------------------
+:}
+                        |DI nombre DI CONSM:val DI nombre DF
+{:
+//----------------------
+:}
+                        |DI direccion DI CONSM:val DI direccion DF
+{:
+//----------------------
+:}
+                        |DI telefono DI EQ:val DI telefono DF
+{:
+//----------------------
+:}
+                        |DI imagen DI identificador:val DI imagen DF
+{:
+//----------------------
+:};
 
-ACCIONESTIENDA ::=   ACCIONESTIENDA coma ACCIONESTIENDAP                                            {::}
-                    |ACCIONESTIENDAP                                                                {::};
+ACCIONESTIENDA ::=   ACCIONESTIENDA:val1 coma ACCIONESTIENDAP:val2
+{:
+//----------------------
+:}
+                    |ACCIONESTIENDAP:val
+{:
+//----------------------
+:};
 
-ACCIONESTIENDAP ::=  tipo igual ACCION                                                        {::}
-                    |codigo igual numero                                                            {::}
-                    |propietario igual numero                                                       {::}
-                    |nombre igual cadena                                                            {::}
-                    |direccion igual cadena                                                         {::}
-                    |telefono igual numero                                                          {::};
+ACCIONESTIENDAP ::=  tipo igual ACCION:val
+{:
+//----------------------
+:}
+                    |codigo igual numero:val
+{:
+//----------------------
+:}
+                    |propietario igual numero:val
+{:
+//----------------------
+:}
+                    |nombre igual cadena:val
+{:
+//----------------------
+:}
+                    |direccion igual cadena:val
+{:
+//----------------------
+:}
+                    |telefono igual numero:val
+{:
+//----------------------
+:};
       
 CONSM ::=    cadena:val
 {:
@@ -459,34 +538,235 @@ CONSM ::=    cadena:val
                 }
 :};
 
-PRODUCTO ::=     DI producto tipo igual CREACION DI REGISPRODU DI DF                                {::}
-                |DI producto ACCIONESPRODU DF                                                           {::}
-                |DI tienda id igual numero DI ACCIONESPRODU DI tienda DF                               {::};
+PRODUCTO ::=     DI producto tipo igual CREACION DI REGISPRODU:val DI DF
+{:
+                if(val!=null){
+                    if(val.getId()!=0 && val.getNombre().equals("") && val.getSucursal()!=0){
+                        if(!hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
+                            hash.modificarprodu(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()), val);
+                        }else{
+                            errores.add("Ya se Encuentra Ocupado el Id:" + val.getId() + " Linea:" + valleft +" Columna:" + valright);
+                        }
+                    }else{
+                        errores.add("ninguno de los parametros obligatorios se encuentra disponible, linea: " + String.valueOf(valleft) + " Columna:" + String.valueOf(valright));
+                    }
+                }else{
+                    errores.add("no se ha especificado ningun atributo");
+                }
+:}
+                |DI producto ACCIONESPRODU:val DF
+{:
+                if(val.isEliminar()){
+                        if(hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
+                            hash.eliminarproduc(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()));
+                        }else{
+                            errores.add("No Existe Producto con id: "+val.getId());
+                        }
+                    }else if(val.isModificar()){
+                        if(hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
+                            hash.modificarprodu(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()), val);
+                        }else{
+                            errores.add("No Existe Producto con id: "+val.getId());
+                        }
+                    }else if(val.isRegistro()){
+                        if(!hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
+                            hash.modificarprodu(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()), val);
+                        }else{
+                            errores.add("Ya Existe Producto con id: "+val.getId());
+                        }
+                    }else{
+                        errores.add("No se ha especificdo ninguna accion para el producto id: "+ String.valueOf(val.getId()));
+                }
 
-REGISPRODU ::=   REGISPRODU REGISPRODUP                                                             {::}
-                |REGISPRODUP                                                                        {::};
+:}
+                |DI tienda id igual numero:val1 DI CONJUNTOP:val2 DI tienda DF
+{:
 
-REGISPRODUP ::=  DI codigo DI EQ DI codigo DF                                                    {::}
-                |DI nombre DI CONSM DI nombre DF                                                    {::}
-                |DI cantidad DI EQ DI cantidad DF                                                {::}
-                |DI marca DI CONSM DI marca DF                                                      {::}
-                |DI tamano DI EQ DI tamano DF                                                    {::}
-                |DI color DI CONSM DI color DF                                                      {::}
-                |DI imagen DI identificador DI imagen DF                                            {::};
+                val2.stream().forEach((Producto p)->{
+                    p.setSucursal(Integer.parseInt(val1));
+                    if(p.isEliminar()){
+                        if(hash.produExist(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()))){
+                            hash.eliminarproduc(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()));
+                        }else{
+                            errores.add("No Existe Producto con id: "+p.getId());
+                        }
+                    }else if(p.isModificar()){
+                        if(hash.produExist(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()))){
+                            hash.modificarprodu(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()), p);
+                        }else{
+                            errores.add("No Existe Producto con id: "+p.getId());
+                        }
+                    }else if(p.isRegistro()){
+                        if(!hash.produExist(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()))){
+                            hash.modificarprodu(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()), p);
+                        }else{
+                            errores.add("Ya Existe Producto con id: "+p.getId());
+                        }
+                    }else{
+                        errores.add("No se ha especificdo ninguna accion para el producto id: "+ String.valueOf(p.getId()));
+                    }
+                
+                });
 
-ACCIONESPRODU ::=    ACCIONESPRODU ACCIONESPRODUP                                                   {::}
-                    |ACCIONESPRODUP                                                                 {::};
 
-ACCIONESPRODUP ::=   tipo igual ACCION                                                              {::}
-                |codigo igual numero                                                                {::}
-                |sucursal igual numero                                                              {::}
-                |nombre igual cadena                                                                {::}
-                |color igual CONSM                                                                  {::}
-                |cantidad igual EQ                                                               {::};
+:};
+
+CONJUNTOP ::= CONJUNTOP:val1 CONJUNTOPP:val2
+{:
+                RESULT = val1;
+                val2.stream().forEach(RESULT::add);
+:}
+              |CONJUNTOPP:val
+{:
+                RESULT = val;
+:};
+
+CONJUNTOPP ::= DI producto ACCIONESPRODU:val2 DF
+{:
+                RESULT = new ArrayList();
+                RESULT.add(val2);
+:};
+
+REGISPRODU ::=   REGISPRODU:val1 REGISPRODUP:val2
+{:
+                RESULT = val1;
+
+                if(val2.getId()!=0 && RESULT.getId()==0){
+                    RESULT.setId(val2.getId());
+                }else if(!val2.getNombre().equals("vacio") && RESULT.getNombre().equals("vacio")){
+                    RESULT.setNombre(val2.getNombre());
+                }else if(val2.getCantidad()!=0 && RESULT.getCantidad()==0){
+                    RESULT.setCantidad(val2.getCantidad());
+                }else if(!val2.getMarca().equals("vacio") && RESULT.getMarca().equals("vacio")){
+                    RESULT.setMarca(val2.getMarca());
+                }else if(!val2.getColor().equals("vacio") && RESULT.getColor().equals("vacio")){
+                    RESULT.setColor(val2.getColor());
+                }else if(val2.getTamaño()!=0 && RESULT.getTamaño()==0){
+                    RESULT.setTamaño(val2.getTamaño());
+                }else if(!val2.getImg().equals("vacio") && RESULT.getImg().equals("vacio")){
+                    RESULT.setImg(val2.getImg());
+                }else if(val2.getSucursal()!=0 && RESULT.getSucursal()==0){
+                    RESULT.setSucursal(val2.getSucursal());
+                }
+:}
+                |REGISPRODUP:val
+{:
+                RESULT = val;
+:};
+
+REGISPRODUP ::=  DI codigo DI EQ:val DI codigo DF
+{:
+                RESULT = new Producto();
+                RESULT.setId(Integer.parseInt(val.Ecuacion));
+:}
+                |DI nombre DI CONSM:val DI nombre DF
+{:
+                RESULT = new Producto();
+                RESULT.setNombre(val);
+:}
+                |DI cantidad DI EQ:val DI cantidad DF
+{:
+                RESULT = new Producto();
+                RESULT.setCantidad(Integer.parseInt(val.Ecuacion));
+:}
+                |DI marca DI CONSM:val DI marca DF
+{:
+                RESULT = new Producto();
+                RESULT.setMarca(val);
+:}
+                |DI tamano DI EQ:val DI tamano DF
+{:		
+                RESULT = new Producto();
+                RESULT.setTamaño(Integer.parseInt(val.Ecuacion));
+:}
+                |DI color DI CONSM:val DI color DF
+{:
+                RESULT = new Producto();
+                RESULT.setColor(val);
+:}
+                |DI imagen DI identificador:val DI imagen DF
+{:
+                RESULT = new Producto();
+                RESULT.setImg(val);
+:};
+
+ACCIONESPRODU ::=    ACCIONESPRODU:val1 ACCIONESPRODUP:val2
+{:
+                RESULT = val1;
+
+                if(val2.getId()!=0 && RESULT.getId()==0){
+                    RESULT.setId(val2.getId());
+                }else if(!val2.getNombre().equals("vacio") && RESULT.getNombre().equals("vacio")){
+                    RESULT.setNombre(val2.getNombre());
+                }else if(val2.getCantidad()!=0 && RESULT.getCantidad()==0){
+                    RESULT.setCantidad(val2.getCantidad());
+                }else if(!val2.getMarca().equals("vacio") && RESULT.getMarca().equals("vacio")){
+                    RESULT.setMarca(val2.getMarca());
+                }else if(!val2.getColor().equals("vacio") && RESULT.getColor().equals("vacio")){
+                    RESULT.setColor(val2.getColor());
+                }else if(val2.getTamaño()!=0 && RESULT.getTamaño()==0){
+                    RESULT.setTamaño(val2.getTamaño());
+                }else if(!val2.getImg().equals("vacio") && RESULT.getImg().equals("vacio")){
+                    RESULT.setImg(val2.getImg());
+                }else if(val2.getSucursal()!=0 && RESULT.getSucursal()==0){
+                    RESULT.setSucursal(val2.getSucursal());
+                }else if(val2.isModificar()&& !RESULT.isModificar()){
+                    RESULT.setModificar(true);
+                }else if(val2.isEliminar() && !RESULT.isEliminar()){
+                    RESULT.setEliminar(true);
+                }                
+:}
+                    |ACCIONESPRODUP:val
+{:
+                RESULT = val;
+:};
+
+ACCIONESPRODUP ::=   tipo igual ACCION:val
+{:
+                RESULT = new Producto();
+                if(val.equals("eliminar")){
+                    RESULT.setEliminar(false);
+                }else if(val.equals("modificar")){
+                    RESULT.setModificar(true);
+                }else{
+                    errores.add("valor de accion no encontrado");
+                }
+:}
+                |codigo igual numero:val
+{:
+                RESULT = new Producto();
+                RESULT.setId(Integer.parseInt(val));
+:}
+                |sucursal igual numero:val
+{:
+                RESULT = new Producto();
+                RESULT.setSucursal(Integer.parseInt(val));
+:}
+                |nombre igual cadena:val
+{:
+                RESULT = new Producto();
+                RESULT.setNombre(val);
+:}
+                |color igual CONSM:val
+{:
+                RESULT = new Producto();
+                RESULT.setColor(val);
+:}
+                |cantidad igual EQ:val
+{:
+                RESULT = new Producto();
+                RESULT.setCantidad(Integer.parseInt(val.Ecuacion));
+:};
 
 
-ACCION ::=   MODIFICACION                                                                           {::}
-            |ELIMINACION                                                                            {::};
+ACCION ::=   MODIFICACION
+{:
+              RESULT = "modificar";
+:}
+            |ELIMINACION
+{:
+              RESULT = "eliminar";
+:};
 
 USUARIO ::=  DI crearusuario DI REGISUSU:val DI crearusuario DF
 {:

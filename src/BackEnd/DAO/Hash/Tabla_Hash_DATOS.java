@@ -30,6 +30,18 @@ public class Tabla_Hash_DATOS {
     public Producto getProdu(int indice){
         return SG.Productos_hash[indice];
     }
+    public void eliminarproduc(int indice){
+        SG.Productos_hash[indice]=null;
+    }
+    public void modificarprodu(int indice,Producto pro){
+        SG.Productos_hash[indice]=pro;
+    }
+    public void eliminartienda(int indice){
+        SG.Tienda_hash[indice]=null;
+    }
+    public void modificartienda(int indice, Tienda temp){
+        SG.Tienda_hash[indice]=temp;
+    }
     public boolean usuExist(int indice){
         if(indice>49){
             return false;
@@ -54,8 +66,8 @@ public class Tabla_Hash_DATOS {
     public int Hash_Cod_Tienda(int id,int sucursal){
         return 100*(id - 1) + (sucursal - 1);
     }
-    public int Hash_Cod_Producto(int id, int sucursal, int producto){
-        return 100*(100*(id - 1) + (sucursal-1))+(producto - 1);    
+    public int Hash_Cod_Producto(int sucursal, int producto){
+        return (sucursal-1)+(producto - 1);    
     }
     public Producto getproducto(int indice){
         return SG.Productos_hash[indice];
