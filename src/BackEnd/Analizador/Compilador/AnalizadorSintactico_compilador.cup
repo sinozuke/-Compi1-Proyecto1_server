@@ -5,7 +5,6 @@ import BackEnd.DAO.Compilador.*;
 import BackEnd.DAO.Hash.Tabla_Hash_compilador;
 import java.util.ArrayList;
 import BackEnd.Conexion.Enlace_Envio;
-import java.net.InetAddress;
 
 
 //import static compi1.proyecto1_server.pkg201403775.Compi1Proyecto1_Server201403775.hash;
@@ -33,7 +32,7 @@ action code
 {:
     Tabla_Hash_compilador hash_compi = new Tabla_Hash_compilador();
     ArrayList<String> errores = new ArrayList();
-    private Enlace_Envio enlace=new Enlace_Envio();
+    private final Enlace_Envio enlace=new Enlace_Envio();
         		
 :}
 terminal constante,DI,DF,get,request,iniciousuario,id,sucursal,password,usuario,crearusuario;
@@ -430,81 +429,150 @@ PETICIONP ::=   DI tienda TIENDA:val DF
 //----------------------
 :};
 
-TIENDA ::=  tipo igual CREACION DI CONTREGISTIENDA DI tienda
+TIENDA ::=  tipo igual CREACION DI CONTREGISTIENDA:val DI tienda DF
 {:
-//----------------------
+                if(val!=null){
+                    if(val.getCodigo()!=0 && val.getDirreccion().equals("vacio") && val.getImg().equals("vacio") && val.getNombre().equals("vacio") && val.getPropietario()!=0 && val.getTelefono()!=0){
+                        if(!hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
+                            hash.modificartienda(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()), val);
+                        }else{
+                            errores.add("Tienda ya existente con el id:"+ String.valueOf(val.getCodigo())+" Linea"+valleft + " Columna" + valright);
+                        }
+                    }else{
+                        errores.add("Todos los valores son nesesario, ninguno puede ser nulo" + " Linea:"+valleft + " Columna:"+valright);
+                    }
+                }
+
 :}
             | ACCIONESTIENDA:val
 {:
-//----------------------
+                if(val.isEliminar()){
+                    if(hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
+                        hash.eliminartienda(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()));
+                    }else{
+                        errores.add("No Existe La tienda con id:"+val.getCodigo() + " Linea:"+valleft + " Columna:" + valright);
+                    }
+                }else if(val.isModificar()){
+                    if(hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
+                        hash.modificartienda(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()), val);
+                    }else{
+                        errores.add("No Existe La tienda con id:"+val.getCodigo() + " Linea:"+valleft + " Columna:" + valright);
+                    }
+                }
 :};
 
 CONTREGISTIENDA ::=  CONTREGISTIENDA:val1 CONTREGISTIENDAP:val2
 {:
-//----------------------
+                RESULT = val1;
+                if(val2.getCodigo()!=0 && RESULT.getCodigo()==0){
+                    RESULT.setCodigo(val2.getCodigo());
+                }else if(!val2.getNombre().equals("vacio") && RESULT.getNombre().equals("vacio")){
+                    RESULT.setNombre(val2.getNombre());
+                }else if(val2.getPropietario()!=0 && RESULT.getPropietario()==0){
+                    RESULT.setPropietario(val2.getPropietario());
+                }else if(!val2.getDirreccion().equals("vacio") && RESULT.getDirreccion().equals("vacio")){
+                    RESULT.setDirreccion(val2.getDirreccion());
+                }else if(val2.getTelefono()!=0 && RESULT.getTelefono()==0){
+                    RESULT.setTelefono(val2.getTelefono());
+                }else if(!val2.getImg().equals("vacio") && RESULT.getImg().equals("vacio")){
+                    RESULT.setImg(val2.getImg());
+                }
 :}
                     |CONTREGISTIENDAP:val
 {:
-//----------------------
+                RESULT = val;
 :};
 
-CONTREGISTIENDAP ::=     DI codigo DI EQ:val DI codigo DF
+CONTREGISTIENDAP ::=     DI codigo DI numero:val DI codigo DF
 {:
-//----------------------
+                RESULT = new Tienda();
+                RESULT.setCodigo(Integer.parseInt(val));
 :}
-                        |DI propietario DI EQ:val DI propietario DF
+                        |DI propietario DI numero:val DI propietario DF
 {:
-//----------------------
+                RESULT = new Tienda();
+                RESULT.setPropietario(Integer.parseInt(val));
 :}
                         |DI nombre DI CONSM:val DI nombre DF
 {:
-//----------------------
+                RESULT = new Tienda();
+                RESULT.setNombre(val);
 :}
                         |DI direccion DI CONSM:val DI direccion DF
 {:
-//----------------------
+                RESULT = new Tienda();
+                RESULT.setDirreccion(val);
 :}
-                        |DI telefono DI EQ:val DI telefono DF
+                        |DI telefono DI numero:val DI telefono DF
 {:
-//----------------------
+                RESULT = new Tienda();
+                RESULT.setTelefono(Integer.parseInt(val));
 :}
                         |DI imagen DI identificador:val DI imagen DF
 {:
-//----------------------
+                RESULT = new Tienda();
+                RESULT.setImg(val);
 :};
 
 ACCIONESTIENDA ::=   ACCIONESTIENDA:val1 coma ACCIONESTIENDAP:val2
 {:
-//----------------------
+                RESULT = val1;
+                if(val2.getCodigo()!=0 && RESULT.getCodigo()==0){
+                    RESULT.setCodigo(val2.getCodigo());
+                }else if(!val2.getNombre().equals("vacio") && RESULT.getNombre().equals("vacio")){
+                    RESULT.setNombre(val2.getNombre());
+                }else if(val2.getPropietario()!=0 && RESULT.getPropietario()==0){
+                    RESULT.setPropietario(val2.getPropietario());
+                }else if(!val2.getDirreccion().equals("vacio") && RESULT.getDirreccion().equals("vacio")){
+                    RESULT.setDirreccion(val2.getDirreccion());
+                }else if(val2.getTelefono()!=0 && RESULT.getTelefono()==0){
+                    RESULT.setTelefono(val2.getTelefono());
+                }else if(!val2.getImg().equals("vacio") && RESULT.getImg().equals("vacio")){
+                    RESULT.setImg(val2.getImg());
+                }else if(val2.isEliminar() && !RESULT.isEliminar()){
+                    RESULT.setEliminar(true);
+                }else if(val2.isModificar() && !RESULT.isModificar()){
+                    RESULT.setModificar(true);
+                }
 :}
                     |ACCIONESTIENDAP:val
 {:
-//----------------------
+                RESULT=val;
 :};
 
 ACCIONESTIENDAP ::=  tipo igual ACCION:val
 {:
-//----------------------
+                RESULT = new Tienda();
+                if(val.equals("eliminar")){
+                    RESULT.setEliminar(true);
+                }else if(val.equals("modificar")){
+                    RESULT.setModificar(true);
+                }
 :}
                     |codigo igual numero:val
 {:
-//----------------------
+                RESULT = new Tienda();
+                RESULT.setCodigo(Integer.parseInt(val));
 :}
                     |propietario igual numero:val
 {:
-//----------------------
+                RESULT = new Tienda();
+                RESULT.setPropietario(Integer.parseInt(val));
 :}
                     |nombre igual cadena:val
 {:
-//----------------------
+                RESULT = new Tienda();
+                RESULT.setNombre(val);
 :}
                     |direccion igual cadena:val
 {:
-//----------------------
+                RESULT = new Tienda();
+                RESULT.setDirreccion(val);
 :}
                     |telefono igual numero:val
 {:
-//----------------------
+                RESULT = new Tienda();
+                RESULT.setTelefono(Integer.parseInt(val));
 :};
       
 CONSM ::=    cadena:val
