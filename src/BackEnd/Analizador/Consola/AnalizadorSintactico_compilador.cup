@@ -1,0 +1,1091 @@
+package BackEnd.Analizador.Compilador;
+import java_cup.runtime.*;
+import BackEnd.DAO.Objetos.*;
+import BackEnd.DAO.Compilador.*;
+import BackEnd.DAO.Hash.Tabla_Hash_compilador;
+import java.util.ArrayList;
+import BackEnd.Conexion.Enlace_Envio;
+
+//import static compi1.proyecto1_server.pkg201403775.Compi1Proyecto1_Server201403775.hash;
+
+parser code
+{:
+
+    protected final static int _error_sync_size = 8;
+    protected int error_sync_size( ) {
+        return _error_sync_size; 
+    }
+
+    /**Metodo al que se llama automáticamente ante algún error sintactico.*/
+    public void syntax_error(Symbol s){
+		System.out.println("Error en la Línea " + (s.right+1) +" Columna "+s.left+ ". Identificador "
+        +s.value + " no reconocido.");
+    }
+
+    /**Metodo al que se llama en el momento en que ya no es posible una recuperación de
+    errores.*/
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+		System.out.println("Error en la Línea " + (s.right+1)+ "Columna "+s.left+". Identificador " +
+        s.value + " no reconocido.");
+    }
+
+:}
+
+action code
+{:
+    Tabla_Hash_compilador hash_compi = new Tabla_Hash_compilador();
+    private final Enlace_Envio enlace=new Enlace_Envio();
+    StringBuilder reply= new StringBuilder();
+    Boolean Respondido = false;
+                
+        		
+:}
+terminal constante,DI,DF,get,request,iniciousuario,id,sucursal,password,usuario,crearusuario;
+terminal String nombre,apellido,telefono,email,direccion,tienda,codigo,propietario,imagen,tipo;
+terminal potencia,raiz,multiplicacion,division,suma,resta;
+terminal producto,cantidad,marca,color,tamano;
+terminal String correo,cadena,numero,identificador;
+terminal pyc;
+terminal coma,igual,corchetei,corchetef,parentesisi,parentesisf,llavesi,llavesf,mate,consulta,avacio;
+terminal AND,OR,NOT;
+terminal extraer,de,donde,CREACION,MODIFICACION,ELIMINACION;
+
+non terminal INICIA;
+non terminal PETICIONES, PETICION, PETICIONP, TIENDA;
+non terminal PRODUCTO;
+non terminal CONSULTA, CONSULTAS;
+non terminal COMPARA, COMPARAP, OL;
+non terminal StringBuilder REQUEST;
+non terminal Usuario USUARIO, REGISUSU, REGISUSUP, LOGIN, LOGINP;
+non terminal Producto ACCIONESPRODU, ACCIONESPRODUP,REGISPRODU,REGISPRODUP;
+non terminal Tienda   ACCIONESTIENDA,ACCIONESTIENDAP,CONTREGISTIENDA,CONTREGISTIENDAP;
+non terminal Ecuacion EQ, EQP, EXPREA, EXPREB, EXPREC, EXPRED, EXPREE, EXPREF,EXPREG;
+non terminal String GET, CONTGETP,CONSM, PARAMSP,ACCION,MATEF;
+non terminal ArrayList<String> PARAMS, PARAMSN,PARAMSNP,CONTMATEF;
+non terminal ArrayList<Object> CONTGET;
+non terminal ArrayList<Producto> CONJUNTOP, CONJUNTOPP; 
+non terminal Seccion_Mate MATE,CONTMATEP,CONTMATE;
+
+precedence left suma;
+precedence left resta;
+precedence left multiplicacion;
+precedence left division;
+
+start with INICIA;
+
+INICIA ::=  REQUEST
+{:
+                if(!Respondido){
+                    enlace.enviar_Reply(reply.toString());
+                }else{
+                    reply = new StringBuilder();
+                    Respondido = false;
+                }
+:};
+
+REQUEST ::=  REQUEST PETICIONES                                                                     {::}
+            |PETICIONES                                                                             {::}
+            |DI mate nombre igual MATE:val DI mate DF
+{:
+                this.hash_compi.agregar_seccion(val);
+:};  
+
+MATE ::= cadena:val1 DI CONTMATE:val2
+{:
+                RESULT = new Seccion_Mate();
+                RESULT.id = val1.replaceAll("\"", "");
+                if(val2!=null){
+                    val2.funciones.stream().forEach(RESULT::agregar_funcion);
+                    val2.constantes.stream().forEach(RESULT::agregar_constante);
+                }
+:};
+
+CONTMATE ::=     CONTMATE:val1 CONTMATEP:val2
+{:
+                if(val1!=null){
+                    RESULT = val1;
+                    if(val2!=null){
+                        if(!val2.funciones.isEmpty()){
+                            val2.funciones.stream().forEach(RESULT::agregar_funcion);
+                        }
+                        if(!val2.constantes.isEmpty()){
+                            val2.constantes.stream().forEach(RESULT::agregar_constante);
+                        }
+                    }
+                }else if(val2!=null){
+                    RESULT = val2;
+                    if(val1!=null){
+                        if(!val1.funciones.isEmpty()){
+                            val1.funciones.stream().forEach(RESULT::agregar_funcion);
+                        }
+                        if(!val1.constantes.isEmpty()){
+                            val1.constantes.stream().forEach(RESULT::agregar_constante);
+                        }
+                    }
+                }
+:}
+                |CONTMATEP:val
+{:
+                if(val!=null){
+                    RESULT = val;
+                }
+:};
+
+CONTMATEP ::=    identificador:val1 parentesisi PARAMS:val2 parentesisf igual llavesi EQ:val3 llavesf pyc
+{:
+                Funcion_Mate funcion = new Funcion_Mate();
+                funcion.id=val1;
+                funcion.parametros=val2;
+                if(funcion.parametros.size() == val3.variables.size()){
+                    if(funcion.parametros.containsAll(val3.variables)){
+                        funcion.parametros=val3.variables;
+                        funcion.accion=val3.Ecuacion;
+                        RESULT = new Seccion_Mate();
+                        RESULT.agregar_funcion(funcion);
+                    }else{
+                        reply.append(enlace.reply_error("semantico", "los parametros declarados no coiciden con los de la ecuacion", val2left, val2right));
+                        errores.add(new Error("semantico", "los parametros declarados no coiciden con los de la ecuacion", val2left, val2right));
+                    }
+                }else if(funcion.parametros.size()<val3.variables.size()){
+                    reply.append(enlace.reply_error("semantico","Hay Mas Variables que parametros declarado para la funcion " + funcion.id, val3left, val3right));
+                    errores.add(new Error("semantico","Hay Mas Variables que parametros declarado para la funcion " + funcion.id, val3left, val3right));
+                }else if(funcion.parametros.size()>val3.variables.size()){
+                    reply.append(enlace.reply_error("semantico","Hay parametros declarados demas en la funcion " + funcion.id, val1left, val1right));           
+                    errores.add(new Error("semantico","Hay parametros declarados demas en la funcion " + funcion.id, val1left, val1right));
+                }
+:}
+                |constante identificador:val1 igual numero:val2 pyc
+{:
+                Cons_Mate constante = new Cons_Mate();
+                constante.id=val1;
+                constante.valor_num=val2;
+                RESULT = new Seccion_Mate();
+                RESULT.agregar_constante(constante);
+                
+:}
+                |constante identificador:val1 igual cadena:val2 pyc
+{:
+                Cons_Mate constante = new Cons_Mate();
+                constante.id=val1;
+                constante.valor_str=val2.replaceAll("\"", "");
+                RESULT = new Seccion_Mate();
+                RESULT.agregar_constante(constante);
+:};
+
+
+PARAMS ::=   PARAMS:val1 coma PARAMSP:val2
+{:
+                RESULT = new ArrayList();
+                val1.stream().forEach(RESULT::add);
+                if(RESULT.isEmpty() && !val2.equals("")){
+                    reply.append(enlace.reply_error("sintactico", "error,  declaracion de paramtero antes de " + val2, val1left, val1right));
+                    errores.add(new Error("sintactico", "error,  declaracion de paramtero antes de " + val2, val1left, val1right));
+                }else if(!RESULT.isEmpty() && val2.equals("")){
+                    reply.append(enlace.reply_error("sintactico","Coma sobrante", val2left, val2right));    
+                    errores.add(new Error("sintactico","Coma sobrante", val2left, val2right));
+                }else{
+                    RESULT.add(val2);
+                }
+:}
+            |PARAMSP:val
+{:
+                RESULT = new ArrayList();
+                if(!val.equals("")){RESULT.add(val);}
+:};
+
+PARAMSP ::= {:RESULT="";:}
+            |identificador:val
+{:
+                RESULT = val;
+:};
+
+EQ ::=   EQP:val
+{:
+                RESULT = val;
+:}
+        |MATEF:val
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion=val;
+
+:};
+
+MATEF ::= corchetei identificador:val1 coma identificador:val2 CONTMATEF:val3 corchetef
+{:
+                if(this.hash_compi.estaseccion(val1)){
+                    Seccion_Mate secciontemp = this.hash_compi.devolver_seccion(val1);
+                    if(secciontemp.estafuncion(val2)){
+                        Funcion_Mate funciontemp = secciontemp.devolverfuncion(val2);
+                        if(funciontemp.parametros.size()==val3.size()){
+                           RESULT = funciontemp.devolver_entero(val3);
+                        }else{
+                            reply.append(enlace.reply_error("semantico","El numero de Paramteroos ingresado no coiciden con los que se nesesitan",val3left,val3right));
+                            errores.add(new Error("semantico","El numero de Paramteroos ingresado no coiciden con los que se nesesitan",val3left,val3right));
+                        }
+                    }else{
+                        reply.append(enlace.reply_error("Semantico", "La Funcion Declarada no Existe", val2left, val2right));
+                        errores.add(new Error("Semantico", "La Funcion Declarada no Existe", val2left, val2right));
+                    }
+                }else{
+                    reply.append(enlace.reply_error("Semantico", "La seccion Mate no Existe", val1left, val1right));
+                    errores.add(new Error("Semantico", "La seccion Mate no Existe", val1left, val1right));
+                }
+:};
+
+CONTMATEF ::=   parentesisi PARAMSN:val parentesisf
+{:
+                RESULT = val;
+:};
+
+PARAMSN ::=  PARAMSN:val1 coma PARAMSNP:val2
+{:
+                RESULT = new ArrayList();
+                if((!val1.isEmpty() && val2.isEmpty()) || (val2.isEmpty() && val1.isEmpty())){
+                    reply.append(enlace.reply_error("Semantico", "Declracion Erronea", val1left, val1right));
+                    errores.add(new Error("Semantico", "Declracion Erronea", val1left, val1right));
+                }
+                if(!val2.isEmpty() && !val1.isEmpty()){
+                    val2.stream().forEach(RESULT::add);
+                    val1.stream().forEach(RESULT::add);
+                }
+:}
+            |PARAMSNP:val
+{:
+                RESULT = new ArrayList();
+                if(!val.isEmpty()){
+                    val.stream().forEach(RESULT::add);
+                }
+:};
+
+PARAMSNP ::= {:RESULT=new ArrayList();:}
+|numero:val
+{:
+                RESULT = new ArrayList();
+                RESULT.add(val);
+:};
+      
+EQP ::= EQP:val1 suma EXPREA:val2
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion=val1.Ecuacion+"+"+val2.Ecuacion;
+                val1.variables.stream().forEach(RESULT.variables::add);
+                val2.variables.stream().forEach(RESULT.variables::add);                
+:}
+        |EXPREA:val
+{:
+                RESULT = val;
+:};
+
+EXPREA ::= EXPREA:val1 resta EXPREB:val2
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion=val1.Ecuacion+"-"+val2.Ecuacion;
+                val1.variables.stream().forEach(RESULT.variables::add);
+                val2.variables.stream().forEach(RESULT.variables::add);                
+:}
+            |EXPREB:val
+{:
+                RESULT = val;
+:};
+
+EXPREB ::= EXPREB:val1 multiplicacion EXPREC:val2
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion=val1.Ecuacion+"*"+val2.Ecuacion;
+                val1.variables.stream().forEach(RESULT.variables::add);
+                val2.variables.stream().forEach(RESULT.variables::add);                
+:}
+            |EXPREC:val
+{:
+                RESULT = val;
+:};
+
+EXPREC ::= EXPREC:val1 division EXPRED:val2
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion=val1.Ecuacion+"/"+val2.Ecuacion;
+                val1.variables.stream().forEach(RESULT.variables::add);
+                val2.variables.stream().forEach(RESULT.variables::add);                
+:}
+            |EXPRED:val
+{:
+                RESULT = val;
+:};
+
+EXPRED ::= potencia corchetei EXPREE:val1 coma EXPREE:val2 corchetef
+{:
+                RESULT=new Ecuacion();
+                RESULT.Ecuacion="Ptn["+val1.Ecuacion+","+val2.Ecuacion+"]";
+                val1.variables.stream().forEach(RESULT.variables::add);
+                val2.variables.stream().forEach(RESULT.variables::add);
+:}
+            |EXPREE:val
+{:
+                RESULT = val;
+:};
+
+EXPREE ::= raiz corchetei EXPREF:val1 coma EXPREF:val2 corchetef
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion="Rq["+val1.Ecuacion+","+val2.Ecuacion+"]";
+                val1.variables.stream().forEach(RESULT.variables::add);
+                val2.variables.stream().forEach(RESULT.variables::add);            
+:}
+            |EXPREF:val
+{:
+                RESULT = val;
+:};
+
+EXPREF ::= llavesi EXPREG:val llavesf
+{:
+                RESULT = new Ecuacion();
+                RESULT.variables = val.variables;
+                RESULT.Ecuacion = "{" + val.Ecuacion + "}";
+:}
+            |EXPREG:val
+{:
+                RESULT = val;
+:};
+
+EXPREG ::= parentesisi EQP:val parentesisf
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion = "("+ val.Ecuacion +")";
+                val.variables.stream().forEach(RESULT.variables::add);
+:}
+            |numero:val
+{:
+                RESULT = new Ecuacion();
+                RESULT.Ecuacion += val;
+:}
+            |identificador:val
+{:
+                RESULT = new Ecuacion();
+                RESULT.variables.add(val);
+                RESULT.Ecuacion+=val;
+:};
+
+PETICIONES ::=   DI request DI PETICION:val DI request DF
+{:
+//----------------------
+:}
+                |DI consulta DI CONSULTA:val DI consulta DF
+{:
+//----------------------
+:}
+                |DI request DI GET:val DI request DF
+{:
+//----------------------
+:}
+                |DI request DI USUARIO:val DI request DF
+{:
+//----------------------
+:}
+                |error:e DF
+{:
+                System.out.println("me sincronize con -$" + eleft + " " + " " + eright);
+:}
+                |error:e DI
+{:
+                System.out.println("me sincronize con $" + eleft + " " + " " + eright);
+:};
+
+GET ::= DI get tipo igual CONTGET DF                                                                {::};
+
+CONTGET ::= cadena:val propietario igual numero:val1 CONTGETP:val2
+{:
+                RESULT = new ArrayList();
+
+                if(val.replaceAll("\"", "").equals("productos")){
+                    if(val2.equals("")){
+                        reply.append(enlace.reply_error("semantico", "a solicitado productos pero no ha especificado sucursal", val2left, val2right));
+                        errores.add(new Error("semantico", "a solicitado productos pero no ha especificado sucursal", val2left, val2right));
+                    }else{
+                        ArrayList<Producto> temp1 = hash.get_productosc("sucursal",(Object)val2);
+                        ArrayList<Producto> temp2 = new ArrayList();
+                        ArrayList<Object> temp3 = new ArrayList();
+                        temp1.stream().forEach((Producto p)->{
+                            temp2.add(p);
+                            temp3.add((Object)p);
+                        });
+                        RESULT = temp3;
+                        reply.append(enlace.reply_lista_productos(temp2));
+                    }
+                }else if(val.replaceAll("\"", "").equals("tiendas")){
+                    if(!val2.equals("")){
+                        reply.append(enlace.reply_error("semantico", "Atributo sucursal no era nesesario para obtener tiendas", val2left, val2right));
+                        errores.add(new Error("semantico", "Atributo sucursal no era nesesario para obtener tiendas", val2left, val2right));
+                    }else{
+                        ArrayList<Tienda> temp1 = hash.get_tiendasc("propietario",(Object)val1);
+                        ArrayList<Tienda> temp2 = new ArrayList();
+                        ArrayList<Object> temp3 = new ArrayList();
+                        temp1.stream().forEach((Tienda p)->{
+                            temp2.add(p);
+                            temp3.add((Object)p);
+                        });
+                        RESULT = temp3;
+                        reply.append(enlace.reply_lista_tiendas(temp2));
+                    }
+                }
+:};
+
+CONTGETP ::=                                                                                        {:RESULT = "";:}
+            |sucursal igual numero:val
+{:
+            RESULT = val;
+:};
+
+PETICION ::=     PETICION:val1 PETICIONP:val2
+{:
+//----------------------
+:}
+                |PETICIONP:val
+{:
+//----------------------
+:};
+
+PETICIONP ::=   DI tienda TIENDA:val
+{:
+//----------------------
+:}
+                |PRODUCTO:val
+{:
+//----------------------
+:};
+
+TIENDA ::=  tipo igual CREACION DI CONTREGISTIENDA:val DI tienda DF
+{:
+                if(val!=null){
+                    if(val.getCodigo()!=0 && !val.getDirreccion().equals("vacio") && !val.getImg().equals("vacio") && !val.getNombre().equals("vacio") && val.getPropietario()!=0 && val.getTelefono()!=0){
+                        if(hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
+                            hash.modificartienda(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()), val);
+                            reply.append(enlace.reply_registro_tienda(val.getCodigo(), "True"));
+                        }else{
+                            reply.append(enlace.reply_error("Semantico","Tienda ya existente con el id:"+ String.valueOf(val.getCodigo()), valleft, valright));
+                            reply.append(enlace.reply_registro_tienda(val.getCodigo(), "False"));
+                            errores.add(new Error("Semantico","Tienda ya existente con el id:"+ String.valueOf(val.getCodigo()), valleft, valright));
+                        }
+                    }else{
+                        reply.append(enlace.reply_error("Semantico","Todos los valores son nesesario, ninguno puede ser nulo", valleft, valright));
+                        reply.append(enlace.reply_registro_tienda(val.getCodigo(), "False"));
+                        errores.add(new Error("Semantico","Todos los valores son nesesario, ninguno puede ser nulo", valleft, valright));
+                    }
+                }
+
+:}
+            | ACCIONESTIENDA:val DF
+{:
+                if(val.isEliminar()){
+                    if(hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
+                        hash.eliminartienda(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()));
+                    }else{
+                        reply.append(enlace.reply_error("Semantico", "No Existe La tienda con id:"+val.getCodigo(), valleft, valright));
+                        errores.add(new Error("Semantico", "No Existe La tienda con id:"+val.getCodigo(), valleft, valright));
+                    }
+                }else if(val.isModificar()){
+                    if(hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
+                        hash.modificartienda(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()), val);
+                    }else{
+                        reply.append(enlace.reply_error("Semantico", "No Existe La tienda con id:"+val.getCodigo(), valleft, valright));
+                        errores.add(new Error("Semantico", "No Existe La tienda con id:"+val.getCodigo(), valleft, valright));
+                    }
+                }
+:};
+
+CONTREGISTIENDA ::=  CONTREGISTIENDA:val1 CONTREGISTIENDAP:val2
+{:
+                RESULT = val1;
+                if(val2.getCodigo()!=0 && RESULT.getCodigo()==0){
+                    RESULT.setCodigo(val2.getCodigo());
+                }else if(!val2.getNombre().equals("vacio") && RESULT.getNombre().equals("vacio")){
+                    RESULT.setNombre(val2.getNombre());
+                }else if(val2.getPropietario()!=0 && RESULT.getPropietario()==0){
+                    RESULT.setPropietario(val2.getPropietario());
+                }else if(!val2.getDirreccion().equals("vacio") && RESULT.getDirreccion().equals("vacio")){
+                    RESULT.setDirreccion(val2.getDirreccion());
+                }else if(val2.getTelefono()!=0 && RESULT.getTelefono()==0){
+                    RESULT.setTelefono(val2.getTelefono());
+                }else if(!val2.getImg().equals("vacio") && RESULT.getImg().equals("vacio")){
+                    RESULT.setImg(val2.getImg());
+                }
+:}
+                    |CONTREGISTIENDAP:val
+{:
+                RESULT = val;
+:};
+
+CONTREGISTIENDAP ::=     DI codigo DI numero:val DI codigo DF
+{:
+                RESULT = new Tienda();
+                RESULT.setCodigo(Integer.parseInt(val));
+:}
+                        |DI propietario DI numero:val DI propietario DF
+{:
+                RESULT = new Tienda();
+                RESULT.setPropietario(Integer.parseInt(val));
+:}
+                        |DI nombre DI CONSM:val DI nombre DF
+{:
+                RESULT = new Tienda();
+                RESULT.setNombre(val);
+:}
+                        |DI direccion DI CONSM:val DI direccion DF
+{:
+                RESULT = new Tienda();
+                RESULT.setDirreccion(val);
+:}
+                        |DI telefono DI numero:val DI telefono DF
+{:
+                RESULT = new Tienda();
+                RESULT.setTelefono(Integer.parseInt(val));
+:}
+                        |DI imagen DI identificador:val DI imagen DF
+{:
+                RESULT = new Tienda();
+                RESULT.setImg(val);
+:}
+                        |error DI
+{:
+                RESULT = new Tienda();
+                System.out.println("me sincronize con DI");
+:}
+                        |error DF {:
+                RESULT = new Tienda();
+                System.out.println("me sincronize con DF");
+:};
+
+ACCIONESTIENDA ::=   ACCIONESTIENDA:val1 coma ACCIONESTIENDAP:val2
+{:
+                RESULT = val1;
+                if(val2.getCodigo()!=0 && RESULT.getCodigo()==0){
+                    RESULT.setCodigo(val2.getCodigo());
+                }else if(!val2.getNombre().equals("vacio") && RESULT.getNombre().equals("vacio")){
+                    RESULT.setNombre(val2.getNombre());
+                }else if(val2.getPropietario()!=0 && RESULT.getPropietario()==0){
+                    RESULT.setPropietario(val2.getPropietario());
+                }else if(!val2.getDirreccion().equals("vacio") && RESULT.getDirreccion().equals("vacio")){
+                    RESULT.setDirreccion(val2.getDirreccion());
+                }else if(val2.getTelefono()!=0 && RESULT.getTelefono()==0){
+                    RESULT.setTelefono(val2.getTelefono());
+                }else if(!val2.getImg().equals("vacio") && RESULT.getImg().equals("vacio")){
+                    RESULT.setImg(val2.getImg());
+                }else if(val2.isEliminar() && !RESULT.isEliminar()){
+                    RESULT.setEliminar(true);
+                }else if(val2.isModificar() && !RESULT.isModificar()){
+                    RESULT.setModificar(true);
+                }
+:}
+                    |ACCIONESTIENDAP:val
+{:
+                RESULT=val;
+:};
+
+ACCIONESTIENDAP ::=  tipo igual ACCION:val
+{:
+                RESULT = new Tienda();
+                if(val.equals("eliminar")){
+                    RESULT.setEliminar(true);
+                }else if(val.equals("modificar")){
+                    RESULT.setModificar(true);
+                }
+:}
+                    |codigo igual numero:val
+{:
+                RESULT = new Tienda();
+                RESULT.setCodigo(Integer.parseInt(val));
+:}
+                    |propietario igual numero:val
+{:
+                RESULT = new Tienda();
+                RESULT.setPropietario(Integer.parseInt(val));
+:}
+                    |nombre igual cadena:val
+{:
+                RESULT = new Tienda();
+                RESULT.setNombre(val.replaceAll("\"", ""));
+:}
+                    |direccion igual cadena:val
+{:
+                RESULT = new Tienda();
+                RESULT.setDirreccion(val.replaceAll("\"", ""));
+:}
+                    |telefono igual numero:val
+{:
+                RESULT = new Tienda();
+                RESULT.setTelefono(Integer.parseInt(val));
+:};
+      
+CONSM ::=    cadena:val
+{:
+                RESULT = val.replaceAll("\"", "");
+:}
+            |numero:val
+{:
+                RESULT = val;
+:}
+            |avacio:val
+{:
+                RESULT = "vacio";
+:}
+            |corchetei identificador:val1 coma identificador:val2 corchetef
+{:
+                if(this.hash_compi.estaseccion(val1)){
+                    Seccion_Mate temp1 = this.hash_compi.devolver_seccion(val1);
+                    if(temp1.estacons(val2)){
+                        Cons_Mate temp2 =temp1.devolverconst(val2);
+                        if(temp2.valor_num!=null){
+                            RESULT = temp2.valor_num;
+                        }else{
+                            RESULT = temp2.valor_str;
+                        }
+                    }else{
+                        reply.append(enlace.reply_error("Semantico", "No Existe Contante Declarada en la seccion mate:"+temp1.id, val2left, val2right));
+                        errores.add(new Error("Semantico", "No Existe Contante Declarada en la seccion mate:"+temp1.id, val2left, val2right));
+                    }
+                }else{
+                    reply.append(enlace.reply_error("Semantico", "No Existe la seccion mate:"+val1, val1left, val1right));
+                            errores.add(new Error("Semantico", "No Existe la seccion mate:"+val1, val1left, val1right));
+                }
+:};
+
+PRODUCTO ::=     DI producto tipo igual CREACION DI REGISPRODU:val DI DF
+{:
+                if(val!=null){
+                    if(val.getId()!=0 && val.getNombre().equals("") && val.getSucursal()!=0){
+                        if(!hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
+                            hash.modificarprodu(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()), val);
+                        }else{
+                            reply.append(enlace.reply_error("semantico", "Ya se Encuentra Ocupado el Id:" + val.getId(), valleft, valright));
+                            errores.add(new Error("semantico", "Ya se Encuentra Ocupado el Id:" + val.getId(), valleft, valright));
+                        }
+                    }else{
+                        reply.append(enlace.reply_error("semantico","ninguno de los parametros obligatorios se encuentra disponible", valleft, valright));
+                        errores.add(new Error("semantico","ninguno de los parametros obligatorios se encuentra disponible", valleft, valright));
+                    }
+                }else{
+                    reply.append(enlace.reply_error("semantico","no se ha epecificado ningun atributo", valleft, valright));
+                            errores.add(new Error("semantico", "No Existe Producto con id: "+p.getId(), val2left, val2right));
+                }
+:}
+                |DI producto ACCIONESPRODU:val DF
+{:
+                if(val.isEliminar()){
+                        if(hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
+                            hash.eliminarproduc(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()));
+                        }else{
+                            reply.append(enlace.reply_error("semantico", "No Existe Producto con id: "+val.getId(), valleft, valright));
+                            errores.add(new Error("semantico", "No Existe Producto con id: "+val.getId(), valleft, valright));
+                        }
+                    }else if(val.isModificar()){
+                        if(hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
+                            hash.modificarprodu(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()), val);
+                        }else{
+                            reply.append(enlace.reply_error("semantico", "No Existe Producto con id: "+val.getId(), valleft, valright));
+                            errores.add(new Error("semantico", "No Existe Producto con id: "+val.getId(), valleft, valright));
+                        }
+                    }else if(val.isRegistro()){
+                        if(!hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
+                            hash.modificarprodu(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()), val);
+                        }else{
+                            reply.append(enlace.reply_error("semantico", "Ya Existe Producto con id: "+val.getId(), valleft, valright));
+                            errores.add(new Error("semantico", "Ya Existe Producto con id: "+val.getId(), valleft, valright));
+                        }
+                    }else{
+                            reply.append(enlace.reply_error("semantico","No se ha especificdo ninguna accion para el producto id: "+ String.valueOf(val.getId()), valleft, valright));
+                            errores.add(new Error("semantico","No se ha especificdo ninguna accion para el producto id: "+ String.valueOf(val.getId()), valleft, valright));
+                }
+:}
+                |DI tienda id igual numero:val1 DI CONJUNTOP:val2 DI tienda DF
+{:
+
+                val2.stream().forEach((Producto p)->{
+                    p.setSucursal(Integer.parseInt(val1));
+                    if(p.isEliminar()){
+                        if(hash.produExist(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()))){
+                            hash.eliminarproduc(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()));
+                            reply.append(enlace.reply_eliminacion_producto(p.getId(), p.getSucursal(), "True"));
+                        }else{
+                            reply.append(enlace.reply_error("semantico", "No Existe Producto con id: "+p.getId(), val2left, val2right));
+                            reply.append(enlace.reply_eliminacion_producto(p.getId(), p.getSucursal(), "False"));
+                            errores.add(new Error("semantico", "No Existe Producto con id: "+p.getId(), val2left, val2right));
+                        }
+                    }else if(p.isModificar()){
+                        if(hash.produExist(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()))){
+                            hash.modificarprodu(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()), p);
+                            reply.append(enlace.reply_modificacion_producto(p.getId(), p.getSucursal(), "True"));
+                        }else{
+                            reply.append(enlace.reply_error("semantico", "No Existe Producto con id: "+p.getId(), val2left, val2right));
+                            reply.append(enlace.reply_eliminacion_producto(p.getId(), p.getSucursal(), "False"));
+                            errores.add(new Error("semantico", "No Existe Producto con id: "+p.getId(), val2left, val2right));
+                        }
+                    }else if(p.isRegistro()){
+                        if(!hash.produExist(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()))){
+                            hash.modificarprodu(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()), p);
+                            reply.append(enlace.reply_eliminacion_producto(p.getId(), p.getSucursal(), "True"));
+                        }else{                            
+                            reply.append(enlace.reply_error("semantico", "Ya Existe Producto con id: "+p.getId(), val2left, val2right));
+                            reply.append(enlace.reply_eliminacion_producto(p.getId(), p.getSucursal(), "False"));
+                            errores.add(new Error("semantico", "Ya Existe Producto con id: "+p.getId(), val2left, val2right));
+                        }
+                    }else{
+                        reply.append(enlace.reply_error("semantico", "No se ha especificdo ninguna accion para el producto id: "+ String.valueOf(p.getId()), val2left, val2right));
+                        errores.add(new Error("semantico", "No se ha especificdo ninguna accion para el producto id: "+ String.valueOf(p.getId()), val2left, val2right));
+                    }
+                });
+
+
+:};
+
+CONJUNTOP ::= CONJUNTOP:val1 CONJUNTOPP:val2
+{:
+                RESULT = val1;
+                val2.stream().forEach(RESULT::add);
+:}
+              |CONJUNTOPP:val
+{:
+                RESULT = val;
+:};
+
+CONJUNTOPP ::= DI producto ACCIONESPRODU:val2 DF
+{:
+                RESULT = new ArrayList();
+                RESULT.add(val2);
+:};
+
+REGISPRODU ::=   REGISPRODU:val1 REGISPRODUP:val2
+{:
+                RESULT = val1;
+
+                if(val2.getId()!=0 && RESULT.getId()==0){
+                    RESULT.setId(val2.getId());
+                }else if(!val2.getNombre().equals("vacio") && RESULT.getNombre().equals("vacio")){
+                    RESULT.setNombre(val2.getNombre());
+                }else if(val2.getCantidad()!=0 && RESULT.getCantidad()==0){
+                    RESULT.setCantidad(val2.getCantidad());
+                }else if(!val2.getMarca().equals("vacio") && RESULT.getMarca().equals("vacio")){
+                    RESULT.setMarca(val2.getMarca());
+                }else if(!val2.getColor().equals("vacio") && RESULT.getColor().equals("vacio")){
+                    RESULT.setColor(val2.getColor());
+                }else if(val2.getTamaño()!=0 && RESULT.getTamaño()==0){
+                    RESULT.setTamaño(val2.getTamaño());
+                }else if(!val2.getImg().equals("vacio") && RESULT.getImg().equals("vacio")){
+                    RESULT.setImg(val2.getImg());
+                }else if(val2.getSucursal()!=0 && RESULT.getSucursal()==0){
+                    RESULT.setSucursal(val2.getSucursal());
+                }
+:}
+                |REGISPRODUP:val
+{:
+                RESULT = val;
+:};
+
+REGISPRODUP ::=  DI codigo DI EQ:val DI codigo DF
+{:
+                RESULT = new Producto();
+                RESULT.setId(Integer.parseInt(val.Ecuacion));
+:}
+                |DI nombre DI CONSM:val DI nombre DF
+{:
+                RESULT = new Producto();
+                RESULT.setNombre(val);
+:}
+                |DI cantidad DI EQ:val DI cantidad DF
+{:
+                RESULT = new Producto();
+                RESULT.setCantidad(Integer.parseInt(val.Ecuacion));
+:}
+                |DI marca DI CONSM:val DI marca DF
+{:
+                RESULT = new Producto();
+                RESULT.setMarca(val);
+:}
+                |DI tamano DI EQ:val DI tamano DF
+{:		
+                RESULT = new Producto();
+                RESULT.setTamaño(Integer.parseInt(val.Ecuacion));
+:}
+                |DI color DI CONSM:val DI color DF
+{:
+                RESULT = new Producto();
+                RESULT.setColor(val);
+:}
+                |DI imagen DI identificador:val DI imagen DF
+{:
+                RESULT = new Producto();
+                RESULT.setImg(val);
+:};
+
+ACCIONESPRODU ::=    ACCIONESPRODU:val1 ACCIONESPRODUP:val2
+{:
+                RESULT = val1;
+
+                if(val2.getId()!=0 && RESULT.getId()==0){
+                    RESULT.setId(val2.getId());
+                }else if(!val2.getNombre().equals("vacio") && RESULT.getNombre().equals("vacio")){
+                    RESULT.setNombre(val2.getNombre());
+                }else if(val2.getCantidad()!=0 && RESULT.getCantidad()==0){
+                    RESULT.setCantidad(val2.getCantidad());
+                }else if(!val2.getMarca().equals("vacio") && RESULT.getMarca().equals("vacio")){
+                    RESULT.setMarca(val2.getMarca());
+                }else if(!val2.getColor().equals("vacio") && RESULT.getColor().equals("vacio")){
+                    RESULT.setColor(val2.getColor());
+                }else if(val2.getTamaño()!=0 && RESULT.getTamaño()==0){
+                    RESULT.setTamaño(val2.getTamaño());
+                }else if(!val2.getImg().equals("vacio") && RESULT.getImg().equals("vacio")){
+                    RESULT.setImg(val2.getImg());
+                }else if(val2.getSucursal()!=0 && RESULT.getSucursal()==0){
+                    RESULT.setSucursal(val2.getSucursal());
+                }else if(val2.isModificar()&& !RESULT.isModificar()){
+                    RESULT.setModificar(true);
+                }else if(val2.isEliminar() && !RESULT.isEliminar()){
+                    RESULT.setEliminar(true);
+                }                
+:}
+                    |ACCIONESPRODUP:val
+{:
+                RESULT = val;
+:};
+
+ACCIONESPRODUP ::=   tipo igual ACCION:val
+{:
+                RESULT = new Producto();
+                if(val.equals("eliminar")){
+                    RESULT.setEliminar(false);
+                }else if(val.equals("modificar")){
+                    RESULT.setModificar(true);
+                }else{
+                    reply.append(enlace.reply_error("semantico", "valor de Accion no Encontrado", valleft, valright));
+                    errores.add(new Error("semantico", "valor de Accion no Encontrado", valleft, valright));
+                }
+:}
+                |codigo igual numero:val
+{:
+                RESULT = new Producto();
+                RESULT.setId(Integer.parseInt(val));
+:}
+                |sucursal igual numero:val
+{:
+                RESULT = new Producto();
+                RESULT.setSucursal(Integer.parseInt(val));
+:}
+                |nombre igual cadena:val
+{:
+                RESULT = new Producto();
+                RESULT.setNombre(val.replaceAll("\"", ""));
+:}
+                |color igual CONSM:val
+{:
+                RESULT = new Producto();
+                RESULT.setColor(val);
+:}
+                |cantidad igual EQ:val
+{:
+                RESULT = new Producto();
+                RESULT.setCantidad(Integer.parseInt(val.Ecuacion));
+:};
+
+
+ACCION ::=   MODIFICACION
+{:
+              RESULT = "modificar";
+:}
+            |ELIMINACION
+{:
+              RESULT = "eliminar";
+:};
+
+USUARIO ::=  DI crearusuario DI REGISUSU:val DI crearusuario DF
+{:
+                RESULT = val;
+                if(RESULT.getId()!=0 && !RESULT.getNombre().equals("vacio") && !RESULT.getApellido().equals("vacio") && RESULT.getTelefono()!=0 && !RESULT.getEmail().equals("vacio")){
+                    if(hash.usuExist(RESULT.getId()-1)){
+                        hash.insertar_usu(RESULT.getId(),RESULT);
+                        reply.append(enlace.reply_registro_usu(RESULT.getId(),"True"));
+                    }else{
+                        reply.append(enlace.reply_registro_usu(RESULT.getId(),"False"));
+                    }
+                }
+:}
+            |DI iniciousuario DI LOGIN:val DI iniciousuario DF
+{:
+
+                RESULT = val;
+                if(RESULT.getId()!=0 && !RESULT.getPassword().equals("vacio")){
+                    if(!hash.usuExist(RESULT.getId()-1)){
+                        Usuario prueba = hash.getusu(RESULT.getId());
+                        if(prueba.getPassword().equals(RESULT.getPassword())){
+                            enlace.reply_login(RESULT.getId(), "True");
+                            Respondido = true;
+                        }else{
+                            enlace.reply_login(RESULT.getId(), "False");
+                            Respondido = true;
+                        }
+                    }else{
+                        enlace.reply_login(RESULT.getId(), "Fail");
+                        Respondido = true;
+                    }
+                }
+
+:};
+
+REGISUSU ::=     REGISUSU:val1 REGISUSUP:val2
+{:
+                    RESULT = val1;
+                    if(val2.getId()!=0 && RESULT.getId()==0){
+                        RESULT.setId(val2.getId());
+                    }else if(val2.getId()!=0 && RESULT.getId()!=0){
+                        reply.append(enlace.reply_error("semantico", "Atributo id declarado mas de una vez", val2left, val2right));
+                        errores.add(new Error("semantico", "Atributo id declarado mas de una vez", val2left, val2right));
+                    }
+                    if(!val2.getNombre().equals("vacio") && RESULT.getNombre().equals("vacio")){
+                        RESULT.setNombre(val2.getNombre());
+                    }else if(!val2.getNombre().equals("vacio") && !RESULT.getNombre().equals("vacio")){
+                        reply.append(enlace.reply_error("semantico", "Atributo nombre declarado mas de una vez", val2left, val2right));
+                        errores.add(new Error("semantico", "Atributo nombre declarado mas de una vez", val2left, val2right));
+                    }
+                    if(!val2.getApellido().equals("vacio") && RESULT.getApellido().equals("vacio")){
+                        RESULT.setApellido(val2.getApellido());
+                    }else if(!val2.getApellido().equals("vacio") && !RESULT.getApellido().equals("vacio")){
+                        reply.append(enlace.reply_error("semantico", "Atributo apellido declarado mas de una vez", val2left, val2right));
+                        errores.add(new Error("semantico", "Atributo Apellido declarado mas de una vez", val2left, val2right));
+                    }
+                    if(!val2.getPassword().equals("vacio") && RESULT.getPassword().equals("vacio")){
+                        RESULT.setPassword(val2.getPassword());
+                    }else if(!val2.getPassword().equals("vacio") && !RESULT.getPassword().equals("vacio")){
+                        reply.append(enlace.reply_error("semantico", "Atributo password declarado mas de una vez", val2left, val2right));
+                        errores.add(new Error("semantico", "Atributo password declarado mas de una vez", val2left, val2right));
+                    }
+                    if(val2.getTelefono()!=0 && RESULT.getTelefono()==0){
+                        RESULT.setTelefono(val2.getTelefono());
+                    }else if(val2.getTelefono()!=0 && RESULT.getTelefono()!=0){
+                        reply.append(enlace.reply_error("semantico", "Atributo telefono declarado mas de una vez", val2left, val2right));
+                        errores.add(new Error("semantico", "Atributo telefono declarado mas de una vez", val2left, val2right));
+                    }
+                    if(!val2.getEmail().equals("vacio") && RESULT.getEmail().equals("vacio")){
+                        RESULT.setEmail(val2.getEmail());
+                    }else if(!val2.getEmail().equals("vacio") && !RESULT.getEmail().equals("vacio")){
+                        reply.append(enlace.reply_error("semantico", "Atributo email declarado mas de una vez", val2left, val2right));
+                        errores.add(new Error("semantico", "Atributo email declarado mas de una vez", val2left, val2right));
+                    }
+                    if(!val2.getDirreccion().equals("vacio") && RESULT.getDirreccion().equals("vacio")){
+                        RESULT.setDirreccion(val2.getDirreccion());
+                    }else if(!val2.getDirreccion().equals("vacio") && !RESULT.getDirreccion().equals("vacio")){
+                        reply.append(enlace.reply_error("semantico", "Atributo dirreccion declarado mas de una vez", val2left, val2right));
+                        errores.add(new Error("semantico", "Atributo dirreccion declarado mas de una vez", val2left, val2right));
+                    }
+:}
+                |REGISUSUP:val
+{:
+                    RESULT = val;
+:};
+
+REGISUSUP ::=    DI id DI numero:val DI id DF
+{:
+                    RESULT = new Usuario();
+                    RESULT.setId(Integer.parseInt(val));
+:}
+                |DI nombre DI cadena:val DI nombre DF
+{:
+                    RESULT = new Usuario();
+                    RESULT.setNombre(val.replace("\"",""));
+:}
+                |DI apellido DI cadena:val DI apellido DF
+{:
+                    RESULT = new Usuario();
+                    RESULT.setApellido(val.replace("\"",""));
+:}
+                |DI password DI identificador:val DI password DF
+{:
+                    RESULT = new Usuario();
+                    RESULT.setPassword(val);
+:}
+                |DI telefono DI numero:val DI telefono DF
+{:
+                    RESULT = new Usuario();
+                    RESULT.setTelefono(Integer.parseInt(val));
+:}
+                |DI email DI correo:val DI email DF
+{:
+                    RESULT = new Usuario();
+                    RESULT.setEmail(val);
+:}
+                |DI direccion DI cadena:val DI direccion DF
+{:
+                    RESULT = new Usuario();
+                    RESULT.setDirreccion(val.replace("\"",""));
+:};
+
+LOGIN ::=    LOGIN:val1 LOGINP:val2
+{:
+                    RESULT= new Usuario();
+                    if(val1.getId()==0 && val2.getId()!=0){
+                        RESULT.setId(val2.getId());
+                    }else if(val1.getId()!=0 && val2.getId()==0){
+                        RESULT.setId(val1.getId());
+                    }else{
+                        reply.append(enlace.reply_error("semantico", "Atributos ingresado para login incorrectos", val1left, val2right));
+                        errores.add(new Error("semantico", "Atributos ingresado para login incorrectos", val1left, val2right));
+                    }
+                    if(val1.getPassword().equals("vacio") && !val2.getPassword().equals("vacio")){
+                        RESULT.setPassword(val2.getPassword());
+                    }else if(!val1.getPassword().equals("vacio") && val2.getPassword().equals("vacio")){
+                        RESULT.setPassword(val1.getPassword());    
+                    }else{
+                        reply.append(enlace.reply_error("semantico", "Atributos ingresado para login incorrectos", val2left, val2right));
+                        errores.add(new Error("semantico", "Atributos ingresado para login incorrectos", val2left, val2right));
+                    }
+                    if(RESULT.getId()==0 || RESULT.getPassword()==null){
+                        reply.append(enlace.reply_error("semantico", "error en ingreso para logear, Fallo Critico", val1left, val2right));
+                        errores.add(new Error("semantico", "error en ingreso para logear, Fallo Critico", val1left, val2right));
+                    }
+:}
+            |LOGINP:val
+{:
+                    RESULT = val;
+:};
+
+LOGINP ::=   DI id DI numero:val DI id DF                                                               
+{:
+                    RESULT = new Usuario();
+                    RESULT.setId(Integer.parseInt(val));
+:}
+            |DI password DI identificador:val DI password DF                                            
+{:  
+                    RESULT = new Usuario();
+                    RESULT.setPassword((String)val);
+:};
+
+CONSULTA ::=   extraer de CONSULTAS COMPARA pyc                                                     {::};
+
+CONSULTAS ::=    usuario                                                                            {::}
+                |tienda                                                                             {::}
+                |producto                                                                           {::};
+
+COMPARA ::=                                                                                         {::}
+            |donde COMPARA OL COMPARAP                                                              {::}
+            |COMPARAP                                                                               {::};
+
+COMPARAP ::=     NOT parentesisi COMPARAP parentesisf                                               {::}
+                |id igual igual EQ                                                               {::}
+                |nombre igual igual CONSM                                                           {::}
+                |apellido igual igual CONSM                                                         {::}
+                |telefono igual igual EQ                                                         {::}
+                |email igual igual CONSM                                                            {::}
+                |direccion igual igual CONSM                                                       {::}
+                |codigo igual igual CONSM                                                           {::}
+                |sucursal igual igual CONSM                                                         {::}
+                |cantidad igual igual EQ                                                         {::}
+                |tamano igual igual EQ                                                           {::};
+
+OL ::=   OR                                                                                         {::}
+        |AND                                                                                        {::}
+        |error:e pyc
+{:
+reply.append(enlace.reply_error("sintactico","identificador no reconocido"+e.toString(),eleft,eright));
+errores.add(new Error("sintactico","identificador no reconocido"+e.toString(),eleft,eright));
+:}
+        |error:e DI
+{:
+reply.append(enlace.reply_error("sintactico","identificador no reconocido"+e.toString(),eleft,eright));
+errores.add(new Error("sintactico","identificador no reconocido"+e.toString(),eleft,eright));
+:};

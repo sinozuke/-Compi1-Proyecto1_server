@@ -12,7 +12,9 @@ package compi1.proyecto1_server.pkg201403775;
 import BackEnd.Conexion.Conexion;
 import BackEnd.DAO.Almacenadores.Stores_Generator;
 import BackEnd.DAO.Hash.Tabla_Hash_DATOS;
+import BackEnd.DAO.Objetos.Error;
 import Interfaz.Interfaz_Server;
+import java.util.ArrayList;
 
 /**
  *
@@ -30,6 +32,7 @@ public class Compi1Proyecto1_Server201403775 {
     public final static Tabla_Hash_DATOS hash = new Tabla_Hash_DATOS();
     public final static Thread SGI = new Thread(SG);
     public static final Interfaz_Server inter = new Interfaz_Server();
+    public static final ArrayList<Error> errores = new ArrayList();
     /**
      *
      * @param args

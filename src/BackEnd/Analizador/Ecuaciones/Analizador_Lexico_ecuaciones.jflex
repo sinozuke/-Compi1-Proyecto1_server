@@ -17,7 +17,6 @@ import java_cup.runtime.Symbol;
 		
 %}
 
-Variable = [a-zA-ZÑñ]([a-zA-ZÑñ]|[0-9]|\_)*
 numero =[0-9]+ "."? [0-9]*
 %%
 "Ptn"     		{return new Symbol(Simbolo.potencia, yycolumn,yyline,yytext()); }
@@ -34,4 +33,3 @@ numero =[0-9]+ "."? [0-9]*
 "{"			{return new Symbol(Simbolo.llavesi, yycolumn,yyline,yytext()); }
 "}"			{return new Symbol(Simbolo.llavesf, yycolumn,yyline,yytext()); }
 ","                     {return new Symbol(Simbolo.coma, yycolumn,yyline,yytext()); }
-{Variable}		{return new Symbol(Simbolo.identificador, yycolumn,yyline,yytext()); }

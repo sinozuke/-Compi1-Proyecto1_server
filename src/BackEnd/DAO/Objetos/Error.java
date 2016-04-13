@@ -10,11 +10,21 @@ package BackEnd.DAO.Objetos;
  * @author sinozuke
  */
 public class Error {
-    private String tipo;
-    private String Descripccion;
-    private int fila;
-    private int columna;
+    private String tipo="vacio";
+    private String Descripccion="vacio";
+    private int fila=0;
+    private int columna=0;
 
+    public Error(String tipo, String Descripccion, int fila, int columna) {
+        this.tipo = tipo;
+        this.Descripccion = Descripccion;
+        this.fila = fila;
+        this.columna = columna;
+    }
+
+    public Error() {
+    }
+    
     public int getFila() {
         return fila;
     }

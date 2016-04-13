@@ -6,7 +6,9 @@
 package BackEnd.DAO.Compilador;
 
 import java.util.ArrayList;
-
+import BackEnd.Analizador.Ecuaciones.Lexico_ecuaciones;
+import BackEnd.Analizador.Ecuaciones.Analizador_Sintactico_ecuaciones;
+import java.io.ByteArrayInputStream;
 /**
  *
  * @author sinozuke
@@ -20,8 +22,8 @@ public class Funcion_Mate {
     private String[] params1;
     public static String resultado;
     
-    public String devolver_entero(ArrayList<String> params){
-        resultado="";
+    public String devolver_entero(ArrayList<String> params) throws Exception{
+        Analizador_Sintactico_ecuaciones ANAL_SIN=null;
         if(parametros.size()>params.size()){
             return "Error: se esperavan mas parametros para la funcion " + this.id;
         }else if(parametros.size()<params.size()){
@@ -34,9 +36,11 @@ public class Funcion_Mate {
             for(int i=0;i<j;i++){
                 accion_final = a(accion,params1[i],String.valueOf(params2[i]));
             }
-            //mandar a analizador de solo ecuaciones
+            Lexico_ecuaciones ANAL_LEX = new Lexico_ecuaciones(new ByteArrayInputStream(accion_final.getBytes())); 
+            ANAL_SIN = new Analizador_Sintactico_ecuaciones(ANAL_LEX);
+            ANAL_SIN.parse();
         }
-        return resultado;
+        return String.valueOf(ANAL_SIN.resultado);
     }
     
     private String a(String acc,String valor,String parametro){

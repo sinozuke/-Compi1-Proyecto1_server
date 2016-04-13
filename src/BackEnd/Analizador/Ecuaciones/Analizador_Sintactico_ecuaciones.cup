@@ -19,16 +19,15 @@ parser code
 
 action code
 {:
-
+        public double resultado;
 		
 :}
 
-terminal potencia,raiz,multiplicacion,division,suma,resta,numero,corchetei,corchetef,parentesisi,parentesisf,llavesi,llavesf,coma,identificador;
+terminal String potencia,raiz,multiplicacion,division,suma,resta,numero,corchetei,corchetef,parentesisi,parentesisf,llavesi,llavesf,coma;
 
 non terminal INICIA;
-non terminal EQ, EQP;
-non terminal EXPREA, EXPREB, EXPREC, EXPRED, EXPREE, EXPREF,EXPREG;
-non terminal PARAMSN,PARAMSNP, MATEF, CONTMATEF;
+non terminal double EQ;
+non terminal double EXPREA, EXPREB, EXPREC, EXPRED, EXPREE, EXPREF,EXPREG;
 
 precedence left suma;
 precedence left resta;
@@ -37,43 +36,79 @@ precedence left division;
 
 start with INICIA;
 
-INICIA ::= EQ;
+INICIA ::= EQ:val
+{:
+            resultado = val;
+:};
 
-EQ ::= EQ EQP{::}
-        |EQP{::}
-        |MATEF {::};
+EQ ::= EQ:val1 suma EXPREA:val2
+{:
+                RESULT = (double)(val1+val2);
+:}
+        |EXPREA:val
+{:
+                RESULT = val;
+:};
 
-MATEF ::= corchetei identificador coma identificador CONTMATEF corchetef {::};
+EXPREA ::= EXPREA:val1 resta EXPREB:val2
+{:
+                RESULT =val1-val2;
+:}
+            |EXPREB:val
+{:
+                RESULT = val;
+:};
 
-CONTMATEF ::=                                 {::}
-            |parentesisi PARAMSN parentesisf {::};
+EXPREB ::= EXPREB:val1 multiplicacion EXPREC:val2
+{:
+                RESULT = (double)(val1*val2);
+:}
+            |EXPREC:val
+{:
+                RESULT = val;
+:};
 
-PARAMSN ::= PARAMSN coma PARAMSNP              {::}
-            |PARAMSNP                        {::};
+EXPREC ::= EXPREC:val1 division EXPRED:val2
+{:
+                RESULT = (double)(val1/val2);
+:}
+            EXPRED:val
+{:
+                RESULT = val;
+:};
 
-PARAMSNP ::= numero {::};
+EXPRED ::= potencia corchetei EXPREE:val1 coma EXPREE:val2 corchetef
+{:
+                RESULT = (double)Math.pow(val1,val2);
+:}
+            |EXPREE:val
+{:
+                RESULT = val;
+:};
 
-EQP ::= EQP suma EXPREA{::}
-        |EXPREA{::};
+EXPREE ::= raiz corchetei EXPREF:val1 coma EXPREF:val2 corchetef
+{:
+                RESULT = (double)Math.pow(val1,1/val2);
+:}
+            |EXPREF:val
+{:
+                RESULT=val;
+:};
 
-EXPREA ::= EXPREA resta EXPREB {::}
-            |EXPREB {::};
+EXPREF ::= llavesi EXPREG:val llavesf
+{:
+                RESULT = val;
+:}
+            |EXPREG:val
+{:
+                RESULT = val;
+:};
 
-EXPREB ::= EXPREB multiplicacion EXPREC{::}
-            |EXPREC {::};
-
-EXPREC ::= EXPREC division EXPRED {::}
-            EXPRED {::};
-
-EXPRED ::= potencia corchetei EXPREE coma EXPREE corchetef {::}
-            |EXPREE {::};
-
-EXPREE ::= raiz corchetei EXPREF coma EXPREF corchetef {::}
-            |EXPREF {::};
-
-EXPREF ::= llavesi EXPREG llavesf {::}
-            |EXPREG {::};
-
-EXPREG ::= parentesisi EQP parentesisf {::}
-            |numero {::}
-            |identificador{::};
+EXPREG ::= parentesisi EQ:val parentesisf
+{:
+                RESULT = val;
+:}
+            |numero:val
+{:
+                RESULT = (double)Integer.parseInt(val);
+:};
