@@ -1229,7 +1229,11 @@ class CUP$AnalizadorSintactico_compilador$actions {
 		Ecuacion val = (Ecuacion)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.peek()).value;
 		
                 RESULT = new Producto();
-                RESULT.setCantidad(Integer.parseInt(val.Ecuacion));
+                try{
+                    RESULT.setCantidad(Integer.parseInt(val.Ecuacion));
+                }catch(Exception ex){
+                        reply.append(enlace.reply_error("semantico", "ecuacion encontrada sin valor exacto", valleft, valright));
+                }
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("ACCIONESPRODUP",18, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-2)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
@@ -1363,7 +1367,27 @@ class CUP$AnalizadorSintactico_compilador$actions {
                     RESULT.setModificar(true);
                 }else if(val2.isEliminar() && !RESULT.isEliminar()){
                     RESULT.setEliminar(true);
-                }                
+                }else if(val2.getId()!=0 && RESULT.getId()!=0){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta id ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(!val2.getNombre().equals("vacio") && !RESULT.getNombre().equals("vacio")){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta nombre ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(val2.getCantidad()!=0 && RESULT.getCantidad()!=0){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta cantidad ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(!val2.getMarca().equals("vacio") && !RESULT.getMarca().equals("vacio")){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta marca ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(!val2.getColor().equals("vacio") && !RESULT.getColor().equals("vacio")){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta color ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(val2.getTamaño()!=0 && RESULT.getTamaño()!=0){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta tamaño ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(!val2.getImg().equals("vacio") && !RESULT.getImg().equals("vacio")){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta img ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(val2.getSucursal()!=0 && RESULT.getSucursal()!=0){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta sucursal ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(val2.isModificar()&& RESULT.isModificar()){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta Accion modificar ya ha sido validada", val2left, val2right));
+                }else if(val2.isEliminar() && RESULT.isEliminar()){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta Accion Eliminar ya ha sido validada", val2left, val2right));
+                }                 
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("ACCIONESPRODU",17, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-1)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
@@ -1888,6 +1912,22 @@ class CUP$AnalizadorSintactico_compilador$actions {
                     RESULT.setEliminar(true);
                 }else if(val2.isModificar() && !RESULT.isModificar()){
                     RESULT.setModificar(true);
+                }else if(val2.getCodigo()!=0 && RESULT.getCodigo()!=0){
+                    reply.append(enlace.reply_error("semantico", "Etiqueta Codigo ya ha sido declarada", val2left, val2right));
+                }else if(!val2.getNombre().equals("vacio") && !RESULT.getNombre().equals("vacio")){
+                    reply.append(enlace.reply_error("semantico", "Etiqueta Nombre ya ha sido declarada", val2left, val2right));
+                }else if(val2.getPropietario()!=0 && RESULT.getPropietario()!=0){
+                    reply.append(enlace.reply_error("semantico", "Etiqueta Propietario ya ha sido declarada", val2left, val2right));
+                }else if(!val2.getDirreccion().equals("vacio") && !RESULT.getDirreccion().equals("vacio")){
+                    reply.append(enlace.reply_error("semantico", "Etiqueta Dirreccion ya ha sido declarada", val2left, val2right));
+                }else if(val2.getTelefono()!=0 && RESULT.getTelefono()==0){
+                    reply.append(enlace.reply_error("semantico", "Etiqueta Telefono ya ha sido declarada", val2left, val2right));
+                }else if(!val2.getImg().equals("vacio") && !RESULT.getImg().equals("vacio")){
+                    reply.append(enlace.reply_error("semantico", "Etiqueta img ya ha sido declarada", val2left, val2right));
+                }else if(val2.isEliminar() && RESULT.isEliminar()){
+                    reply.append(enlace.reply_error("semantico", "Ya se ha estipulado que la accion es eliminar", val2left, val2right));
+                }else if(val2.isModificar() && !RESULT.isModificar()){
+                    reply.append(enlace.reply_error("semantico", "ya se ha estipulado que la accion es modificar", val2left, val2right));
                 }
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("ACCIONESTIENDA",21, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-2)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
@@ -2205,9 +2245,7 @@ class CUP$AnalizadorSintactico_compilador$actions {
                 RESULT = new ArrayList();
 
                 if(val.replaceAll("\"", "").equals("productos")){
-                    if(val2.equals("")){
-                        reply.append(enlace.reply_error("semantico", "a solicitado productos pero no ha especificado sucursal", val2left, val2right));
-                    }else{
+                    if(!val2.equals("")){
                         ArrayList<Producto> temp1 = hash.get_productosc("sucursal",(Object)val2);
                         ArrayList<Producto> temp2 = new ArrayList();
                         ArrayList<Object> temp3 = new ArrayList();
@@ -2217,7 +2255,9 @@ class CUP$AnalizadorSintactico_compilador$actions {
                         });
                         RESULT = temp3;
                         reply.append(enlace.reply_lista_productos(temp2));
-                    }
+                    }else{
+                        reply.append(enlace.reply_error("semantico", "a solicitado productos pero no ha especificado sucursal", val2left, val2right));
+                        }
                 }else if(val.replaceAll("\"", "").equals("tiendas")){
                     if(!val2.equals("")){
                         reply.append(enlace.reply_error("semantico", "Atributo sucursal no era nesesario para obtener tiendas", val2left, val2right));
@@ -2341,7 +2381,7 @@ class CUP$AnalizadorSintactico_compilador$actions {
 		
                 RESULT = new Ecuacion();
                 RESULT.variables.add(val);
-                RESULT.Ecuacion+=val;
+                RESULT.Ecuacion=val;
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("EXPREG",33, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
@@ -2356,7 +2396,7 @@ class CUP$AnalizadorSintactico_compilador$actions {
 		String val = (String)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.peek()).value;
 		
                 RESULT = new Ecuacion();
-                RESULT.Ecuacion += val;
+                RESULT.Ecuacion = val;
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("EXPREG",33, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
@@ -2371,8 +2411,12 @@ class CUP$AnalizadorSintactico_compilador$actions {
 		Ecuacion val = (Ecuacion)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-1)).value;
 		
                 RESULT = new Ecuacion();
-                RESULT.Ecuacion = "("+ val.Ecuacion +")";
-                val.variables.stream().forEach(RESULT.variables::add);
+                if(!val.variables.isEmpty()){
+                    RESULT.Ecuacion = "("+ val.Ecuacion +")";
+                    val.variables.stream().forEach(RESULT.variables::add);
+                }else{
+                    RESULT.Ecuacion =val.Ecuacion;
+                }
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("EXPREG",33, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-2)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
@@ -2401,8 +2445,12 @@ class CUP$AnalizadorSintactico_compilador$actions {
 		Ecuacion val = (Ecuacion)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-1)).value;
 		
                 RESULT = new Ecuacion();
-                RESULT.variables = val.variables;
-                RESULT.Ecuacion = "{" + val.Ecuacion + "}";
+                if(!val.variables.isEmpty()){
+                    RESULT.variables = val.variables;
+                    RESULT.Ecuacion = "{" + val.Ecuacion + "}";
+                }else{
+                    RESULT.Ecuacion =val.Ecuacion;
+                }
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("EXPREF",32, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-2)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
@@ -2434,10 +2482,18 @@ class CUP$AnalizadorSintactico_compilador$actions {
 		Ecuacion val2 = (Ecuacion)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-1)).value;
 		
                 RESULT = new Ecuacion();
-                RESULT.Ecuacion="Rq["+val1.Ecuacion+","+val2.Ecuacion+"]";
-                val1.variables.stream().forEach(RESULT.variables::add);
-                val2.variables.stream().forEach(RESULT.variables::add);            
-
+                if(val1.variables.isEmpty() && val2.variables.isEmpty()){
+                    if(!val2.Ecuacion.equals("0")){
+                        RESULT.Ecuacion=String.valueOf(Math.pow((double)Integer.parseInt(val1.Ecuacion),1/(double)Integer.parseInt(val2.Ecuacion)));
+                    }else{
+                        reply.append(enlace.reply_error("Semantico", "Se ha hecho una raiz de valor 0", val2left, val2right));
+                    }
+                }else{
+                    RESULT.Ecuacion="Rq["+val1.Ecuacion+","+val2.Ecuacion+"]";
+                    val1.variables.stream().forEach(RESULT.variables::add);
+                    val2.variables.stream().forEach(RESULT.variables::add);            
+                }
+                
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("EXPREE",31, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-5)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
           return CUP$AnalizadorSintactico_compilador$result;
@@ -2466,11 +2522,19 @@ class CUP$AnalizadorSintactico_compilador$actions {
 		int val2left = ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-1)).left;
 		int val2right = ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-1)).right;
 		Ecuacion val2 = (Ecuacion)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-1)).value;
-		
-                RESULT=new Ecuacion();
-                RESULT.Ecuacion="Ptn["+val1.Ecuacion+","+val2.Ecuacion+"]";
-                val1.variables.stream().forEach(RESULT.variables::add);
-                val2.variables.stream().forEach(RESULT.variables::add);
+
+                RESULT = new Ecuacion();
+                if(val1.variables.isEmpty() && val2.variables.isEmpty()){
+                    try{
+                        RESULT.Ecuacion=String.valueOf(Math.pow((double)Integer.parseInt(val1.Ecuacion),(double)Integer.parseInt(val2.Ecuacion)));
+                    }catch(Exception ex){
+                        reply.append(enlace.reply_error("Semantico", "Operacion matematica invalida", val1left, val1right));    
+                    }
+                }else{
+                    RESULT.Ecuacion="Ptn["+val1.Ecuacion+","+val2.Ecuacion+"]";
+                    val1.variables.stream().forEach(RESULT.variables::add);
+                    val2.variables.stream().forEach(RESULT.variables::add);            
+                }		
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("EXPRED",30, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-5)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
@@ -2502,10 +2566,18 @@ class CUP$AnalizadorSintactico_compilador$actions {
 		Ecuacion val2 = (Ecuacion)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.peek()).value;
 		
                 RESULT = new Ecuacion();
-                RESULT.Ecuacion=val1.Ecuacion+"/"+val2.Ecuacion;
-                val1.variables.stream().forEach(RESULT.variables::add);
-                val2.variables.stream().forEach(RESULT.variables::add);                
-
+                if(val1.variables.isEmpty() && val2.variables.isEmpty()){
+                    if(!val2.Ecuacion.equals("0")){
+                        RESULT.Ecuacion = String.valueOf((double)Integer.parseInt(val1.Ecuacion)/(double)Integer.parseInt(val2.Ecuacion));
+                    }else{
+                        reply.append(enlace.reply_error("Semantico", "Operacion matematica invalida", val1left, val1right));    
+                    }
+                }else{
+                    RESULT.Ecuacion=val1.Ecuacion+"/"+val2.Ecuacion;
+                    val1.variables.stream().forEach(RESULT.variables::add);
+                    val2.variables.stream().forEach(RESULT.variables::add);                
+                }
+                
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("EXPREC",29, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-2)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
           return CUP$AnalizadorSintactico_compilador$result;
@@ -2536,10 +2608,14 @@ class CUP$AnalizadorSintactico_compilador$actions {
 		Ecuacion val2 = (Ecuacion)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.peek()).value;
 		
                 RESULT = new Ecuacion();
-                RESULT.Ecuacion=val1.Ecuacion+"*"+val2.Ecuacion;
-                val1.variables.stream().forEach(RESULT.variables::add);
-                val2.variables.stream().forEach(RESULT.variables::add);                
-
+                if(val1.variables.isEmpty() && val2.variables.isEmpty()){
+                    RESULT.Ecuacion = String.valueOf((double)Integer.parseInt(val1.Ecuacion)*(double)Integer.parseInt(val2.Ecuacion));
+                }else{
+                    RESULT.Ecuacion=val1.Ecuacion+"*"+val2.Ecuacion;
+                    val1.variables.stream().forEach(RESULT.variables::add);
+                    val2.variables.stream().forEach(RESULT.variables::add);                
+                }
+                
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("EXPREB",28, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-2)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
           return CUP$AnalizadorSintactico_compilador$result;
@@ -2570,10 +2646,13 @@ class CUP$AnalizadorSintactico_compilador$actions {
 		Ecuacion val2 = (Ecuacion)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.peek()).value;
 		
                 RESULT = new Ecuacion();
-                RESULT.Ecuacion=val1.Ecuacion+"-"+val2.Ecuacion;
-                val1.variables.stream().forEach(RESULT.variables::add);
-                val2.variables.stream().forEach(RESULT.variables::add);                
-
+                if(val1.variables.isEmpty() && val2.variables.isEmpty()){
+                    RESULT.Ecuacion = String.valueOf((double)Integer.parseInt(val1.Ecuacion)-(double)Integer.parseInt(val2.Ecuacion));
+                }else{
+                    RESULT.Ecuacion=val1.Ecuacion+"-"+val2.Ecuacion;
+                    val1.variables.stream().forEach(RESULT.variables::add);
+                    val2.variables.stream().forEach(RESULT.variables::add);                
+                }
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("EXPREA",27, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-2)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
           return CUP$AnalizadorSintactico_compilador$result;
@@ -2604,10 +2683,13 @@ class CUP$AnalizadorSintactico_compilador$actions {
 		Ecuacion val2 = (Ecuacion)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.peek()).value;
 		
                 RESULT = new Ecuacion();
-                RESULT.Ecuacion=val1.Ecuacion+"+"+val2.Ecuacion;
-                val1.variables.stream().forEach(RESULT.variables::add);
-                val2.variables.stream().forEach(RESULT.variables::add);                
-
+                if(val1.variables.isEmpty() && val2.variables.isEmpty()){
+                    RESULT.Ecuacion = String.valueOf((double)Integer.parseInt(val1.Ecuacion)+(double)Integer.parseInt(val2.Ecuacion));
+                }else{
+                    RESULT.Ecuacion=val1.Ecuacion+"-"+val2.Ecuacion;
+                    val1.variables.stream().forEach(RESULT.variables::add);
+                    val2.variables.stream().forEach(RESULT.variables::add);                
+                }
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("EQP",26, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-2)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
           return CUP$AnalizadorSintactico_compilador$result;

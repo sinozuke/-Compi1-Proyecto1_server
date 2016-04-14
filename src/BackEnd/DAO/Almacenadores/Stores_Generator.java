@@ -37,7 +37,7 @@ public class Stores_Generator implements Runnable{
     public Producto[] Productos_hash = new Producto[500000];
     private final Stores_Generator_Repository SGR = new Stores_Generator_Repository();
     private final Thread SGR1 = new Thread(SGR);
-    private final String ruta_backlog = "/home/sinozuke/Escritorio/backlog.txt";
+    private final String ruta_backlog = "/var/www/html/backlog.json";
     private final Gson gson = new Gson();
     private final JFileChooser fc = new JFileChooser();
     private final DATOS datos_backup = new DATOS();

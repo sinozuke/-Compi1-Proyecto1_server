@@ -185,7 +185,7 @@ PARAMS ::=   PARAMS:val1 coma PARAMSP:val2
             |PARAMSP:val
 {:
                 RESULT = new ArrayList();
-                if(!val.equals("")){RESULT.add(val);}
+                if(!val.equals("")){RESULT.add(val);}}
 :};
 
 PARAMSP ::= {:RESULT="";:}
@@ -258,9 +258,13 @@ PARAMSNP ::= {:RESULT=new ArrayList();:}
 EQP ::= EQP:val1 suma EXPREA:val2
 {:
                 RESULT = new Ecuacion();
-                RESULT.Ecuacion=val1.Ecuacion+"+"+val2.Ecuacion;
-                val1.variables.stream().forEach(RESULT.variables::add);
-                val2.variables.stream().forEach(RESULT.variables::add);                
+                if(val1.variables.isEmpty() && val2.variables.isEmpty()){
+                    RESULT.Ecuacion = String.valueOf((double)Integer.parseInt(val1.Ecuacion)+(double)Integer.parseInt(val2.Ecuacion));
+                }else{
+                    RESULT.Ecuacion=val1.Ecuacion+"-"+val2.Ecuacion;
+                    val1.variables.stream().forEach(RESULT.variables::add);
+                    val2.variables.stream().forEach(RESULT.variables::add);                
+                }             
 :}
         |EXPREA:val
 {:
@@ -270,9 +274,13 @@ EQP ::= EQP:val1 suma EXPREA:val2
 EXPREA ::= EXPREA:val1 resta EXPREB:val2
 {:
                 RESULT = new Ecuacion();
-                RESULT.Ecuacion=val1.Ecuacion+"-"+val2.Ecuacion;
-                val1.variables.stream().forEach(RESULT.variables::add);
-                val2.variables.stream().forEach(RESULT.variables::add);                
+                if(val1.variables.isEmpty() && val2.variables.isEmpty()){
+                    RESULT.Ecuacion = String.valueOf((double)Integer.parseInt(val1.Ecuacion)-(double)Integer.parseInt(val2.Ecuacion));
+                }else{
+                    RESULT.Ecuacion=val1.Ecuacion+"-"+val2.Ecuacion;
+                    val1.variables.stream().forEach(RESULT.variables::add);
+                    val2.variables.stream().forEach(RESULT.variables::add);                
+                }               
 :}
             |EXPREB:val
 {:
@@ -282,9 +290,13 @@ EXPREA ::= EXPREA:val1 resta EXPREB:val2
 EXPREB ::= EXPREB:val1 multiplicacion EXPREC:val2
 {:
                 RESULT = new Ecuacion();
-                RESULT.Ecuacion=val1.Ecuacion+"*"+val2.Ecuacion;
-                val1.variables.stream().forEach(RESULT.variables::add);
-                val2.variables.stream().forEach(RESULT.variables::add);                
+                if(val1.variables.isEmpty() && val2.variables.isEmpty()){
+                    RESULT.Ecuacion = String.valueOf((double)Integer.parseInt(val1.Ecuacion)*(double)Integer.parseInt(val2.Ecuacion));
+                }else{
+                    RESULT.Ecuacion=val1.Ecuacion+"*"+val2.Ecuacion;
+                    val1.variables.stream().forEach(RESULT.variables::add);
+                    val2.variables.stream().forEach(RESULT.variables::add);                
+                }               
 :}
             |EXPREC:val
 {:
@@ -294,9 +306,17 @@ EXPREB ::= EXPREB:val1 multiplicacion EXPREC:val2
 EXPREC ::= EXPREC:val1 division EXPRED:val2
 {:
                 RESULT = new Ecuacion();
-                RESULT.Ecuacion=val1.Ecuacion+"/"+val2.Ecuacion;
-                val1.variables.stream().forEach(RESULT.variables::add);
-                val2.variables.stream().forEach(RESULT.variables::add);                
+                if(val1.variables.isEmpty() && val2.variables.isEmpty()){
+                    if(!val2.Ecuacion.equals("0")){
+                        RESULT.Ecuacion = String.valueOf((double)Integer.parseInt(val1.Ecuacion)/(double)Integer.parseInt(val2.Ecuacion));
+                    }else{
+                        reply.append(enlace.reply_error("Semantico", "Operacion matematica invalida", val1left, val1right));    
+                    }
+                }else{
+                    RESULT.Ecuacion=val1.Ecuacion+"/"+val2.Ecuacion;
+                    val1.variables.stream().forEach(RESULT.variables::add);
+                    val2.variables.stream().forEach(RESULT.variables::add);                
+                }              
 :}
             |EXPRED:val
 {:
@@ -305,10 +325,17 @@ EXPREC ::= EXPREC:val1 division EXPRED:val2
 
 EXPRED ::= potencia corchetei EXPREE:val1 coma EXPREE:val2 corchetef
 {:
-                RESULT=new Ecuacion();
-                RESULT.Ecuacion="Ptn["+val1.Ecuacion+","+val2.Ecuacion+"]";
-                val1.variables.stream().forEach(RESULT.variables::add);
-                val2.variables.stream().forEach(RESULT.variables::add);
+                if(val1.variables.isEmpty() && val2.variables.isEmpty()){
+                    try{
+                        RESULT.Ecuacion=String.valueOf(Math.pow((double)Integer.parseInt(val1.Ecuacion),(double)Integer.parseInt(val2.Ecuacion)));
+                    }catch(Exception ex){
+                        reply.append(enlace.reply_error("Semantico", "Operacion matematica invalida", val1left, val1right));    
+                    }
+                }else{
+                    RESULT.Ecuacion="Ptn["+val1.Ecuacion+","+val2.Ecuacion+"]";
+                    val1.variables.stream().forEach(RESULT.variables::add);
+                    val2.variables.stream().forEach(RESULT.variables::add);            
+                }
 :}
             |EXPREE:val
 {:
@@ -318,9 +345,17 @@ EXPRED ::= potencia corchetei EXPREE:val1 coma EXPREE:val2 corchetef
 EXPREE ::= raiz corchetei EXPREF:val1 coma EXPREF:val2 corchetef
 {:
                 RESULT = new Ecuacion();
-                RESULT.Ecuacion="Rq["+val1.Ecuacion+","+val2.Ecuacion+"]";
-                val1.variables.stream().forEach(RESULT.variables::add);
-                val2.variables.stream().forEach(RESULT.variables::add);            
+                if(val1.variables.isEmpty() && val2.variables.isEmpty()){
+                    if(!val2.Ecuacion.equals("0")){
+                        RESULT.Ecuacion=String.valueOf(Math.pow((double)Integer.parseInt(val1.Ecuacion),1/(double)Integer.parseInt(val2.Ecuacion)));
+                    }else{
+                        reply.append(enlace.reply_error("Semantico", "Se ha hecho una raiz de valor 0", val2left, val2right));
+                    }
+                }else{
+                    RESULT.Ecuacion="Rq["+val1.Ecuacion+","+val2.Ecuacion+"]";
+                    val1.variables.stream().forEach(RESULT.variables::add);
+                    val2.variables.stream().forEach(RESULT.variables::add);            
+                }           
 :}
             |EXPREF:val
 {:
@@ -330,8 +365,12 @@ EXPREE ::= raiz corchetei EXPREF:val1 coma EXPREF:val2 corchetef
 EXPREF ::= llavesi EXPREG:val llavesf
 {:
                 RESULT = new Ecuacion();
-                RESULT.variables = val.variables;
-                RESULT.Ecuacion = "{" + val.Ecuacion + "}";
+                if(!val.variables.isEmpty()){
+                    RESULT.variables = val.variables;
+                    RESULT.Ecuacion = "{" + val.Ecuacion + "}";
+                }else{
+                    RESULT.Ecuacion =val.Ecuacion;
+                }
 :}
             |EXPREG:val
 {:
@@ -341,19 +380,23 @@ EXPREF ::= llavesi EXPREG:val llavesf
 EXPREG ::= parentesisi EQP:val parentesisf
 {:
                 RESULT = new Ecuacion();
-                RESULT.Ecuacion = "("+ val.Ecuacion +")";
-                val.variables.stream().forEach(RESULT.variables::add);
+                if(!val.variables.isEmpty()){
+                    RESULT.Ecuacion = "("+ val.Ecuacion +")";
+                    val.variables.stream().forEach(RESULT.variables::add);
+                }else{
+                    RESULT.Ecuacion =val.Ecuacion;
+                }
 :}
             |numero:val
 {:
                 RESULT = new Ecuacion();
-                RESULT.Ecuacion += val;
+                RESULT.Ecuacion = val;
 :}
             |identificador:val
 {:
                 RESULT = new Ecuacion();
                 RESULT.variables.add(val);
-                RESULT.Ecuacion+=val;
+                RESULT.Ecuacion=val;
 :};
 
 PETICIONES ::=   DI request DI PETICION:val DI request DF
@@ -388,9 +431,7 @@ CONTGET ::= cadena:val propietario igual numero:val1 CONTGETP:val2
                 RESULT = new ArrayList();
 
                 if(val.replaceAll("\"", "").equals("productos")){
-                    if(val2.equals("")){
-                        reply.append(enlace.reply_error("semantico", "a solicitado productos pero no ha especificado sucursal", val2left, val2right));
-                    }else{
+                    if(!val2.equals("")){
                         ArrayList<Producto> temp1 = hash.get_productosc("sucursal",(Object)val2);
                         ArrayList<Producto> temp2 = new ArrayList();
                         ArrayList<Object> temp3 = new ArrayList();
@@ -400,7 +441,9 @@ CONTGET ::= cadena:val propietario igual numero:val1 CONTGETP:val2
                         });
                         RESULT = temp3;
                         reply.append(enlace.reply_lista_productos(temp2));
-                    }
+                    }else{
+                        reply.append(enlace.reply_error("semantico", "a solicitado productos pero no ha especificado sucursal", val2left, val2right));
+                        }
                 }else if(val.replaceAll("\"", "").equals("tiendas")){
                     if(!val2.equals("")){
                         reply.append(enlace.reply_error("semantico", "Atributo sucursal no era nesesario para obtener tiendas", val2left, val2right));
@@ -541,7 +584,7 @@ CONTREGISTIENDAP ::=     DI codigo DI numero:val DI codigo DF
 
 ACCIONESTIENDA ::=   ACCIONESTIENDA:val1 coma ACCIONESTIENDAP:val2
 {:
-                RESULT = val1;
+RESULT = val1;
                 if(val2.getCodigo()!=0 && RESULT.getCodigo()==0){
                     RESULT.setCodigo(val2.getCodigo());
                 }else if(!val2.getNombre().equals("vacio") && RESULT.getNombre().equals("vacio")){
@@ -558,6 +601,22 @@ ACCIONESTIENDA ::=   ACCIONESTIENDA:val1 coma ACCIONESTIENDAP:val2
                     RESULT.setEliminar(true);
                 }else if(val2.isModificar() && !RESULT.isModificar()){
                     RESULT.setModificar(true);
+                }else if(val2.getCodigo()!=0 && RESULT.getCodigo()!=0){
+                    reply.append(enlace.reply_error("semantico", "Etiqueta Codigo ya ha sido declarada", val2left, val2right));
+                }else if(!val2.getNombre().equals("vacio") && !RESULT.getNombre().equals("vacio")){
+                    reply.append(enlace.reply_error("semantico", "Etiqueta Nombre ya ha sido declarada", val2left, val2right));
+                }else if(val2.getPropietario()!=0 && RESULT.getPropietario()!=0){
+                    reply.append(enlace.reply_error("semantico", "Etiqueta Propietario ya ha sido declarada", val2left, val2right));
+                }else if(!val2.getDirreccion().equals("vacio") && !RESULT.getDirreccion().equals("vacio")){
+                    reply.append(enlace.reply_error("semantico", "Etiqueta Dirreccion ya ha sido declarada", val2left, val2right));
+                }else if(val2.getTelefono()!=0 && RESULT.getTelefono()==0){
+                    reply.append(enlace.reply_error("semantico", "Etiqueta Telefono ya ha sido declarada", val2left, val2right));
+                }else if(!val2.getImg().equals("vacio") && !RESULT.getImg().equals("vacio")){
+                    reply.append(enlace.reply_error("semantico", "Etiqueta img ya ha sido declarada", val2left, val2right));
+                }else if(val2.isEliminar() && RESULT.isEliminar()){
+                    reply.append(enlace.reply_error("semantico", "Ya se ha estipulado que la accion es eliminar", val2left, val2right));
+                }else if(val2.isModificar() && !RESULT.isModificar()){
+                    reply.append(enlace.reply_error("semantico", "ya se ha estipulado que la accion es modificar", val2left, val2right));
                 }
 :}
                     |ACCIONESTIENDAP:val
@@ -673,7 +732,6 @@ PRODUCTO ::=     DI producto tipo igual CREACION DI REGISPRODU:val DI DF
 :}
                 |DI tienda id igual numero:val1 DI CONJUNTOP:val2 DI tienda DF
 {:
-
                 val2.stream().forEach((Producto p)->{
                     p.setSucursal(Integer.parseInt(val1));
                     if(p.isEliminar()){
@@ -704,8 +762,6 @@ PRODUCTO ::=     DI producto tipo igual CREACION DI REGISPRODU:val DI DF
                         reply.append(enlace.reply_error("semantico", "No se ha especificdo ninguna accion para el producto id: "+ String.valueOf(p.getId()), val2left, val2right));
                     }
                 });
-
-
 :};
 
 CONJUNTOP ::= CONJUNTOP:val1 CONJUNTOPP:val2
@@ -791,7 +847,7 @@ ACCIONESPRODU ::=    ACCIONESPRODU:val1 ACCIONESPRODUP:val2
 {:
                 RESULT = val1;
 
-                if(val2.getId()!=0 && RESULT.getId()==0){
+if(val2.getId()!=0 && RESULT.getId()==0){
                     RESULT.setId(val2.getId());
                 }else if(!val2.getNombre().equals("vacio") && RESULT.getNombre().equals("vacio")){
                     RESULT.setNombre(val2.getNombre());
@@ -811,7 +867,27 @@ ACCIONESPRODU ::=    ACCIONESPRODU:val1 ACCIONESPRODUP:val2
                     RESULT.setModificar(true);
                 }else if(val2.isEliminar() && !RESULT.isEliminar()){
                     RESULT.setEliminar(true);
-                }                
+                }else if(val2.getId()!=0 && RESULT.getId()!=0){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta id ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(!val2.getNombre().equals("vacio") && !RESULT.getNombre().equals("vacio")){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta nombre ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(val2.getCantidad()!=0 && RESULT.getCantidad()!=0){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta cantidad ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(!val2.getMarca().equals("vacio") && !RESULT.getMarca().equals("vacio")){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta marca ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(!val2.getColor().equals("vacio") && !RESULT.getColor().equals("vacio")){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta color ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(val2.getTamaño()!=0 && RESULT.getTamaño()!=0){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta tamaño ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(!val2.getImg().equals("vacio") && !RESULT.getImg().equals("vacio")){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta img ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(val2.getSucursal()!=0 && RESULT.getSucursal()!=0){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta sucursal ya se ha escrito con anterioridad", val2left, val2right));
+                }else if(val2.isModificar()&& RESULT.isModificar()){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta Accion modificar ya ha sido validada", val2left, val2right));
+                }else if(val2.isEliminar() && RESULT.isEliminar()){
+                    reply.append(enlace.reply_error("semantico", "La etiqueta Accion Eliminar ya ha sido validada", val2left, val2right));
+                }                                
 :}
                     |ACCIONESPRODUP:val
 {:
@@ -852,7 +928,11 @@ ACCIONESPRODUP ::=   tipo igual ACCION:val
                 |cantidad igual EQ:val
 {:
                 RESULT = new Producto();
-                RESULT.setCantidad(Integer.parseInt(val.Ecuacion));
+                try{
+                    RESULT.setCantidad(Integer.parseInt(val.Ecuacion));
+                }catch(Exception ex){
+                        reply.append(enlace.reply_error("semantico", "ecuacion encontrada sin valor exacto", valleft, valright));
+                }
 :};
 
 
@@ -1023,10 +1103,12 @@ CONSULTAS ::=    usuario                                                        
                 |producto                                                                           {::};
 
 COMPARA ::=                                                                                         {::}
-            |donde COMPARA OL COMPARAP                                                              {::}
-            |COMPARAP                                                                               {::};
+            |donde COMPARAP                                                                         {::};
 
-COMPARAP ::=     NOT parentesisi COMPARAP parentesisf                                               {::}
+COMPARAP ::= COMPARAP OL COMPARAPP                                                              {::}
+            |COMPARAPP                                                                               {::};
+
+COMPARAPP ::=     NOT parentesisi COMPARAP parentesisf                                               {::}
                 |id igual igual EQ                                                               {::}
                 |nombre igual igual CONSM                                                           {::}
                 |apellido igual igual CONSM                                                         {::}
