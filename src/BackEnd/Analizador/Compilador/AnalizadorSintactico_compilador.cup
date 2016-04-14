@@ -40,31 +40,30 @@ action code
                 
         		
 :}
-terminal constante,DI,DF,get,request,iniciousuario,id,sucursal,password,usuario,crearusuario;
-terminal String nombre,apellido,telefono,email,direccion,tienda,codigo,propietario,imagen,tipo;
-terminal potencia,raiz,multiplicacion,division,suma,resta;
-terminal producto,cantidad,marca,color,tamano;
-terminal String correo,cadena,numero,identificador;
 terminal pyc;
-terminal coma,igual,corchetei,corchetef,parentesisi,parentesisf,llavesi,llavesf,mate,consulta,avacio;
-terminal AND,OR,NOT;
-terminal extraer,de,donde,CREACION,MODIFICACION,ELIMINACION;
+terminal AND, OR, NOT;
+terminal producto, cantidad, marca, color, tamano;
+terminal String correo, cadena, numero, identificador;
+terminal potencia, raiz, multiplicacion, division, suma, resta;
+terminal extraer, de, donde, CREACION, MODIFICACION, ELIMINACION;
+terminal constante, DI, DF, get, request, iniciousuario, id, sucursal, password, usuario, crearusuario;
+terminal String nombre, apellido, telefono, email, direccion, tienda, codigo, propietario, imagen, tipo;
+terminal coma, igual, corchetei, corchetef, parentesisi, parentesisf, llavesi, llavesf, mate, consulta, avacio;
 
 non terminal INICIA;
-non terminal PETICIONES, PETICION, PETICIONP, TIENDA;
 non terminal PRODUCTO;
-non terminal CONSULTA, CONSULTAS;
-non terminal COMPARA, COMPARAP, OL;
 non terminal StringBuilder REQUEST;
+non terminal ArrayList<Object> CONTGET;
+non terminal Seccion_Mate MATE,CONTMATEP,CONTMATE;
+non terminal PETICIONES, PETICION, PETICIONP, TIENDA;
+non terminal ArrayList<Producto> CONJUNTOP, CONJUNTOPP;
 non terminal Usuario USUARIO, REGISUSU, REGISUSUP, LOGIN, LOGINP;
+non terminal ArrayList<String> PARAMS, PARAMSN,PARAMSNP,CONTMATEF;
+non terminal Query CONSULTA, CONSULTAS,COMPARA, COMPARAP, COMPARAPP;
+non terminal String GET, CONTGETP, CONSM, PARAMSP, ACCION, MATEF, OL;
 non terminal Producto ACCIONESPRODU, ACCIONESPRODUP,REGISPRODU,REGISPRODUP;
 non terminal Tienda   ACCIONESTIENDA,ACCIONESTIENDAP,CONTREGISTIENDA,CONTREGISTIENDAP;
 non terminal Ecuacion EQ, EQP, EXPREA, EXPREB, EXPREC, EXPRED, EXPREE, EXPREF,EXPREG;
-non terminal String GET, CONTGETP,CONSM, PARAMSP,ACCION,MATEF;
-non terminal ArrayList<String> PARAMS, PARAMSN,PARAMSNP,CONTMATEF;
-non terminal ArrayList<Object> CONTGET;
-non terminal ArrayList<Producto> CONJUNTOP, CONJUNTOPP; 
-non terminal Seccion_Mate MATE,CONTMATEP,CONTMATE;
 
 precedence left suma;
 precedence left resta;
@@ -185,7 +184,7 @@ PARAMS ::=   PARAMS:val1 coma PARAMSP:val2
             |PARAMSP:val
 {:
                 RESULT = new ArrayList();
-                if(!val.equals("")){RESULT.add(val);}}
+                if(!val.equals("")){RESULT.add(val);}
 :};
 
 PARAMSP ::= {:RESULT="";:}
