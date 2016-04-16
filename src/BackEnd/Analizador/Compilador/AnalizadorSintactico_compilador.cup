@@ -493,7 +493,7 @@ TIENDA ::=  tipo igual CREACION DI CONTREGISTIENDA:val DI tienda
 {:
                 if(val!=null){
                     if(val.getCodigo()!=0 && !val.getDirreccion().equals("vacio") && !val.getImg().equals("vacio") && !val.getNombre().equals("vacio") && val.getPropietario()!=0 && !val.getTelefono().equals("vacio")){
-                        if(!hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
+                        if(hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
                             hash.modificartienda(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()), val);
                             reply.append(enlace.reply_registro_tienda(val.getCodigo(), "True"));
                         }else{
@@ -575,10 +575,10 @@ CONTREGISTIENDAP ::=     DI codigo DI numero:val DI codigo DF
                 RESULT = new Tienda();
                 RESULT.setTelefono(val);
 :}
-                        |DI imagen DI identificador:val DI imagen DF
+                        |DI imagen DI cadena:val DI imagen DF
 {:
                 RESULT = new Tienda();
-                RESULT.setImg(val);
+                RESULT.setImg(val.replaceAll("\"",""));
 :}
                         |error DI
 {:
@@ -845,10 +845,10 @@ REGISPRODUP ::=  DI codigo DI EQ:val DI codigo DF
                 RESULT = new Producto();
                 RESULT.setColor(val);
 :}
-                |DI imagen DI identificador:val DI imagen DF
+                |DI imagen DI cadena:val DI imagen DF
 {:
                 RESULT = new Producto();
-                RESULT.setImg(val);
+                RESULT.setImg(val.replaceAll("\"",""));
 :};
 
 ACCIONESPRODU ::=    ACCIONESPRODU:val1 ACCIONESPRODUP:val2
@@ -1039,12 +1039,12 @@ REGISUSUP ::=    DI id DI numero:val DI id DF
                 |DI nombre DI cadena:val DI nombre DF
 {:
                     RESULT = new Usuario();
-                    RESULT.setNombre(val.replace("\"",""));
+                    RESULT.setNombre(val.replaceAll("\"",""));
 :}
                 |DI apellido DI cadena:val DI apellido DF
 {:
                     RESULT = new Usuario();
-                    RESULT.setApellido(val.replace("\"",""));
+                    RESULT.setApellido(val.replaceAll("\"",""));
 :}
                 |DI password DI identificador:val DI password DF
 {:
@@ -1064,7 +1064,7 @@ REGISUSUP ::=    DI id DI numero:val DI id DF
                 |DI direccion DI cadena:val DI direccion DF
 {:
                     RESULT = new Usuario();
-                    RESULT.setDirreccion(val.replace("\"",""));
+                    RESULT.setDirreccion(val.replaceAll("\"",""));
 :};
 
 LOGIN ::=    LOGIN:val1 LOGINP:val2
