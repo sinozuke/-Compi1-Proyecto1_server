@@ -15,68 +15,9 @@ import java.util.ArrayList;
  * @author sinozuke
  */
 public class Query {
-    private int atributo_evaluado;
-    private boolean producto;
-    private boolean tienda;
-    private boolean usuario;
-    private ArrayList<Usuario> usuarios;
-    private ArrayList<Tienda> tiendas;
-    private ArrayList<Producto> productos;
+    public ArrayList<String> valuados=new ArrayList();
+    public ArrayList<Usuario> usuarios=new ArrayList();
+    public ArrayList<Tienda> tiendas=new ArrayList();
+    public ArrayList<Producto> productos=new ArrayList();
 
-    public int getAtributo_evaluado() {
-        return atributo_evaluado;
-    }
-
-    public void setAtributo_evaluado(int atributo_evaluado) {
-        this.atributo_evaluado = atributo_evaluado;
-    }
-
-    public boolean isProducto() {
-        return producto;
-    }
-
-    public void setProducto(boolean producto) {
-        this.producto = producto;
-    }
-
-    public boolean isTienda() {
-        return tienda;
-    }
-
-    public void setTienda(boolean tienda) {
-        this.tienda = tienda;
-    }
-
-    public boolean isUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(boolean usuario) {
-        this.usuario = usuario;
-    }
-
-    public ArrayList<Usuario> getUsuarios() {
-        return usuarios;
-    }
-
-    public void setUsuarios(ArrayList<Usuario> usuarios) {
-        this.usuarios = usuarios;
-    }
-
-    public ArrayList<Tienda> getTiendas() {
-        return tiendas;
-    }
-
-    public void setTiendas(ArrayList<Tienda> tiendas) {
-        this.tiendas = tiendas;
-    }
-
-    public ArrayList<Producto> getProductos() {
-        return productos;
-    }
-
-    public void setProductos(ArrayList<Producto> productos) {
-        this.productos = productos;
-    }
-    
 }

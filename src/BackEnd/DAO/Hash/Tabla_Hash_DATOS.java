@@ -105,18 +105,54 @@ public class Tabla_Hash_DATOS {
         }
         return temp;    
     }
+    
+    public ArrayList<Usuario> get_usuariosc(String evaluar, Object comparacion){
+        ArrayList<Usuario> usuarios = this.get_usuarios();
+        ArrayList<Usuario> temp = new ArrayList();
+        usuarios.stream().forEach((Usuario u)->{
+            switch(evaluar){
+                case "id":
+                    if(u.getId()==Integer.parseInt((String)comparacion)){temp.add(u);}
+                    break;
+                case "nombre":
+                    if(u.getNombre().equals((String)comparacion)){temp.add(u);}
+                    break;
+                case "apellido":
+                    if(u.getApellido().equals((String)comparacion)){temp.add(u);}
+                    break;
+                case "password":
+                    if(u.getPassword().equals((String)comparacion)){temp.add(u);}
+                    break;
+                case "telefono":
+                    if(u.getTelefono()==Integer.parseInt((String)comparacion)){temp.add(u);}
+                    break;
+                case "email":
+                    if(u.getEmail().equals((String)comparacion)){temp.add(u);}
+                    break;
+                case "direccion":
+                    if(u.getDirreccion().equals((String)comparacion)){temp.add(u);}
+                    break;
+            }
+        
+        
+        });
+        
+        return temp;
+    }
+    
     public ArrayList<Tienda> get_tiendasc(String evaluacion,Object comparacion){
         ArrayList<Tienda> temp = this.get_tiendas();
         ArrayList<Tienda> temp2 = new ArrayList();
+        try{}catch(Exception ex){}
         temp.stream().forEach((Tienda t)->{
             switch(evaluacion){
                 case "codigo":
-                    if(t.getCodigo()==(Integer)comparacion){
+                    if(t.getCodigo()==Integer.parseInt((String)comparacion)){
                         temp2.add(t);
                     }
                     break;
                 case "propietario":
-                    if(t.getPropietario()==(Integer)comparacion){
+                    if(t.getPropietario()==Integer.parseInt((String)comparacion)){
                         temp2.add(t);
                     }
                     break;
@@ -131,7 +167,7 @@ public class Tabla_Hash_DATOS {
                     }
                     break;
                 case "telefono":
-                    if(t.getTelefono()==(Integer)comparacion){
+                    if(t.getTelefono()==Integer.parseInt((String)comparacion)){
                         temp2.add(t);
                     }
                     break;
@@ -145,7 +181,7 @@ public class Tabla_Hash_DATOS {
         temp.stream().forEach((Producto p)->{
             switch(evaluar){
                 case "id":
-                    if(p.getId()==(Integer)comparacion){
+                    if(p.getId()==Integer.parseInt((String)comparacion)){
                         temp2.add(p);
                     }
                     break;
@@ -165,17 +201,17 @@ public class Tabla_Hash_DATOS {
                     }
                     break;
                 case "cantidad":
-                    if(p.getCantidad()==(Integer)comparacion){
+                    if(p.getCantidad()==Integer.parseInt((String)comparacion)){
                         temp2.add(p);
                     }
                     break;
                 case "tamaño":
-                    if(p.getTamaño()==(Integer)comparacion){
+                    if(p.getTamaño()==Integer.parseInt((String)comparacion)){
                         temp2.add(p);
                     }
                     break;
                 case "sucursal":
-                    if(p.getSucursal()==(Integer)comparacion){
+                    if(p.getSucursal()==Integer.parseInt((String)comparacion)){
                         temp2.add(p);
                     }
                     break;
@@ -183,4 +219,33 @@ public class Tabla_Hash_DATOS {
         });
         return temp2;
     }
+    public ArrayList<Producto> Negar_productos(ArrayList<Producto> negados){
+        ArrayList<Producto> temp = this.get_productos();
+        
+        negados.stream().forEach((Producto p)->{
+            temp.remove(p);
+        });
+        
+        return temp;
+    }
+    public ArrayList<Tienda> Negar_tiendas(ArrayList<Tienda> negados){
+        ArrayList<Tienda> temp = this.get_tiendas();
+        
+        negados.stream().forEach((Tienda p)->{
+            temp.remove(p);
+        });
+        
+        return temp;
+    }
+    public ArrayList<Usuario> Negar_usuarioss(ArrayList<Usuario> negados){
+        ArrayList<Usuario> temp = this.get_usuarios();
+        ArrayList<Usuario> temp2 = negados;
+        
+        negados.stream().forEach((Usuario p)->{
+            temp.remove(p);
+        });
+        
+        return temp;
+    }
+
 }

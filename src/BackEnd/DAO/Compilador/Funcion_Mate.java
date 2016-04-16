@@ -16,7 +16,7 @@ import java.io.ByteArrayInputStream;
 public class Funcion_Mate {
     
     public String id;
-    public ArrayList<String> parametros;
+    public ArrayList<String> parametros=new ArrayList();
     public String accion;
     private String[] params2;
     private String[] params1;

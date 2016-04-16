@@ -59,16 +59,21 @@ non terminal PETICIONES, PETICION, PETICIONP, TIENDA;
 non terminal ArrayList<Producto> CONJUNTOP, CONJUNTOPP;
 non terminal Usuario USUARIO, REGISUSU, REGISUSUP, LOGIN, LOGINP;
 non terminal ArrayList<String> PARAMS, PARAMSN,PARAMSNP,CONTMATEF;
-non terminal Query CONSULTA, CONSULTAS,COMPARA, COMPARAP, COMPARAPP;
-non terminal String GET, CONTGETP, CONSM, PARAMSP, ACCION, MATEF, OL;
+non terminal Query CONSULTA;
+non terminal String GET, CONTGETP, CONSM, PARAMSP, ACCION, MATEF;
 non terminal Producto ACCIONESPRODU, ACCIONESPRODUP,REGISPRODU,REGISPRODUP;
 non terminal Tienda   ACCIONESTIENDA,ACCIONESTIENDAP,CONTREGISTIENDA,CONTREGISTIENDAP;
 non terminal Ecuacion EQ, EQP, EXPREA, EXPREB, EXPREC, EXPRED, EXPREE, EXPREF,EXPREG;
+non terminal Query COMPARAU1, COMPARAT1, COMPARAP1,COMPARAU2,COMPARAU3,COMPARAU4;
+non terminal Query COMPARAT2, COMPARAT3, COMPARAT4;
+non terminal Query COMPARAP2, COMPARAP3, COMPARAP4;
 
 precedence left suma;
 precedence left resta;
 precedence left multiplicacion;
 precedence left division;
+precedence left AND;
+precedence left OR;
 
 start with INICIA;
 
@@ -1095,32 +1100,587 @@ LOGINP ::=   DI id DI numero:val DI id DF
                     RESULT.setPassword((String)val);
 :};
 
-CONSULTA ::=   extraer de CONSULTAS COMPARA pyc                                                     {::};
+CONSULTA ::=     extraer de usuario donde COMPARAU1:val pyc
+{:
+                    reply.append("Nombre---Apellido----Id----Password----Telefono----Dirreccion");
+                    val.usuarios.stream().forEach((Usuario u)->{
+                    reply.append(u.getNombre());
+                    reply.append(u.getApellido());
+                    reply.append(u.getId());
+                    reply.append(u.getPassword());
+                    reply.append(u.getTelefono());
+                    reply.append(u.getDirreccion());
+                    });
+:}
+                |extraer de tienda donde COMPARAT1:val pyc
+{:
+                    reply.append("Codigo---Propietario----Nombre----Direcciones----Telefono");
+                    val.tiendas.stream().forEach((Tienda u)->{
+                    reply.append(u.getCodigo());
+                    reply.append(u.getPropietario());
+                    reply.append(u.getNombre());
+                    reply.append(u.getDireccion());
+                    reply.append(u.getTelefono());
+                    });
+               
+:}
+                |extraer de producto donde COMPARAP1:val pyc
+{:
+                    reply.append("id---nombre----marca----color----cantidad-------tamaño------sucursal");
+                    val.productos.stream().forEach((Producto u)->{
+                    reply.append(u.getId());
+                    reply.append(u.getNombre());
+                    reply.append(u.getMarca());
+                    reply.append(u.getColor());
+                    reply.append(u.getCantidad());
+                    reply.append(u.getTamaño());
+                    reply.append(u.getSucursal());
+                    });
+:}
+                |extraer de usuario pyc
+{:
+                    ArrayList<Usuario> val = hash.get_usuarios();
+                    reply.append("Nombre---Apellido----Id----Password----Telefono----Dirreccion");
+                    val.stream().forEach((Usuario u)->{
+                    reply.append(u.getNombre());
+                    reply.append(u.getApellido());
+                    reply.append(u.getId());
+                    reply.append(u.getPassword());
+                    reply.append(u.getTelefono());
+                    reply.append(u.getDirreccion());
+                    });
+:}
+                |extraer de tienda pyc
+{:
+                    ArrayList<Tienda> val = hash.get_tiendas();
+                    reply.append("Codigo---Propietario----Nombre----Direcciones----Telefono");
+                    val.stream().forEach((Tienda u)->{
+                    reply.append(u.getCodigo());
+                    reply.append(u.getPropietario());
+                    reply.append(u.getNombre());
+                    reply.append(u.getDireccion());
+                    reply.append(u.getTelefono());
+                    });
+               
+:}
+                |extraer de producto pyc
+{:
+                    ArrayList<Producto> val = hash.get_productos();
+                    reply.append("id---nombre----marca----color----cantidad-------tamaño------sucursal");
+                    val.stream().forEach((Producto u)->{
+                    reply.append(u.getId());
+                    reply.append(u.getNombre());
+                    reply.append(u.getMarca());
+                    reply.append(u.getColor());
+                    reply.append(u.getCantidad());
+                    reply.append(u.getTamaño());
+                    reply.append(u.getSucursal());
+                    });
+:};
 
-CONSULTAS ::=    usuario                                                                            {::}
-                |tienda                                                                             {::}
-                |producto                                                                           {::};
+COMPARAU1 ::= COMPARAU1:val1 OR COMPARAU2:val2
+{:
+                    RESULT = new Query();
+                    val1.usuarios.stream().forEach(RESULT.usuarios::add);
+                    val2.usuarios.stream().forEach(RESULT.usuarios::add);
+                    val1.valuados.stream().forEach(RESULT.valuados::add);
+                    val2.valuados.stream().forEach(RESULT.valuados::add);
+:}
+            |COMPARAU2:val
+{:
+                    RESULT = val;
+:};
 
-COMPARA ::=                                                                                         {::}
-            |donde COMPARAP                                                                         {::};
+COMPARAU2 ::= COMPARAU2:val1 AND COMPARAU3:val2
+{:
+                                    RESULT = new Query();
+                val1.valuados.stream().forEach(RESULT.valuados::add);
+                val2.valuados.stream().forEach(RESULT.valuados::add);
+                ArrayList<Usuario> temp2 = new ArrayList();
+                if(!val1.usuarios.isEmpty()){
+                    Usuario prueba = val1.usuarios.get(0);
+                    val1.valuados.stream().forEach((String s)->{
+                        val2.usuarios.stream().forEach((Usuario p)->{
+                            switch(s){
+                                case "id":
+                                    if(p.getId()==prueba.getId()){
+                                        temp2.add(p);
+                                    }
+                                    break;
+                                case "nombre":
+                                    if(p.getNombre().equals(prueba.getNombre())){
+                                        temp2.add(p);
+                                    }
+                                    break;
+                                case "apellido":
+                                    if(p.getApellido().equals(prueba.getApellido())){
+                                        temp2.add(p);
+                                    }
+                                    break;
+                                case "password":
+                                    if(p.getPassword().equals(prueba.getPassword())){
+                                        temp2.add(p);
+                                    }
+                                    break;
+                                case "telefono":
+                                    if(p.getTelefono()==prueba.getTelefono()){
+                                        temp2.add(p);
+                                    }
+                                    break;
+                                case "email":
+                                    if(p.getEmail()==prueba.getEmail()){
+                                        temp2.add(p);
+                                    }
+                                    break;
+                                case "direeccion":
+                                    if(p.getDirreccion()==prueba.getDirreccion()){
+                                        temp2.add(p);
+                                    }
+                                    break;
+                            }
+                        });
+                    });
+                }
+                if(!val2.usuarios.isEmpty()){
+                    Usuario prueba = val2.usuarios.get(0);
+                    val2.valuados.stream().forEach((String s)->{
+                        val1.usuarios.stream().forEach((Usuario p)->{
+                            switch(s){
+                                case "id":
+                                    if(p.getId()==prueba.getId()){
+                                        if(!temp2.contains(p)){
+                                            temp2.add(p);
+                                        }
+                                    }
+                                    break;
+                                case "nombre":
+                                    if(p.getNombre().equals(prueba.getNombre())){
+                                        if(!temp2.contains(p)){
+                                            temp2.add(p);
+                                        }
+                                    }
+                                    break;
+                                case "apellido":
+                                    if(p.getApellido().equals(prueba.getApellido())){
+                                        if(!temp2.contains(p)){
+                                            temp2.add(p);
+                                        }
+                                    }
+                                    break;
+                                case "password":
+                                    if(p.getPassword().equals(prueba.getPassword())){
+                                        if(!temp2.contains(p)){
+                                            temp2.add(p);
+                                        }
+                                    }
+                                    break;
+                                case "telefono":
+                                    if(p.getTelefono()==prueba.getTelefono()){
+                                        if(!temp2.contains(p)){
+                                            temp2.add(p);
+                                        }
+                                    }
+                                    break;
+                                case "email":
+                                    if(p.getEmail().equals(prueba.getEmail())){
+                                        if(!temp2.contains(p)){
+                                            temp2.add(p);
+                                        }
+                                    }
+                                    break;
+                                case "direccion":
+                                    if(p.getDirreccion().equals(prueba.getDireccion())){
+                                        if(!temp2.contains(p)){
+                                            temp2.add(p);
+                                        }
+                                    }
+                                    break;
+                            }
+                        });
+                    });
+                }
 
-COMPARAP ::= COMPARAP OL COMPARAPP                                                              {::}
-            |COMPARAPP                                                                               {::};
+:}
+                |COMPARAU3:val
+{:
+                    RESULT = val;
+:};
 
-COMPARAPP ::=     NOT parentesisi COMPARAP parentesisf                                               {::}
-                |id igual igual EQ                                                               {::}
-                |nombre igual igual CONSM                                                           {::}
-                |apellido igual igual CONSM                                                         {::}
-                |telefono igual igual EQ                                                         {::}
-                |email igual igual CONSM                                                            {::}
-                |direccion igual igual CONSM                                                       {::}
-                |codigo igual igual CONSM                                                           {::}
-                |sucursal igual igual CONSM                                                         {::}
-                |cantidad igual igual EQ                                                         {::}
-                |tamano igual igual EQ                                                           {::};
+COMPARAU3 ::= NOT parentesisi COMPARAU1:val parentesisf
+{:
+                    RESULT = new Query();
+                    RESULT.usuarios = hash.Negar_usuarioss(val.usuarios);
+                    val.valuados.stream().forEach(RESULT.valuados::add);
+:}
+                |COMPARAU4:val
+{:
+                    RESULT = val;
+:};
 
-OL ::=   OR                                                                                         {::}
-        |AND                                                                                        {::}
-        |error:e pyc{:reply.append(enlace.reply_error("sintactico","identificador no reconocido"+e.toString(),eleft,eright));:}
-        |error:e DI
-        {:reply.append(enlace.reply_error("sintactico","identificador no reconocido"+e.toString(),eleft,eright));:};
+COMPARAU4 ::=     id igual igual numero:val 
+{:
+                RESULT = new Query();
+                RESULT.usuarios = hash.get_usuariosc("id", val);
+                RESULT.valuados.add("id");
+:}
+                |nombre igual igual CONSM:val
+{:
+                RESULT = new Query();
+                RESULT.usuarios = hash.get_usuariosc("nombre", val);
+                RESULT.valuados.add("nombre");
+:}
+                |apellido igual igual CONSM:val
+{:
+                RESULT = new Query();
+                RESULT.usuarios = hash.get_usuariosc("apellido", val);
+                RESULT.valuados.add("apellido");
+:}
+                |telefono igual igual numero:val
+{:
+                RESULT = new Query();
+                RESULT.usuarios = hash.get_usuariosc("telefono", val);
+                RESULT.valuados.add("telefono");
+:}
+                |email igual igual CONSM:val
+{:
+                RESULT = new Query();
+                RESULT.usuarios = hash.get_usuariosc("email", val);
+                RESULT.valuados.add("email");
+:}
+                |direccion igual igual CONSM:val
+{:
+                RESULT = new Query();
+                RESULT.usuarios = hash.get_usuariosc("direccion", val);
+                RESULT.valuados.add("direccion");
+:}
+                |password igual igual CONSM:val
+{:
+                RESULT = new Query();
+                RESULT.usuarios = hash.get_usuariosc("password", val);
+                RESULT.valuados.add("password");
+:};
+
+COMPARAT1 ::= COMPARAT1:val1 OR COMPARAT2:val2
+{:
+                RESULT = new Query();
+                val1.tiendas.stream().forEach(RESULT.tiendas::add);
+                val2.tiendas.stream().forEach(RESULT.tiendas::add);
+                val1.valuados.stream().forEach(RESULT.valuados::add);
+                val2.valuados.stream().forEach(RESULT.valuados::add);
+:}
+            |COMPARAT2:val
+{:
+                    RESULT = val;
+:};
+
+COMPARAT2 ::= COMPARAT2:val1 AND COMPARAT3:val2
+{:
+                RESULT = new Query();
+                val1.valuados.stream().forEach(RESULT.valuados::add);
+                val2.valuados.stream().forEach(RESULT.valuados::add);
+                ArrayList<Tienda> temp2 = new ArrayList();
+                if(!val1.valuados.isEmpty()){
+                    Tienda temp = val1.tiendas.get(0);
+                    val1.valuados.stream().forEach((String s)->{
+                        val2.tiendas.stream().forEach((Tienda t)->{
+                            switch(s){
+                                case "codigo":
+                                    if(t.getCodigo()==temp.getCodigo()){
+                                        temp2.add(t);
+                                    }
+                                    break;
+                                case "propietario":
+                                    if(t.getPropietario()==temp.getPropietario()){
+                                        temp2.add(t);
+                                    }
+                                    break;
+                                case "nombre":
+                                    if(t.getNombre().equals(temp.getNombre())){
+                                        temp2.add(t);
+                                    }
+                                    break;
+                                case "dirreccion":
+                                    if(t.getDirreccion().equals(temp.getDirreccion())){
+                                        temp2.add(t);
+                                    }
+                                    break;
+                                case "telefono":
+                                    if(t.getTelefono()==temp.getTelefono()){
+                                        temp2.add(t);
+                                    }
+                                    break;
+                            }
+                        });
+                    });
+                }else if(!val2.valuados.isEmpty()){
+                    Tienda temp = val2.tiendas.get(0);
+                    val2.valuados.stream().forEach((String s)->{
+                        val1.tiendas.stream().forEach((Tienda t)->{
+                            switch(s){
+                                case "codigo":
+                                    if(t.getCodigo()==temp.getCodigo()){
+                                        temp2.add(t);
+                                    }
+                                    break;
+                                case "propietario":
+                                    if(t.getPropietario()==temp.getPropietario()){
+                                        temp2.add(t);
+                                    }
+                                    break;
+                                case "nombre":
+                                    if(t.getNombre().equals(temp.getNombre())){
+                                        temp2.add(t);
+                                    }
+                                    break;
+                                case "dirreccion":
+                                    if(t.getDirreccion().equals(temp.getDirreccion())){
+                                        temp2.add(t);
+                                    }
+                                    break;
+                                case "telefono":
+                                    if(t.getTelefono()==temp.getTelefono()){
+                                        temp2.add(t);
+                                    }
+                                    break;
+                            }
+                        });
+                    });
+                }
+                RESULT.tiendas = temp2;
+:}
+                |COMPARAT3:val
+{:
+                    RESULT = val;
+:};
+
+COMPARAT3 ::= NOT parentesisi COMPARAT1:val parentesisf
+{:
+                RESULT = new Query();
+                RESULT.tiendas = hash.Negar_tiendas(val.tiendas);
+:}
+                |COMPARAT4:val
+{:
+                    RESULT = val;
+:};
+
+COMPARAT4 ::=     codigo igual igual numero:val 
+{:
+                RESULT = new Query();
+                RESULT.valuados.add("codigo");
+                RESULT.tiendas = hash.get_tiendasc("codigo", (Object)val);
+:}
+                |nombre igual igual CONSM:val
+{:
+                RESULT = new Query();
+                RESULT.valuados.add("nombre");
+                RESULT.tiendas = hash.get_tiendasc("nombre", (Object)val);
+:}
+                |propietario igual igual numero:val
+{:
+                RESULT = new Query();
+                RESULT.valuados.add("propietario");
+                RESULT.tiendas = hash.get_tiendasc("propietario", (Object)val);
+:}
+                |telefono igual igual numero:val
+{:
+                RESULT = new Query();
+                RESULT.valuados.add("telefono");
+                RESULT.tiendas = hash.get_tiendasc("telefono, (Object)val);
+:}
+
+                |direccion igual igual CONSM:val
+{:
+                RESULT = new Query();
+                RESULT.valuados.add("direccion");
+                RESULT.tiendas = hash.get_tiendasc("direccion", (Object)val);
+
+:};
+
+COMPARAP1 ::= COMPARAP1:val1 OR COMPARAP2:val2
+{:
+                RESULT = new Query();
+                val1.valuados.stream().forEach(RESULT.valuados::add);
+                val2.valuados.stream().forEach(RESULT.valuados::add);
+                val1.productos.stream().forEach(RESULT.productos::add);
+                val2.productos.stream().forEach(RESULT.productos::add);
+:}
+            |COMPARAP2:val
+{:
+                    RESULT = val;
+:};
+
+COMPARAP2 ::= COMPARAP2:val1 AND COMPARAP3:val2
+{:
+                RESULT = new Query();
+                val1.valuados.stream().forEach(RESULT.valuados::add);
+                val2.valuados.stream().forEach(RESULT.valuados::add);
+                ArrayList<Producto> temp2 = new ArrayList();
+                if(!val1.productos.isEmpty()){
+                    Producto prueba = val1.productos.get(0);
+                    val1.valuados.stream().forEach((String s)->{
+                        val2.productos.stream().forEach((Producto p)->{
+                            switch(s){
+                                case "id":
+                                    if(p.getId()==prueba.getId()){
+                                        temp2.add(p);
+                                    }
+                                    break;
+                                case "nombre":
+                                    if(p.getNombre().equals(prueba.getNombre())){
+                                        temp2.add(p);
+                                    }
+                                    break;
+                                case "marca":
+                                    if(p.getMarca().equals(prueba.getMarca())){
+                                        temp2.add(p);
+                                    }
+                                    break;
+                                case "color":
+                                    if(p.getColor().equals(prueba.getColor())){
+                                        temp2.add(p);
+                                    }
+                                    break;
+                                case "cantidad":
+                                    if(p.getCantidad()==prueba.getCantidad()){
+                                        temp2.add(p);
+                                    }
+                                    break;
+                                case "tamaño":
+                                    if(p.getTamaño()==prueba.getTamaño()){
+                                        temp2.add(p);
+                                    }
+                                    break;
+                                case "sucursal":
+                                    if(p.getSucursal()==prueba.getSucursal()){
+                                        temp2.add(p);
+                                    }
+                                    break;
+                            }
+                        });
+                    });
+                }
+                if(!val2.productos.isEmpty()){
+                    Producto prueba = val2.productos.get(0);
+                    val2.valuados.stream().forEach((String s)->{
+                        val1.productos.stream().forEach((Producto p)->{
+                            switch(s){
+                                case "id":
+                                    if(p.getId()==prueba.getId()){
+                                        if(!temp2.contains(p)){
+                                            temp2.add(p);
+                                        }
+                                    }
+                                    break;
+                                case "nombre":
+                                    if(p.getNombre().equals(prueba.getNombre())){
+                                        if(!temp2.contains(p)){
+                                            temp2.add(p);
+                                        }
+                                    }
+                                    break;
+                                case "marca":
+                                    if(p.getMarca().equals(prueba.getMarca())){
+                                        if(!temp2.contains(p)){
+                                            temp2.add(p);
+                                        }
+                                    }
+                                    break;
+                                case "color":
+                                    if(p.getColor().equals(prueba.getColor())){
+                                        if(!temp2.contains(p)){
+                                            temp2.add(p);
+                                        }
+                                    }
+                                    break;
+                                case "cantidad":
+                                    if(p.getCantidad()==prueba.getCantidad()){
+                                        if(!temp2.contains(p)){
+                                            temp2.add(p);
+                                        }
+                                    }
+                                    break;
+                                case "tamaño":
+                                    if(p.getTamaño()==prueba.getTamaño()){
+                                        if(!temp2.contains(p)){
+                                            temp2.add(p);
+                                        }
+                                    }
+                                    break;
+                                case "sucursal":
+                                    if(p.getSucursal()==prueba.getSucursal()){
+                                        if(!temp2.contains(p)){
+                                            temp2.add(p);
+                                        }
+                                    }
+                                    break;
+                            }
+                        });
+                    });
+                }
+:}
+                |COMPARAP3:val
+{:
+                    RESULT = val;
+:};
+
+COMPARAP3 ::= NOT parentesisi COMPARAP1:val parentesisf
+{:
+                RESULT = new Query();
+                RESULT.valuados = val.valuados;
+                RESULT.productos = hash.Negar_productos(val.productos);
+:}
+                |COMPARAP4:val
+{:
+                    RESULT = val;
+:};
+
+COMPARAP4 ::=     id igual igual numero:val 
+{:
+                RESULT = new Query();
+                RESULT.valuados.add("id");
+                RESULT.productos = hash.get_productosc("id", (Object)val);
+:}
+                |nombre igual igual CONSM:val
+{:
+                RESULT = new Query();
+                RESULT.valuados.add("nombre");
+                RESULT.productos = hash.get_productosc("nombre", (Object)val);
+:}
+                |marca igual igual CONSM:val
+{:
+                RESULT = new Query();
+                RESULT.valuados.add("marca");
+                RESULT.productos = hash.get_productosc("marca", (Object)val);
+:}
+                |color igual igual CONSM:val
+{:
+                RESULT = new Query();
+                RESULT.valuados.add("color");
+                RESULT.productos = hash.get_productosc("color", (Object)val);
+:}
+                |cantidad igual igual EQ:val
+{:
+                RESULT = new Query();
+                RESULT.valuados.add("cantidad");
+                if(!val.variables.isEmpty() && !val.Ecuacion.equals("")){
+                    RESULT.productos = hash.get_productosc("cantidad", (Object)val.Ecuacion);
+                }else{
+                    reply.append(enlace.reply_error("semantico", "la ecuacion ingresada no se puede evaluar", valleft, valright));
+                }
+:}
+                |tamano igual igual EQ:val
+{:
+                RESULT = new Query();
+                RESULT.valuados.add("tamaño");
+                if(!val.variables.isEmpty() && !val.Ecuacion.equals("")){
+                    RESULT.productos = hash.get_productosc("tamaño", (Object)val.Ecuacion);
+                }else{
+                    reply.append(enlace.reply_error("semantico", "la ecuacion ingresada no se puede evaluar", valleft, valright));
+                }
+:}
+                |sucursal igual igual CONSM:val
+{:
+                RESULT = new Query();
+                RESULT.valuados.add("sucursal");
+                RESULT.productos = hash.get_productosc("sucursal", (Object)val);
+:};

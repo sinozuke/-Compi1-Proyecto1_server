@@ -14,8 +14,8 @@ import java.util.ArrayList;
 public class Seccion_Mate {
     
     public String id;
-    public ArrayList<Funcion_Mate> funciones;
-    public ArrayList<Cons_Mate> constantes;
+    public ArrayList<Funcion_Mate> funciones=new ArrayList();
+    public ArrayList<Cons_Mate> constantes=new ArrayList();
     private static boolean esta;
     private static Funcion_Mate temp1;
     private static Cons_Mate temp2;
