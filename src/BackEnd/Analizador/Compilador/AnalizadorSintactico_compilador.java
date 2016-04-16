@@ -2583,10 +2583,10 @@ if(val2.getId()!=0 && RESULT.getId()==0){
                             RESULT = temp2.valor_str;
                         }
                     }else{
-                        reply.append(enlace.reply_error("Semantico", "No Existe Contante Declarada en la seccion mate:"+temp1.id, val2left, val2right));
+                        reply.append(enlace.reply_error("semantico", "No Existe Contante Declarada en la seccion mate:"+temp1.id, val2left, val2right));
                     }
                 }else{
-                    reply.append(enlace.reply_error("Semantico", "No Existe la seccion mate:"+val1, val1left, val1right));
+                    reply.append(enlace.reply_error("semantico", "No Existe la seccion mate:"+val1, val1left, val1right));
                 }
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("CONSM",25, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-4)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
@@ -2960,16 +2960,16 @@ RESULT = val1;
 		Tienda val = (Tienda)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.peek()).value;
 		
                 if(val.isEliminar()){
-                    if(hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
+                    if(!hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
                         hash.eliminartienda(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()));
                     }else{
-                        reply.append(enlace.reply_error("Semantico", "No Existe La tienda con id:"+val.getCodigo(), valleft, valright));
+                        reply.append(enlace.reply_error("semantico", "No Existe La tienda con id:"+val.getCodigo(), valleft, valright));
                     }
                 }else if(val.isModificar()){
-                    if(hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
+                    if(!hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
                         hash.modificartienda(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()), val);
                     }else{
-                        reply.append(enlace.reply_error("Semantico", "No Existe La tienda con id:"+val.getCodigo(), valleft, valright));
+                        reply.append(enlace.reply_error("semantico", "No Existe La tienda con id:"+val.getCodigo(), valleft, valright));
                     }
                 }
 
@@ -2992,15 +2992,15 @@ RESULT = val1;
                             !val.getNombre().equals("vacio") &&
                             val.getPropietario()!=0 &&
                             !val.getTelefono().equals("vacio")){
-                        if(hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
+                        if(!hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
                             hash.modificartienda(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()), val);
                             reply.append(enlace.reply_registro_tienda(val.getCodigo(), "True"));
                         }else{
-                            reply.append(enlace.reply_error("Semantico","Tienda ya existente con el id:"+ String.valueOf(val.getCodigo()), valleft, valright));
+                            reply.append(enlace.reply_error("semantico","Tienda ya existente con el id:"+ String.valueOf(val.getCodigo()), valleft, valright));
                             reply.append(enlace.reply_registro_tienda(val.getCodigo(), "False"));
                         }
                     }else{
-                        reply.append(enlace.reply_error("Semantico","Todos los valores son nesesario, ninguno puede ser nulo", valleft, valright));
+                        reply.append(enlace.reply_error("semantico","Todos los valores son nesesario, ninguno puede ser nulo", valleft, valright));
                         reply.append(enlace.reply_registro_tienda(val.getCodigo(), "False"));
                     }
                 }
@@ -3350,7 +3350,7 @@ RESULT = val1;
                     if(!val2.Ecuacion.equals("0")){
                         RESULT.Ecuacion=String.valueOf(Math.pow((double)Integer.parseInt(val1.Ecuacion),1/(double)Integer.parseInt(val2.Ecuacion)));
                     }else{
-                        reply.append(enlace.reply_error("Semantico", "Se ha hecho una raiz de valor 0", val2left, val2right));
+                        reply.append(enlace.reply_error("semantico", "Se ha hecho una raiz de valor 0", val2left, val2right));
                     }
                 }else{
                     RESULT.Ecuacion="Rq["+val1.Ecuacion+","+val2.Ecuacion+"]";
@@ -3391,7 +3391,7 @@ RESULT = val1;
                     try{
                         RESULT.Ecuacion=String.valueOf(Math.pow((double)Integer.parseInt(val1.Ecuacion),(double)Integer.parseInt(val2.Ecuacion)));
                     }catch(Exception ex){
-                        reply.append(enlace.reply_error("Semantico", "Operacion matematica invalida", val1left, val1right));    
+                        reply.append(enlace.reply_error("semantico", "Operacion matematica invalida", val1left, val1right));    
                     }
                 }else{
                     RESULT.Ecuacion="Ptn["+val1.Ecuacion+","+val2.Ecuacion+"]";
@@ -3433,7 +3433,7 @@ RESULT = val1;
                     if(!val2.Ecuacion.equals("0")){
                         RESULT.Ecuacion = String.valueOf((double)Integer.parseInt(val1.Ecuacion)/(double)Integer.parseInt(val2.Ecuacion));
                     }else{
-                        reply.append(enlace.reply_error("Semantico", "Operacion matematica invalida", val1left, val1right));    
+                        reply.append(enlace.reply_error("semantico", "Operacion matematica invalida", val1left, val1right));    
                     }
                 }else{
                     RESULT.Ecuacion=val1.Ecuacion+"/"+val2.Ecuacion;
@@ -3613,7 +3613,7 @@ RESULT = val1;
 		
                 RESULT = new ArrayList();
                 if((!val1.isEmpty() && val2.isEmpty()) || (val2.isEmpty() && val1.isEmpty())){
-                    reply.append(enlace.reply_error("Semantico", "Declracion Erronea", val1left, val1right));
+                    reply.append(enlace.reply_error("semantico", "Declracion Erronea", val1left, val1right));
                 }
                 if(!val2.isEmpty() && !val1.isEmpty()){
                     val2.stream().forEach(RESULT::add);
@@ -3662,10 +3662,10 @@ RESULT = val1;
                             reply.append(enlace.reply_error("semantico","El numero de Paramteroos ingresado no coiciden con los que se nesesitan",val3left,val3right));
                         }
                     }else{
-                        reply.append(enlace.reply_error("Semantico", "La Funcion Declarada no Existe", val2left, val2right));
+                        reply.append(enlace.reply_error("semantico", "La Funcion Declarada no Existe", val2left, val2right));
                     }
                 }else{
-                    reply.append(enlace.reply_error("Semantico", "La seccion Mate no Existe", val1left, val1right));
+                    reply.append(enlace.reply_error("semantico", "La seccion Mate no Existe", val1left, val1right));
                 }
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("MATEF",28, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-5)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);

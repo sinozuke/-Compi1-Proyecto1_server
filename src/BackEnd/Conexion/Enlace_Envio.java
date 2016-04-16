@@ -146,13 +146,13 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
     
     @Override
     public String reply_error(String tipo,String descripccion, int fila, int columna) {
-        return MessageFormat.format("$error$\n+"
-                + "$tipo${0}$tipo-$\n+"
-                + "$posicion$\n$+"
-                    + "fila${1}$fila-$\n+"
-                    + "$columna${2}$columna-$\n+"
-                + "$posicion-$\n+"
-                + "$descripcion${3}$descripcion-$\n+"
+        return MessageFormat.format("$error$\n"
+                + "$tipo$\"{0}\"$tipo-$\n"
+                + "$posicion$\n$"
+                    + "fila${1}$fila-$\n"
+                    + "$columna${2}$columna-$\n"
+                + "$posicion-$\n"
+                + "$descripcion$\"{3}\"$descripcion-$\n"
                 + "$error-$\n", tipo, fila, columna, descripccion);
     }
 
