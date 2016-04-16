@@ -480,7 +480,7 @@ PETICION ::=     PETICION:val1 PETICIONP:val2
 //----------------------
 :};
 
-PETICIONP ::=   DI tienda TIENDA:val
+PETICIONP ::=   DI tienda TIENDA:val DF
 {:
 //----------------------
 :}
@@ -489,7 +489,7 @@ PETICIONP ::=   DI tienda TIENDA:val
 //----------------------
 :};
 
-TIENDA ::=  tipo igual CREACION DI CONTREGISTIENDA:val DI tienda DF
+TIENDA ::=  tipo igual CREACION DI CONTREGISTIENDA:val DI tienda
 {:
                 if(val!=null){
                     if(val.getCodigo()!=0 && !val.getDirreccion().equals("vacio") && !val.getImg().equals("vacio") && !val.getNombre().equals("vacio") && val.getPropietario()!=0 && val.getTelefono()!=0){
@@ -507,7 +507,7 @@ TIENDA ::=  tipo igual CREACION DI CONTREGISTIENDA:val DI tienda DF
                 }
 
 :}
-            | ACCIONESTIENDA:val DF
+            | ACCIONESTIENDA:val
 {:
                 if(val.isEliminar()){
                     if(hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
@@ -1102,14 +1102,13 @@ LOGINP ::=   DI id DI numero:val DI id DF
 
 CONSULTA ::=     extraer de usuario donde COMPARAU1:val pyc
 {:
-                    reply.append("Nombre---Apellido----Id----Password----Telefono----Dirreccion");
-                    val.usuarios.stream().forEach((Usuario u)->{
+                    reply.append("Codigo---Propietario----Nombre----Direcciones----Telefono");
+                    val.tiendas.stream().forEach((Tienda u)->{
+                    reply.append(u.getCodigo());
+                    reply.append(u.getPropietario());
                     reply.append(u.getNombre());
-                    reply.append(u.getApellido());
-                    reply.append(u.getId());
-                    reply.append(u.getPassword());
-                    reply.append(u.getTelefono());
                     reply.append(u.getDirreccion());
+                    reply.append(u.getTelefono());
                     });
 :}
                 |extraer de tienda donde COMPARAT1:val pyc
@@ -1119,7 +1118,7 @@ CONSULTA ::=     extraer de usuario donde COMPARAU1:val pyc
                     reply.append(u.getCodigo());
                     reply.append(u.getPropietario());
                     reply.append(u.getNombre());
-                    reply.append(u.getDireccion());
+                    reply.append(u.getDirreccion());
                     reply.append(u.getTelefono());
                     });
                
@@ -1158,7 +1157,7 @@ CONSULTA ::=     extraer de usuario donde COMPARAU1:val pyc
                     reply.append(u.getCodigo());
                     reply.append(u.getPropietario());
                     reply.append(u.getNombre());
-                    reply.append(u.getDireccion());
+                    reply.append(u.getDirreccion());
                     reply.append(u.getTelefono());
                     });
                
@@ -1193,7 +1192,7 @@ COMPARAU1 ::= COMPARAU1:val1 OR COMPARAU2:val2
 
 COMPARAU2 ::= COMPARAU2:val1 AND COMPARAU3:val2
 {:
-                                    RESULT = new Query();
+                RESULT = new Query();
                 val1.valuados.stream().forEach(RESULT.valuados::add);
                 val2.valuados.stream().forEach(RESULT.valuados::add);
                 ArrayList<Usuario> temp2 = new ArrayList();
@@ -1228,12 +1227,12 @@ COMPARAU2 ::= COMPARAU2:val1 AND COMPARAU3:val2
                                     }
                                     break;
                                 case "email":
-                                    if(p.getEmail()==prueba.getEmail()){
+                                    if(p.getEmail().equals(prueba.getEmail())){
                                         temp2.add(p);
                                     }
                                     break;
                                 case "direeccion":
-                                    if(p.getDirreccion()==prueba.getDirreccion()){
+                                    if(p.getDirreccion().equals(prueba.getDirreccion())){
                                         temp2.add(p);
                                     }
                                     break;
@@ -1289,7 +1288,7 @@ COMPARAU2 ::= COMPARAU2:val1 AND COMPARAU3:val2
                                     }
                                     break;
                                 case "direccion":
-                                    if(p.getDirreccion().equals(prueba.getDireccion())){
+                                    if(p.getDirreccion().equals(prueba.getDirreccion())){
                                         if(!temp2.contains(p)){
                                             temp2.add(p);
                                         }
@@ -1485,7 +1484,7 @@ COMPARAT4 ::=     codigo igual igual numero:val
 {:
                 RESULT = new Query();
                 RESULT.valuados.add("telefono");
-                RESULT.tiendas = hash.get_tiendasc("telefono, (Object)val);
+                RESULT.tiendas = hash.get_tiendasc("telefono", (Object)val);
 :}
 
                 |direccion igual igual CONSM:val
