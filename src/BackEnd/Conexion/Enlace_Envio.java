@@ -182,6 +182,11 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
             reply.append("$telefono$");
             reply.append(t.getTelefono());
             reply.append("$telefono-$\n");
+            reply.append("$img$");
+            reply.append("\"");
+            reply.append(t.getImg());
+            reply.append("\"");
+            reply.append("$img-$\n");
             reply.append("$tienda-$\n");
         });
         reply.append("$lista-$\n");
@@ -221,6 +226,11 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
             reply.append("$sucursal$");
             reply.append(p.getSucursal());
             reply.append("$sucursal-$\n");
+            reply.append("$img$");
+            reply.append("\"");
+            reply.append(p.getImg());
+            reply.append("\"");
+            reply.append("$img-$\n");
             reply.append("$producto-$\n");
         });
         
