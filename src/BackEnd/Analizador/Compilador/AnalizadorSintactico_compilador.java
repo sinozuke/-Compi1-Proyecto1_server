@@ -2962,14 +2962,18 @@ RESULT = val1;
                 if(val.isEliminar()){
                     if(!hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
                         hash.eliminartienda(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()));
+                        reply.append(enlace.reply_eliminar_tienda(val.getCodigo(), "True"));
                     }else{
                         reply.append(enlace.reply_error("semantico", "No Existe La tienda con id:"+val.getCodigo(), valleft, valright));
+                        reply.append(enlace.reply_eliminar_tienda(val.getCodigo(), "False"));
                     }
                 }else if(val.isModificar()){
                     if(!hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
                         hash.modificartienda(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()), val);
+                        reply.append(enlace.reply_modificacion_tienda(val.getCodigo(), "True"));
                     }else{
                         reply.append(enlace.reply_error("semantico", "No Existe La tienda con id:"+val.getCodigo(), valleft, valright));
+                        reply.append(enlace.reply_modificacion_tienda(val.getCodigo(), "False"));
                     }
                 }
 
