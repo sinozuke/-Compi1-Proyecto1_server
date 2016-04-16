@@ -1875,7 +1875,7 @@ class CUP$AnalizadorSintactico_compilador$actions {
 		String val = (String)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-3)).value;
 		
                     RESULT = new Usuario();
-                    RESULT.setTelefono(Integer.parseInt(val));
+                    RESULT.setTelefono(val);
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("REGISUSUP",15, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-6)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
@@ -1987,9 +1987,9 @@ class CUP$AnalizadorSintactico_compilador$actions {
                     }else if(!val2.getPassword().equals("vacio") && !RESULT.getPassword().equals("vacio")){
                         reply.append(enlace.reply_error("semantico", "Atributo password declarado mas de una vez", val2left, val2right));
                     }
-                    if(val2.getTelefono()!=0 && RESULT.getTelefono()==0){
+                    if(!val2.getTelefono().equals("vacio") && RESULT.getTelefono().equals("vacio")){
                         RESULT.setTelefono(val2.getTelefono());
-                    }else if(val2.getTelefono()!=0 && RESULT.getTelefono()!=0){
+                    }else if(!val2.getTelefono().equals("vacio") && !RESULT.getTelefono().equals("vacio")){
                         reply.append(enlace.reply_error("semantico", "Atributo telefono declarado mas de una vez", val2left, val2right));
                     }
                     if(!val2.getEmail().equals("vacio") && RESULT.getEmail().equals("vacio")){
@@ -2047,7 +2047,7 @@ class CUP$AnalizadorSintactico_compilador$actions {
 		Usuario val = (Usuario)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-3)).value;
 		
                 RESULT = val;
-                if(RESULT.getId()!=0 && !RESULT.getNombre().equals("vacio") && !RESULT.getApellido().equals("vacio") && RESULT.getTelefono()!=0 && !RESULT.getEmail().equals("vacio")){
+                if(RESULT.getId()!=0 && !RESULT.getNombre().equals("vacio") && !RESULT.getApellido().equals("vacio") && !RESULT.getTelefono().equals("vacio") && !RESULT.getEmail().equals("vacio")){
                     if(hash.usuExist(RESULT.getId()-1)){
                         hash.insertar_usu(RESULT.getId(),RESULT);
                         reply.append(enlace.reply_registro_usu(RESULT.getId(),"True"));
@@ -2644,7 +2644,7 @@ if(val2.getId()!=0 && RESULT.getId()==0){
 		String val = (String)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.peek()).value;
 		
                 RESULT = new Tienda();
-                RESULT.setTelefono(Integer.parseInt(val));
+                RESULT.setTelefono(val);
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("ACCIONESTIENDAP",34, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-2)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
@@ -2763,7 +2763,7 @@ RESULT = val1;
                     RESULT.setPropietario(val2.getPropietario());
                 }else if(!val2.getDirreccion().equals("vacio") && RESULT.getDirreccion().equals("vacio")){
                     RESULT.setDirreccion(val2.getDirreccion());
-                }else if(val2.getTelefono()!=0 && RESULT.getTelefono()==0){
+                }else if(!val2.getTelefono().equals("vacio") && RESULT.getTelefono().equals("vacio")){
                     RESULT.setTelefono(val2.getTelefono());
                 }else if(!val2.getImg().equals("vacio") && RESULT.getImg().equals("vacio")){
                     RESULT.setImg(val2.getImg());
@@ -2779,7 +2779,7 @@ RESULT = val1;
                     reply.append(enlace.reply_error("semantico", "Etiqueta Propietario ya ha sido declarada", val2left, val2right));
                 }else if(!val2.getDirreccion().equals("vacio") && !RESULT.getDirreccion().equals("vacio")){
                     reply.append(enlace.reply_error("semantico", "Etiqueta Dirreccion ya ha sido declarada", val2left, val2right));
-                }else if(val2.getTelefono()!=0 && RESULT.getTelefono()==0){
+                }else if(!val2.getTelefono().equals("vacio") && RESULT.getTelefono().equals("vacio")){
                     reply.append(enlace.reply_error("semantico", "Etiqueta Telefono ya ha sido declarada", val2left, val2right));
                 }else if(!val2.getImg().equals("vacio") && !RESULT.getImg().equals("vacio")){
                     reply.append(enlace.reply_error("semantico", "Etiqueta img ya ha sido declarada", val2left, val2right));
@@ -2841,7 +2841,7 @@ RESULT = val1;
 		String val = (String)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-3)).value;
 		
                 RESULT = new Tienda();
-                RESULT.setTelefono(Integer.parseInt(val));
+                RESULT.setTelefono(val);
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("CONTREGISTIENDAP",36, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-6)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
@@ -2941,7 +2941,7 @@ RESULT = val1;
                     RESULT.setPropietario(val2.getPropietario());
                 }else if(!val2.getDirreccion().equals("vacio") && RESULT.getDirreccion().equals("vacio")){
                     RESULT.setDirreccion(val2.getDirreccion());
-                }else if(val2.getTelefono()!=0 && RESULT.getTelefono()==0){
+                }else if(!val2.getTelefono().equals("vacio") && RESULT.getTelefono().equals("vacio")){
                     RESULT.setTelefono(val2.getTelefono());
                 }else if(!val2.getImg().equals("vacio") && RESULT.getImg().equals("vacio")){
                     RESULT.setImg(val2.getImg());
@@ -2986,7 +2986,12 @@ RESULT = val1;
 		Tienda val = (Tienda)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-2)).value;
 		
                 if(val!=null){
-                    if(val.getCodigo()!=0 && !val.getDirreccion().equals("vacio") && !val.getImg().equals("vacio") && !val.getNombre().equals("vacio") && val.getPropietario()!=0 && val.getTelefono()!=0){
+                    if(val.getCodigo()!=0 &&
+                            !val.getDirreccion().equals("vacio") &&
+                            !val.getImg().equals("vacio") &&
+                            !val.getNombre().equals("vacio") &&
+                            val.getPropietario()!=0 &&
+                            !val.getTelefono().equals("vacio")){
                         if(hash.tiendaExist(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()))){
                             hash.modificartienda(hash.Hash_Cod_Tienda(val.getPropietario(), val.getCodigo()), val);
                             reply.append(enlace.reply_registro_tienda(val.getCodigo(), "True"));

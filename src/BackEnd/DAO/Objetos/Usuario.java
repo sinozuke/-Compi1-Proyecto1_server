@@ -16,7 +16,7 @@ public class Usuario {
     private String nombre="vacio";
     private String apellido="vacio";
     private String password="vacio";
-    private int telefono=0;
+    private String telefono="vacio";
     private String email="vacio";
     private String dirreccion="vacio";
     private boolean registro=false;
@@ -61,11 +61,11 @@ public class Usuario {
         this.password = password;
     }
 
-    public int getTelefono() {
+    public String getTelefono() {
         return telefono;
     }
 
-    public void setTelefono(int telefono) {
+    public void setTelefono(String telefono) {
         this.telefono = telefono;
     }
 

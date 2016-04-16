@@ -124,7 +124,7 @@ public class Tabla_Hash_DATOS {
                     if(u.getPassword().equals((String)comparacion)){temp.add(u);}
                     break;
                 case "telefono":
-                    if(u.getTelefono()==Integer.parseInt((String)comparacion)){temp.add(u);}
+                    if(u.getTelefono().equals((String)comparacion)){temp.add(u);}
                     break;
                 case "email":
                     if(u.getEmail().equals((String)comparacion)){temp.add(u);}
@@ -167,7 +167,7 @@ public class Tabla_Hash_DATOS {
                     }
                     break;
                 case "telefono":
-                    if(t.getTelefono()==Integer.parseInt((String)comparacion)){
+                    if(t.getTelefono().equals((String)comparacion)){
                         temp2.add(t);
                     }
                     break;

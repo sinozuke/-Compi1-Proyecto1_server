@@ -18,14 +18,14 @@ import java_cup.runtime.Symbol;
 %}
 
 Variable = [a-zA-ZÑñ]([a-zA-ZÑñ]|[0-9]|\_)*
-numero =[0-9]+ "."? [0-9]*
+numero =[0-9] "."? [0-9]*
 Correo = ([A-Za-zÑñ]|[0-9]|\_|\-)+"@compi1.com"	
 
 cadena = [\"] [^\"]* [\"] 
 ComentarioLinea = "//"([^\n\t])*(\t|\n) 
 ComentarioMultilinea= "#*" ([^*#]|[*])* "*#"
 Hacer = [\"]"crear"[\"]
-Modi = ([\"]"modificar"[\"]|[\"]"modificación"[\"])
+Modi = ([\"]"modificar"[\"]|[\"]"modificacion"[\"])
 Borrar = [\"]"Eliminar"[\"]
 %%
 
