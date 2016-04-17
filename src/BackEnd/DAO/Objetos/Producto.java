@@ -19,19 +19,10 @@ public class Producto {
     private int tamaño=0;
     private int sucursal=0;
     private String img="vacio";
-    private String cimg="vacio";
     private boolean registro=false;
     private boolean modificar=false;
     private boolean eliminar=false;
 
-    public String getCimg() {
-        return cimg;
-    }
-
-    public void setCimg(String cimg) {
-        this.cimg = cimg;
-    }
-    
     public boolean isRegistro() {
         return registro;
     }

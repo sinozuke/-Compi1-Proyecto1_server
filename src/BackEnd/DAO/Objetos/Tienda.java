@@ -17,18 +17,9 @@ public class Tienda {
     private String Dirreccion="vacio";
     private String telefono="vacio";
     private String img="vacio";
-    private String cimg="vacio";
     private boolean registro=false;
     private boolean modificar=false;
     private boolean eliminar=false;
-
-    public String getCimg() {
-        return cimg;
-    }
-
-    public void setCimg(String cimg) {
-        this.cimg = cimg;
-    }
 
     public boolean isRegistro() {
         return registro;

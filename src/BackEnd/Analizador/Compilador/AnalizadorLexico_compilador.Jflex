@@ -50,7 +50,6 @@ Borrar = [\"]"Eliminar"[\"]
 "codigo"                {return new Symbol(Simbolo.codigo, yycolumn,yyline,yytext()); }
 "propietario"      	{return new Symbol(Simbolo.propietario, yycolumn,yyline,yytext()); }
 "img"           	{return new Symbol(Simbolo.imagen, yycolumn,yyline,yytext()); }
-"cimg"                  {return new Symbol(Simbolo.cimagen, yycolumn,yyline,yytext()); }
 "tipo"          	{return new Symbol(Simbolo.tipo, yycolumn,yyline,yytext()); }
 "Ptn"     		{return new Symbol(Simbolo.potencia, yycolumn,yyline,yytext()); }
 "Rq"     		{return new Symbol(Simbolo.raiz, yycolumn,yyline,yytext()); }

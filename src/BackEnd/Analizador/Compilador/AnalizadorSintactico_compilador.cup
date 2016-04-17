@@ -47,7 +47,7 @@ terminal String correo, cadena, numero, identificador;
 terminal potencia, raiz, multiplicacion, division, suma, resta;
 terminal extraer, de, donde, CREACION, MODIFICACION, ELIMINACION;
 terminal constante, DI, DF, get, request, iniciousuario, id, sucursal, password, usuario, crearusuario;
-terminal String nombre, apellido, telefono, email, direccion, tienda, codigo, propietario, imagen, tipo,cimagen;
+terminal String nombre, apellido, telefono, email, direccion, tienda, codigo, propietario, imagen, tipo;
 terminal coma, igual, corchetei, corchetef, parentesisi, parentesisf, llavesi, llavesf, mate, consulta, avacio;
 
 non terminal INICIA;
@@ -580,11 +580,6 @@ CONTREGISTIENDAP ::=     DI codigo DI numero:val DI codigo DF
                 RESULT = new Tienda();
                 RESULT.setImg(val.replaceAll("\"",""));
 :}
-                        |DI cimagen DI cadena:val DI cimagen DF
-{:
-                RESULT = new Tienda();
-                RESULT.setCimg(val.replaceAll("\"",""));
-:}
                         |error DI
 {:
                 RESULT = new Tienda();
@@ -854,11 +849,6 @@ REGISPRODUP ::=  DI codigo DI EQ:val DI codigo DF
 {:
                 RESULT = new Producto();
                 RESULT.setImg(val.replaceAll("\"",""));
-:}
-                |DI cimagen DI cadena:val DI cimagen DF
-{:
-                RESULT = new Producto();
-                RESULT.setCimg(val.replaceAll("\"",""));
 :};
 
 ACCIONESPRODU ::=    ACCIONESPRODU:val1 ACCIONESPRODUP:val2
