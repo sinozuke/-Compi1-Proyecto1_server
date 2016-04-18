@@ -1,10 +1,10 @@
-package BackEnd.Analizador.Compilador;
+package BackEnd.Analizador.Consola;
 
 import java_cup.runtime.Symbol;
 
 %%
 
-%cupsym Simbolo_consola
+%cupsym Simbolo
 %class Lexico_Request_consola
 %cup
 %public
@@ -18,15 +18,15 @@ import java_cup.runtime.Symbol;
 %}
 
 Variable = [a-zA-ZÑñ]([a-zA-ZÑñ]|[0-9]|\_)*
-numero =[0-9]+ "."? [0-9]*
+numero =[0-9] "."? [0-9]*
 Correo = ([A-Za-zÑñ]|[0-9]|\_|\-)+"@compi1.com"	
 
 cadena = [\"] [^\"]* [\"] 
 ComentarioLinea = "//"([^\n\t])*(\t|\n) 
 ComentarioMultilinea= "#*" ([^*#]|[*])* "*#"
 Hacer = [\"]"crear"[\"]
-Modi = ([\"]"modificar"[\"]|[\"]"modificación"[\"])
-Borrar = [\"]"Eliminar"[\"]
+Modi = ([\"]"modificar"[\"]|[\"]"modificacion"[\"])
+Borrar = [\"]"eliminar"[\"]
 %%
 
 

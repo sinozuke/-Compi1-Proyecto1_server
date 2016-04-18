@@ -5,7 +5,7 @@
  */
 package Interfaz;
 
-import BackEnd.Analizador.Compilador.Lexico_Request_consola;
+import BackEnd.Analizador.Consola.Lexico_Request_consola;
 import BackEnd.Analizador.Consola.AnalizadorSintactico_compilador_consola;
 import static compi1.proyecto1_server.pkg201403775.Compi1Proyecto1_Server201403775.SG;
 import static compi1.proyecto1_server.pkg201403775.Compi1Proyecto1_Server201403775.errores;
