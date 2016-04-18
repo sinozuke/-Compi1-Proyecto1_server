@@ -543,6 +543,7 @@ CONTREGISTIENDA ::=  CONTREGISTIENDA:val1 CONTREGISTIENDAP:val2
                     RESULT.setTelefono(val2.getTelefono());
                 }else if(!val2.getImg().equals("vacio") && RESULT.getImg().equals("vacio")){
                     RESULT.setImg(val2.getImg());
+                    RESULT.setPath(val2.getPath());
                 }
 :}
                     |CONTREGISTIENDAP:val
@@ -579,8 +580,8 @@ CONTREGISTIENDAP ::=     DI codigo DI numero:val DI codigo DF
 {:
                 RESULT = new Tienda();
                 RESULT.setPath(val.replaceAll("\"",""));
-                Runtime.getRuntime().exec("cp "+RESULT.getImg()+" /var/www/html/");
-                String[] imgtemp = RESULT.getPath().split("/");
+                Runtime.getRuntime().exec("cp "+RESULT.getPath()+" /var/www/html/");
+                String[] imgtemp = val.replaceAll("\"","").split("/");
                 RESULT.setImg(imgtemp[imgtemp.length-1]);
 :}
                         |error DI
@@ -852,8 +853,8 @@ REGISPRODUP ::=  DI codigo DI EQ:val DI codigo DF
 {:
                 RESULT = new Producto();
                 RESULT.setPath(val.replaceAll("\"",""));
-                Runtime.getRuntime().exec("cp "+RESULT.getImg()+" /var/www/html/");
-                String[] imgtemp = RESULT.getPath().split("/");
+                Runtime.getRuntime().exec("cp "+RESULT.getPath()+" /var/www/html/");
+                String[] imgtemp = val.replaceAll("\"","").split("/");
                 RESULT.setImg(imgtemp[imgtemp.length-1]);
 :};
 

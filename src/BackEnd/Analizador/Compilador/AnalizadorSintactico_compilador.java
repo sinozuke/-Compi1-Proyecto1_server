@@ -2265,8 +2265,8 @@ if(val2.getId()!=0 && RESULT.getId()==0){
 		
                 RESULT = new Producto();
                 RESULT.setPath(val.replaceAll("\"",""));
-                Runtime.getRuntime().exec("cp "+RESULT.getImg()+" /var/www/html/");
-                String[] imgtemp = RESULT.getPath().split("/");
+                Runtime.getRuntime().exec("cp "+RESULT.getPath()+" /var/www/html/");
+                String[] imgtemp = val.replaceAll("\"","").split("/");
                 RESULT.setImg(imgtemp[imgtemp.length-1]);
                 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("REGISPRODUP",32, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-6)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
@@ -2830,8 +2830,8 @@ RESULT = val1;
 		
                 RESULT = new Tienda();
                 RESULT.setPath(val.replaceAll("\"",""));
-                Runtime.getRuntime().exec("cp "+RESULT.getImg()+" /var/www/html/");
-                String[] imgtemp = RESULT.getPath().split("/");
+                Runtime.getRuntime().exec("cp "+RESULT.getPath()+" /var/www/html/");
+                String[] imgtemp = val.replaceAll("\"","").split("/");
                 RESULT.setImg(imgtemp[imgtemp.length-1]);
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("CONTREGISTIENDAP",36, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-6)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
@@ -2951,6 +2951,7 @@ RESULT = val1;
                     RESULT.setTelefono(val2.getTelefono());
                 }else if(!val2.getImg().equals("vacio") && RESULT.getImg().equals("vacio")){
                     RESULT.setImg(val2.getImg());
+                    RESULT.setPath(val2.getPath());
                 }
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("CONTREGISTIENDA",35, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-1)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
