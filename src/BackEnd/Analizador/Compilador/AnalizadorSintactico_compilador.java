@@ -2190,12 +2190,16 @@ class CUP$AnalizadorSintactico_compilador$actions {
 		String val = (String)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.peek()).value;
 		
                 RESULT = new Producto();
-                if(val.equals("eliminar")){
-                    RESULT.setEliminar(false);
-                }else if(val.equals("modificar")){
-                    RESULT.setModificar(true);
-                }else{
-                    reply.append(enlace.reply_error("semantico", "valor de Accion no Encontrado", valleft, valright));
+                switch (val) {
+                    case "eliminar":
+                        RESULT.setEliminar(true);
+                        break;
+                    case "modificar":
+                        RESULT.setModificar(true);
+                        break;
+                    default:
+                        reply.append(enlace.reply_error("semantico", "valor de Accion no Encontrado", valleft, valright));
+                        break;
                 }
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("ACCIONESPRODUP",30, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-2)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
@@ -2562,8 +2566,10 @@ class CUP$AnalizadorSintactico_compilador$actions {
                 if(val.isEliminar()){
                         if(!hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
                             hash.eliminarproduc(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()));
+                            reply.append(enlace.reply_eliminacion_producto(val.getId(), val.getSucursal(), "True"));
                         }else{
                             reply.append(enlace.reply_error("semantico", "No Existe Producto con id: "+val.getId(), valleft, valright));
+                            reply.append(enlace.reply_eliminacion_producto(val.getId(), val.getSucursal(), "False"));
                         }
                     }else if(val.isModificar()){
                         if(!hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
@@ -2571,11 +2577,14 @@ class CUP$AnalizadorSintactico_compilador$actions {
                             reply.append(enlace.reply_modificacion_producto(val.getId(), val.getSucursal(), "True"));
                         }else{
                             reply.append(enlace.reply_error("semantico", "No Existe Producto con id: "+val.getId(), valleft, valright));
+                            reply.append(enlace.reply_eliminacion_producto(val.getId(), val.getSucursal(), "False"));
                         }
                     }else if(val.isRegistro()){
                             reply.append(enlace.reply_error("sintactico","Sentencia Erronea para la creacion de Producto", valleft, valright));
+                            reply.append(enlace.reply_eliminacion_producto(val.getId(), val.getSucursal(), "False"));
                     }else{
                             reply.append(enlace.reply_error("semantico","No se ha especificdo ninguna accion para el producto id: "+ String.valueOf(val.getId()), valleft, valright));
+                            reply.append(enlace.reply_eliminacion_producto(val.getId(), val.getSucursal(), "False"));
                 }
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("PRODUCTO",1, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-3)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);

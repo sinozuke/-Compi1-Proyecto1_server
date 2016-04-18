@@ -26,7 +26,7 @@ ComentarioLinea = "//"([^\n\t])*(\t|\n)
 ComentarioMultilinea= "#*" ([^*#]|[*])* "*#"
 Hacer = [\"]"crear"[\"]
 Modi = ([\"]"modificar"[\"]|[\"]"modificacion"[\"])
-Borrar = [\"]"Eliminar"[\"]
+Borrar = [\"]"eliminar"[\"]
 %%
 
 
