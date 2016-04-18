@@ -702,42 +702,43 @@ CONSM ::=    cadena:val
                 }
 :};
 
-PRODUCTO ::=     DI producto tipo igual CREACION DI REGISPRODU:val DI DF
+PRODUCTO ::=     DI producto tipo igual CREACION DI REGISPRODU:val DI producto DF
 {:
                 if(val!=null){
-                    if(val.getId()!=0 && val.getNombre().equals("") && val.getSucursal()!=0){
-                        if(!hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
+                    if(val.getId()!=0 && !val.getNombre().equals("vacio") && val.getSucursal()!=0){
+                        if(hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
                             hash.modificarprodu(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()), val);
+                            reply.append(enlace.reply_registro_producto(val.getId(), val.getSucursal(), "True"));
                         }else{
                             reply.append(enlace.reply_error("semantico", "Ya se Encuentra Ocupado el Id:" + val.getId(), valleft, valright));
+                            reply.append(enlace.reply_registro_producto(val.getId(), val.getSucursal(), "False"));
                         }
                     }else{
-                        reply.append(enlace.reply_error("semantico","ninguno de los parametros obligatorios se encuentra disponible", valleft, valright));
+                        reply.append(enlace.reply_error("semantico","Alguno de los parametros obligatorios se encuentra disponible", valleft, valright));
+                        reply.append(enlace.reply_registro_producto(val.getId(), val.getSucursal(), "False"));
                     }
                 }else{
                     reply.append(enlace.reply_error("semantico","no se ha epecificado ningun atributo", valleft, valright));
+                    reply.append(enlace.reply_registro_producto(val.getId(), val.getSucursal(), "False"));
                 }
 :}
                 |DI producto ACCIONESPRODU:val DF
 {:
                 if(val.isEliminar()){
-                        if(hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
+                        if(!hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
                             hash.eliminarproduc(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()));
                         }else{
                             reply.append(enlace.reply_error("semantico", "No Existe Producto con id: "+val.getId(), valleft, valright));
                         }
                     }else if(val.isModificar()){
-                        if(hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
+                        if(!hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
                             hash.modificarprodu(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()), val);
+                            reply.append(enlace.reply_modificacion_producto(val.getId(), val.getSucursal(), "True"));
                         }else{
                             reply.append(enlace.reply_error("semantico", "No Existe Producto con id: "+val.getId(), valleft, valright));
                         }
                     }else if(val.isRegistro()){
-                        if(!hash.produExist(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()))){
-                            hash.modificarprodu(hash.Hash_Cod_Producto(val.getSucursal(), val.getId()), val);
-                        }else{
-                            reply.append(enlace.reply_error("semantico", "Ya Existe Producto con id: "+val.getId(), valleft, valright));
-                        }
+                            reply.append(enlace.reply_error("sintactico","Sentencia Erronea para la creacion de Producto", valleft, valright));
                     }else{
                             reply.append(enlace.reply_error("semantico","No se ha especificdo ninguna accion para el producto id: "+ String.valueOf(val.getId()), valleft, valright));
                 }
@@ -747,7 +748,7 @@ PRODUCTO ::=     DI producto tipo igual CREACION DI REGISPRODU:val DI DF
                 val2.stream().forEach((Producto p)->{
                     p.setSucursal(Integer.parseInt(val1));
                     if(p.isEliminar()){
-                        if(hash.produExist(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()))){
+                        if(!hash.produExist(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()))){
                             hash.eliminarproduc(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()));
                             reply.append(enlace.reply_eliminacion_producto(p.getId(), p.getSucursal(), "True"));
                         }else{
@@ -755,7 +756,7 @@ PRODUCTO ::=     DI producto tipo igual CREACION DI REGISPRODU:val DI DF
                             reply.append(enlace.reply_eliminacion_producto(p.getId(), p.getSucursal(), "False"));
                         }
                     }else if(p.isModificar()){
-                        if(hash.produExist(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()))){
+                        if(!hash.produExist(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()))){
                             hash.modificarprodu(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()), p);
                             reply.append(enlace.reply_modificacion_producto(p.getId(), p.getSucursal(), "True"));
                         }else{
@@ -763,7 +764,7 @@ PRODUCTO ::=     DI producto tipo igual CREACION DI REGISPRODU:val DI DF
                             reply.append(enlace.reply_eliminacion_producto(p.getId(), p.getSucursal(), "False"));
                         }
                     }else if(p.isRegistro()){
-                        if(!hash.produExist(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()))){
+                        if(hash.produExist(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()))){
                             hash.modificarprodu(hash.Hash_Cod_Producto(p.getSucursal(), p.getId()), p);
                             reply.append(enlace.reply_eliminacion_producto(p.getId(), p.getSucursal(), "True"));
                         }else{                            
@@ -772,6 +773,7 @@ PRODUCTO ::=     DI producto tipo igual CREACION DI REGISPRODU:val DI DF
                         }
                     }else{
                         reply.append(enlace.reply_error("semantico", "No se ha especificdo ninguna accion para el producto id: "+ String.valueOf(p.getId()), val2left, val2right));
+                        reply.append(enlace.reply_registro_producto(p.getId(), p.getSucursal(), "False"));
                     }
                 });
 :};
@@ -810,6 +812,7 @@ REGISPRODU ::=   REGISPRODU:val1 REGISPRODUP:val2
                     RESULT.setTamaño(val2.getTamaño());
                 }else if(!val2.getImg().equals("vacio") && RESULT.getImg().equals("vacio")){
                     RESULT.setImg(val2.getImg());
+                    RESULT.setPath(val2.getPath());
                 }else if(val2.getSucursal()!=0 && RESULT.getSucursal()==0){
                     RESULT.setSucursal(val2.getSucursal());
                 }
@@ -819,10 +822,10 @@ REGISPRODU ::=   REGISPRODU:val1 REGISPRODUP:val2
                 RESULT = val;
 :};
 
-REGISPRODUP ::=  DI codigo DI EQ:val DI codigo DF
+REGISPRODUP ::=  DI codigo DI numero:val DI codigo DF
 {:
                 RESULT = new Producto();
-                RESULT.setId(Integer.parseInt(val.Ecuacion));
+                RESULT.setId(Integer.parseInt(val));
 :}
                 |DI nombre DI CONSM:val DI nombre DF
 {:
@@ -832,7 +835,11 @@ REGISPRODUP ::=  DI codigo DI EQ:val DI codigo DF
                 |DI cantidad DI EQ:val DI cantidad DF
 {:
                 RESULT = new Producto();
-                RESULT.setCantidad(Integer.parseInt(val.Ecuacion));
+                if(val.variables.isEmpty()){
+                    RESULT.setCantidad(Integer.parseInt(val.Ecuacion));
+                }else{
+                    reply.append(enlace.reply_error("semantico","La Ecuacion no devuelve ningun valor",valleft,valright));
+                }
 :}
                 |DI marca DI CONSM:val DI marca DF
 {:
@@ -842,7 +849,12 @@ REGISPRODUP ::=  DI codigo DI EQ:val DI codigo DF
                 |DI tamano DI EQ:val DI tamano DF
 {:		
                 RESULT = new Producto();
-                RESULT.setTamaño(Integer.parseInt(val.Ecuacion));
+                if(val.variables.isEmpty()){
+                    RESULT.setTamaño(Integer.parseInt(val.Ecuacion));
+                }else{
+                    reply.append(enlace.reply_error("semantico","La Ecuacion no devuelve ningun valor",valleft,valright));
+                }
+                
 :}
                 |DI color DI CONSM:val DI color DF
 {:
@@ -856,13 +868,18 @@ REGISPRODUP ::=  DI codigo DI EQ:val DI codigo DF
                 Runtime.getRuntime().exec("cp "+RESULT.getPath()+" /var/www/html/");
                 String[] imgtemp = val.replaceAll("\"","").split("/");
                 RESULT.setImg(imgtemp[imgtemp.length-1]);
+:}
+                |DI sucursal DI numero:val DI sucursal DF
+{:
+                RESULT = new Producto();
+                RESULT.setSucursal(Integer.parseInt(val));
 :};
 
-ACCIONESPRODU ::=    ACCIONESPRODU:val1 ACCIONESPRODUP:val2
+ACCIONESPRODU ::=    ACCIONESPRODU:val1 coma ACCIONESPRODUP:val2
 {:
                 RESULT = val1;
 
-if(val2.getId()!=0 && RESULT.getId()==0){
+                if(val2.getId()!=0 && RESULT.getId()==0){
                     RESULT.setId(val2.getId());
                 }else if(!val2.getNombre().equals("vacio") && RESULT.getNombre().equals("vacio")){
                     RESULT.setNombre(val2.getNombre());
@@ -943,10 +960,24 @@ ACCIONESPRODUP ::=   tipo igual ACCION:val
                 |cantidad igual EQ:val
 {:
                 RESULT = new Producto();
-                try{
+                if(val.variables.isEmpty()){
                     RESULT.setCantidad(Integer.parseInt(val.Ecuacion));
-                }catch(Exception ex){
-                        reply.append(enlace.reply_error("semantico", "ecuacion encontrada sin valor exacto", valleft, valright));
+                }else{
+                    reply.append(enlace.reply_error("semantico", "ecuacion encontrada sin valor exacto", valleft, valright));
+                }
+:}
+                |marca igual CONSM:val
+{:
+                RESULT = new Producto();
+                RESULT.setMarca(val);
+:}
+                |tamano igual EQ:val
+{:
+                RESULT = new Producto();
+                if(val.variables.isEmpty()){
+                    RESULT.setTamaño(Integer.parseInt(val.Ecuacion));
+                }else{
+                    reply.append(enlace.reply_error("semantico", "ecuacion encontrada sin valor exacto", valleft, valright));
                 }
 :};
 
@@ -1672,7 +1703,7 @@ COMPARAP4 ::=     id igual igual numero:val
 {:
                 RESULT = new Query();
                 RESULT.valuados.add("cantidad");
-                if(!val.variables.isEmpty() && !val.Ecuacion.equals("")){
+                if(val.variables.isEmpty() && val.Ecuacion.equals("")){
                     RESULT.productos = hash.get_productosc("cantidad", (Object)val.Ecuacion);
                 }else{
                     reply.append(enlace.reply_error("semantico", "la ecuacion ingresada no se puede evaluar", valleft, valright));
@@ -1682,7 +1713,7 @@ COMPARAP4 ::=     id igual igual numero:val
 {:
                 RESULT = new Query();
                 RESULT.valuados.add("tamaño");
-                if(!val.variables.isEmpty() && !val.Ecuacion.equals("")){
+                if(val.variables.isEmpty() && val.Ecuacion.equals("")){
                     RESULT.productos = hash.get_productosc("tamaño", (Object)val.Ecuacion);
                 }else{
                     reply.append(enlace.reply_error("semantico", "la ecuacion ingresada no se puede evaluar", valleft, valright));

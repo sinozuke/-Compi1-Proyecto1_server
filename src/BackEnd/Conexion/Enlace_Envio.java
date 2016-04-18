@@ -199,9 +199,9 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
         reply.append("$lista$\n");
         productos.stream().forEach((Producto p)->{
             reply.append("$producto$\n");
-            reply.append("$código$");
+            reply.append("$codigo$");
             reply.append(p.getId());
-            reply.append("$código-$\n");
+            reply.append("$codigo-$\n");
             reply.append("$nombre$");
             reply.append("\"");
             reply.append(p.getNombre());

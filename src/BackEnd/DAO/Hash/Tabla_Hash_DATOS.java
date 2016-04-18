@@ -34,12 +34,16 @@ public class Tabla_Hash_DATOS {
         SG.Productos_hash[indice]=null;
     }
     public void modificarprodu(int indice,Producto pro){
+        pro.setImg(SG.Productos_hash[indice].getImg());
+        pro.setPath(SG.Productos_hash[indice].getPath());
         SG.Productos_hash[indice]=pro;
     }
     public void eliminartienda(int indice){
         SG.Tienda_hash[indice]=null;
     }
     public void modificartienda(int indice, Tienda temp){
+        temp.setPath(SG.Tienda_hash[indice].getPath());
+        temp.setImg(SG.Tienda_hash[indice].getImg());
         SG.Tienda_hash[indice]=temp;
     }
     public boolean usuExist(int indice){
