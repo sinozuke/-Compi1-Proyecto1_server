@@ -2264,8 +2264,11 @@ if(val2.getId()!=0 && RESULT.getId()==0){
 		String val = (String)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-3)).value;
 		
                 RESULT = new Producto();
-                RESULT.setImg(val.replaceAll("\"",""));
-
+                RESULT.setPath(val.replaceAll("\"",""));
+                Runtime.getRuntime().exec("cp "+RESULT.getImg()+" /var/www/html/");
+                String[] imgtemp = RESULT.getPath().split("/");
+                RESULT.setImg(imgtemp[imgtemp.length-1]);
+                
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("REGISPRODUP",32, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-6)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }
           return CUP$AnalizadorSintactico_compilador$result;
@@ -2826,7 +2829,10 @@ RESULT = val1;
 		String val = (String)((java_cup.runtime.Symbol) CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-3)).value;
 		
                 RESULT = new Tienda();
-                RESULT.setImg(val.replaceAll("\"",""));
+                RESULT.setPath(val.replaceAll("\"",""));
+                Runtime.getRuntime().exec("cp "+RESULT.getImg()+" /var/www/html/");
+                String[] imgtemp = RESULT.getPath().split("/");
+                RESULT.setImg(imgtemp[imgtemp.length-1]);
 
               CUP$AnalizadorSintactico_compilador$result = parser.getSymbolFactory().newSymbol("CONTREGISTIENDAP",36, ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.elementAt(CUP$AnalizadorSintactico_compilador$top-6)), ((java_cup.runtime.Symbol)CUP$AnalizadorSintactico_compilador$stack.peek()), RESULT);
             }

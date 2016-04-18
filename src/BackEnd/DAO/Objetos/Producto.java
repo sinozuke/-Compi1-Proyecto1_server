@@ -15,14 +15,23 @@ public class Producto {
     private String Nombre="vacio";
     private String marca="vacio";
     private String color="vacio";
+    private String img="vacio";
+    private String path="vacio";
     private int cantidad=0;
     private int tamaño=0;
     private int sucursal=0;
-    private String img="vacio";
     private boolean registro=false;
     private boolean modificar=false;
     private boolean eliminar=false;
 
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+    
     public boolean isRegistro() {
         return registro;
     }

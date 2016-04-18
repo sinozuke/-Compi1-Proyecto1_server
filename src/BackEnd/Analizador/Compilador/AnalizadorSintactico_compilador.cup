@@ -578,7 +578,10 @@ CONTREGISTIENDAP ::=     DI codigo DI numero:val DI codigo DF
                         |DI imagen DI cadena:val DI imagen DF
 {:
                 RESULT = new Tienda();
-                RESULT.setImg(val.replaceAll("\"",""));
+                RESULT.setPath(val.replaceAll("\"",""));
+                Runtime.getRuntime().exec("cp "+RESULT.getImg()+" /var/www/html/");
+                String[] imgtemp = RESULT.getPath().split("/");
+                RESULT.setImg(imgtemp[imgtemp.length-1]);
 :}
                         |error DI
 {:
@@ -848,7 +851,10 @@ REGISPRODUP ::=  DI codigo DI EQ:val DI codigo DF
                 |DI imagen DI cadena:val DI imagen DF
 {:
                 RESULT = new Producto();
-                RESULT.setImg(val.replaceAll("\"",""));
+                RESULT.setPath(val.replaceAll("\"",""));
+                Runtime.getRuntime().exec("cp "+RESULT.getImg()+" /var/www/html/");
+                String[] imgtemp = RESULT.getPath().split("/");
+                RESULT.setImg(imgtemp[imgtemp.length-1]);
 :};
 
 ACCIONESPRODU ::=    ACCIONESPRODU:val1 ACCIONESPRODUP:val2

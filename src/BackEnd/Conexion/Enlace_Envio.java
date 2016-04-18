@@ -184,7 +184,7 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
             reply.append("$telefono-$\n");
             reply.append("$img$");
             reply.append("\"");
-            reply.append(t.getImg());
+            reply.append(t.getPath());
             reply.append("\"");
             reply.append("$img-$\n");
             reply.append("$tienda-$\n");
@@ -228,7 +228,7 @@ public class Enlace_Envio implements Enlace_EnvioDAO{
             reply.append("$sucursal-$\n");
             reply.append("$img$");
             reply.append("\"");
-            reply.append(p.getImg());
+            reply.append(p.getPath());
             reply.append("\"");
             reply.append("$img-$\n");
             reply.append("$producto-$\n");

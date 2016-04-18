@@ -17,10 +17,19 @@ public class Tienda {
     private String Dirreccion="vacio";
     private String telefono="vacio";
     private String img="vacio";
+    private String path="vacio";
     private boolean registro=false;
     private boolean modificar=false;
     private boolean eliminar=false;
 
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+    
     public boolean isRegistro() {
         return registro;
     }
